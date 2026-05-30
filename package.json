@@ -1,0 +1,25 @@
+{
+  "name": "organic-todo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Grove — tasks, focus & memo for desktop",
+  "type": "module",
+  "scripts": {
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "icons": "python scripts/prepare-icon.py && tauri icon public/Grove_icon_square.png && node -e \"const fs=require('fs');const p='public/Grove_icon.png';['src/Grove_icon.png','marketing/Grove_icon.png'].forEach(d=>fs.copyFileSync(p,d));fs.copyFileSync('public/Grove_icon_square.png','assets/tray-icon.png');\"",
+    "tauri": "tauri"
+  },
+  "keywords": [
+    "todo",
+    "focus",
+    "pomodoro",
+    "productivity",
+    "tauri"
+  ],
+  "author": "Ethan",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  }
+}
