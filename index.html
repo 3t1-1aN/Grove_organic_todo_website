@@ -1082,10 +1082,10 @@
         }
 
         .download-card {
-            max-width: 640px;
+            max-width: 480px;
             margin: 0 auto;
             border-radius: var(--radius-lg);
-            padding: 40px 36px;
+            padding: 44px 40px 36px;
             text-align: center;
             background: var(--glass-bg);
             backdrop-filter: blur(40px) saturate(160%);
@@ -1095,84 +1095,118 @@
         }
 
         .download-card h3 {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 600;
-            color: rgba(210, 240, 215, 0.9);
-            margin-bottom: 12px;
+            color: rgba(210, 240, 215, 0.92);
+            margin-bottom: 8px;
         }
 
-        .download-card p {
-            font-size: 14px;
+        .download-badge {
+            display: inline-block;
+            margin-bottom: 16px;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--accent-light);
+            background: rgba(74, 222, 128, 0.12);
+            border: 0.5px solid rgba(74, 222, 128, 0.22);
+        }
+
+        .download-tagline {
+            font-size: 15px;
             color: var(--text-dim);
-            line-height: 1.65;
-            margin-bottom: 8px;
+            line-height: 1.55;
+            margin-bottom: 28px;
+        }
+
+        .download-btn-primary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 320px;
+            min-height: 54px;
+            padding: 14px 28px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: inherit;
+            text-decoration: none;
+            color: rgba(8, 18, 10, 0.92);
+            background: linear-gradient(180deg, #86efac 0%, #4ade80 100%);
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset,
+                0 8px 24px rgba(74, 222, 128, 0.35),
+                0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .download-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.4) inset,
+                0 12px 32px rgba(74, 222, 128, 0.42),
+                0 4px 10px rgba(0, 0, 0, 0.22);
+        }
+
+        .download-btn-primary svg {
+            flex-shrink: 0;
+            opacity: 0.85;
+        }
+
+        .download-formats {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 6px 10px;
+            margin-top: 18px;
+            font-size: 14px;
+        }
+
+        .download-formats a {
+            color: rgba(200, 230, 210, 0.72);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .download-formats a:hover {
+            color: var(--accent-light);
+        }
+
+        .download-formats-sep {
+            color: rgba(134, 200, 140, 0.25);
+            user-select: none;
+        }
+
+        .download-specs {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px 10px;
+            margin-top: 28px;
+            padding-top: 24px;
+            border-top: 0.5px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .download-specs li {
+            font-size: 12px;
+            color: rgba(134, 200, 140, 0.42);
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 0.5px solid rgba(255, 255, 255, 0.05);
         }
 
         .download-meta {
             font-size: 12px;
             color: rgba(134, 200, 140, 0.35);
-            margin-top: 16px;
-            letter-spacing: 0.02em;
-        }
-
-        .download-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 24px;
-        }
-
-        .download-actions .btn-primary,
-        .download-actions .btn-ghost {
-            min-height: 48px;
-            padding: 12px 24px;
-        }
-
-        .download-note {
-            font-size: 13px;
-            color: rgba(134, 200, 140, 0.45);
-            margin-top: 20px;
-            line-height: 1.55;
-        }
-
-        .download-note code {
-            font-size: 0.92em;
-            color: rgba(200, 230, 210, 0.55);
-        }
-
-        .download-divider {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin: 28px 0 8px;
-            font-size: 12px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: rgba(134, 200, 140, 0.35);
-        }
-
-        .download-divider::before,
-        .download-divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: rgba(74, 222, 128, 0.12);
-        }
-
-        .download-github-note {
-            font-size: 13px;
-            color: rgba(134, 200, 140, 0.45);
-            margin-top: 12px;
-        }
-
-        .download-github-note a {
-            color: var(--green-soft);
-            text-decoration: none;
-        }
-
-        .download-github-note a:hover {
-            text-decoration: underline;
+            margin-top: 14px;
+            line-height: 1.5;
         }
 
         .footer-links {
@@ -1191,50 +1225,6 @@
 
         .footer-links a:hover {
             color: var(--green-soft);
-        }
-
-        .download-card .hero-btns {
-            margin-top: 24px;
-            align-items: center;
-        }
-
-        .download-card .btn-primary,
-        .download-card .btn-ghost {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 48px;
-            padding: 12px 28px;
-            border-radius: 12px;
-            white-space: nowrap;
-        }
-
-        .download-card .btn-primary {
-            background: rgba(74, 222, 128, 0.2);
-            color: var(--accent-pale);
-            border: 0.5px solid rgba(134, 239, 172, 0.35);
-            box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.35),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
-        }
-
-        .download-card .btn-primary:hover {
-            background: rgba(74, 222, 128, 0.3);
-            color: #fff;
-            box-shadow: 4px 6px 20px rgba(0, 0, 0, 0.4),
-                0 0 24px rgba(74, 222, 128, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        .download-card .btn-ghost {
-            background: rgba(255, 255, 255, 0.05);
-            color: rgba(200, 230, 210, 0.82);
-            border: 0.5px solid rgba(255, 255, 255, 0.12);
-        }
-
-        .download-card .btn-ghost:hover {
-            background: rgba(255, 255, 255, 0.09);
-            color: var(--accent-light);
-            border-color: rgba(134, 239, 172, 0.25);
         }
     </style>
 </head>
@@ -1563,32 +1553,35 @@
         <!-- CTA / Download -->
         <section class="cta-section" id="download">
             <h2>Ready for a calmer <em>desktop</em>?</h2>
-            <p>Open source under Apache-2.0. Download from GitHub Releases, or build from source with
-                <code style="font-size:0.9em;color:rgba(30,60,40,0.7)">npm run build</code>.</p>
+            <p>Free for Windows. No account, no cloud — just install and go.</p>
             <div class="download-card">
                 <img class="download-brand" src="Grove_icon.png" width="56" height="56" alt="">
+                <div class="download-badge">Version 1.0 · Windows</div>
                 <h3>Grove for Windows</h3>
-                <p>Tasks · Focus · Memo — version 1.0. Free, offline-first, yours on disk.</p>
-                <div class="download-actions">
-                    <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/Grove_1.0.0_x64-setup.exe"
-                        class="btn-primary" rel="noopener noreferrer">Download from GitHub (.exe)</a>
+                <p class="download-tagline">Tasks, focus &amp; memo in one quiet desktop app.</p>
+                <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/Grove_1.0.0_x64-setup.exe"
+                    class="download-btn-primary" rel="noopener noreferrer">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M12 3v10m0 0l4-4m-4 4L8 9" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" />
+                    </svg>
+                    Download for Windows
+                </a>
+                <div class="download-formats">
                     <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/Grove_1.0.0_x64_en-US.msi"
-                        class="btn-ghost" rel="noopener noreferrer">Download MSI</a>
-                    <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest" class="btn-ghost"
-                        rel="noopener noreferrer">All releases</a>
+                        rel="noopener noreferrer">MSI installer</a>
+                    <span class="download-formats-sep" aria-hidden="true">·</span>
+                    <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest"
+                        rel="noopener noreferrer">What's new</a>
                 </div>
-                <p class="download-meta">Requires WebView2 · Data stays in your profile via the app webview</p>
-                <p class="download-github-note">Source &amp; feedback:
-                    <a href="https://github.com/3t1-1aN/Grove_organic_todo_website">github.com/3t1-1aN/Grove_organic_todo_website</a> ·
-                    <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/issues">Report an issue</a>
-                </p>
-                <div class="download-divider">or mirror</div>
-                <div class="download-actions">
-                    <a href="downloads/Grove_1.0.0_x64-setup.exe" class="btn-ghost" download>Direct .exe (this site)</a>
-                    <a href="downloads/Grove_1.0.0_x64_en-US.msi" class="btn-ghost" download>Direct MSI (this site)</a>
-                </div>
-                <p class="download-note">Mirror links work when this page is hosted with
-                    <code>marketing/downloads/</code> populated. Primary builds live on GitHub Releases.</p>
+                <ul class="download-specs">
+                    <li>Windows 10 &amp; 11</li>
+                    <li>64-bit</li>
+                    <li>Offline &amp; local</li>
+                </ul>
+                <p class="download-meta">WebView2 on Windows 11 · Installers hosted on GitHub Releases</p>
             </div>
         </section>
 
