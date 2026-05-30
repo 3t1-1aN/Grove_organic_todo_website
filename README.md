@@ -6,7 +6,7 @@ Tasks, focus & memo — a lightweight desktop app built with [Tauri 2](https://v
 
 ## Download
 
-Pre-built Windows installers are on [GitHub Releases](https://github.com/3t1-1aN/grove/releases/latest):
+Pre-built Windows installers are on [GitHub Releases](https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest):
 
 - NSIS setup (`.exe`)
 - MSI (`.msi`)
@@ -15,7 +15,7 @@ After `npm run build`, upload the files from `D:\rust\organic-todo-target\releas
 
 ## Feedback
 
-Bug reports and feature ideas: [GitHub Issues](https://github.com/3t1-1aN/grove/issues).
+Bug reports and feature ideas: [GitHub Issues](https://github.com/3t1-1aN/Grove_organic_todo_website/issues).
 
 ## Prerequisites
 

@@ -29,3 +29,5 @@ src-tauri/target
 # Release installers (attach to GitHub Releases instead)
 marketing/downloads/*
 !marketing/downloads/.gitkeep
+downloads/*
+!downloads/.gitkeep
