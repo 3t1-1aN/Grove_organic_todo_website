@@ -7,6 +7,10 @@
     <title>Grove</title>
     <link rel="icon" type="image/png" href="Grove_icon.png">
     <link rel="apple-touch-icon" href="Grove_icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Patrick+Hand&display=swap"
+        rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -66,12 +70,14 @@
             --duration-fast: 0.2s;
             --duration-normal: 0.35s;
             --duration-spring: 0.42s;
+            --font-display: 'Caveat', cursive;
+            --font-body: 'Patrick Hand', cursive;
         }
 
         body {
             min-height: 100vh;
             min-height: 100dvh;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: var(--font-body);
             display: flex;
             align-items: flex-start;
             justify-content: center;
@@ -80,6 +86,23 @@
             overflow-y: auto;
             position: relative;
             background: var(--page-bg);
+        }
+
+        h1,
+        h2,
+        h3,
+        .title,
+        .notes-title,
+        #focusPanel .focus-daily-header h2,
+        .focus-current-title,
+        .focus-time,
+        .focus-session-time {
+            font-family: var(--font-display);
+        }
+
+        .note-text,
+        .notes-input {
+            font-family: var(--font-display);
         }
 
         .app-panel {
@@ -249,8 +272,131 @@
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 360px;
+            max-width: 420px;
             text-align: center;
+        }
+
+        .focus-timer-stage {
+            position: relative;
+            width: min(340px, 82vw);
+            aspect-ratio: 1;
+            margin: 0 auto 1.75rem;
+            display: grid;
+            place-items: center;
+        }
+
+        .focus-session-stage {
+            width: min(100%, clamp(380px, 42vw, 500px));
+            margin: 0 auto 1rem;
+        }
+
+        .focus-session-stage .focus-current-title {
+            font-size: clamp(1rem, 2.2vw, 1.35rem);
+            margin-bottom: 8px;
+        }
+
+        .focus-session-stage .focus-session-time {
+            font-size: clamp(3.5rem, 12vw, 5.5rem);
+            line-height: 1;
+        }
+
+        .timer-ring-wrap {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .timer-ring {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+            overflow: visible;
+        }
+
+        .timer-ring-track {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.07);
+            stroke-width: 2.5;
+        }
+
+        .timer-ring-progress {
+            fill: none;
+            stroke: rgba(74, 222, 128, 0.88);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 0.85s linear, stroke 0.45s ease, opacity 0.35s ease;
+        }
+
+        .focus-timer-stage.is-break .timer-ring-progress {
+            stroke: rgba(251, 191, 36, 0.88);
+        }
+
+        .focus-timer-stage:not(.is-running) .timer-ring-progress {
+            opacity: 0.55;
+        }
+
+        .timer-ring-glow {
+            position: absolute;
+            inset: 14%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(74, 222, 128, 0.16) 0%, transparent 68%);
+            opacity: 0;
+            transform: scale(0.94);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .focus-timer-stage.is-break .timer-ring-glow {
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.14) 0%, transparent 68%);
+        }
+
+        .focus-timer-stage.is-running .timer-ring-glow {
+            opacity: 1;
+            animation: timerBreathe 5s ease-in-out infinite;
+        }
+
+        @keyframes timerBreathe {
+            0%, 100% {
+                transform: scale(0.94);
+                opacity: 0.45;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+        }
+
+        .focus-timer-core {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 0 12px;
+        }
+
+        .focus-timer-core .focus-phase,
+        .focus-timer-core .focus-current-label {
+            margin-bottom: 8px;
+        }
+
+        .focus-timer-core .focus-current-title {
+            margin-bottom: 10px;
+        }
+
+        .focus-timer-core .focus-time,
+        .focus-timer-core .focus-session-time {
+            margin-bottom: 0;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .timer-ring-glow {
+                animation: none !important;
+            }
+
+            .timer-ring-progress {
+                transition: stroke-dashoffset 0.2s ease, stroke 0.3s ease, opacity 0.3s ease !important;
+            }
         }
 
         .focus-phase {
@@ -272,8 +418,8 @@
 
         .focus-time {
             font-size: clamp(4.5rem, 22vw, 6.5rem);
-            font-weight: 200;
-            letter-spacing: -0.04em;
+            font-weight: 700;
+            letter-spacing: 0.02em;
             color: rgba(220, 250, 230, 0.96);
             line-height: 1;
             font-variant-numeric: tabular-nums;
@@ -381,9 +527,14 @@
             border: 0.5px solid rgba(255, 255, 255, 0.05);
             background: rgba(255, 255, 255, 0.04);
             color: rgba(210, 235, 215, 0.78);
-            font-size: 14px;
+            font-size: 0;
             font-weight: 600;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 0;
             box-shadow:
                 3px 3px 10px rgba(0, 0, 0, 0.45),
                 -1px -1px 4px rgba(255, 255, 255, 0.04),
@@ -534,7 +685,7 @@
             font-size: clamp(1.75rem, 3vw, 2.25rem);
             font-weight: 600;
             color: rgba(210, 240, 215, 0.9);
-            letter-spacing: -0.02em;
+            letter-spacing: 0.02em;
             margin-bottom: 6px;
         }
 
@@ -812,6 +963,15 @@
             box-shadow: none;
         }
 
+        #focusPanel .focus-current {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            flex: 1 1 auto;
+        }
+
         .focus-current.hidden,
         .focus-session-idle.hidden {
             display: none;
@@ -836,29 +996,14 @@
 
         .focus-session-time {
             font-size: clamp(3rem, 8vw, 4.5rem);
-            font-weight: 200;
-            letter-spacing: -0.04em;
+            font-weight: 700;
+            letter-spacing: 0.02em;
             color: rgba(220, 250, 230, 0.96);
             font-variant-numeric: tabular-nums;
-            margin-bottom: 20px;
         }
 
-        .focus-progress {
-            width: 100%;
-            max-width: 280px;
-            height: 6px;
-            border-radius: 999px;
-            background: rgba(0, 0, 0, 0.35);
-            overflow: hidden;
-            margin: 0 auto 20px;
-        }
-
-        .focus-progress-bar {
-            height: 100%;
-            width: 0%;
-            border-radius: 999px;
-            background: linear-gradient(90deg, rgba(74, 222, 128, 0.7), rgba(134, 239, 172, 0.95));
-            transition: width 0.35s ease;
+        .focus-pause-btn {
+            margin-top: 8px;
         }
 
         body.focus-session-running #focusPanel .focus-session-col {
@@ -928,7 +1073,7 @@
             justify-content: center;
             gap: 1.75rem;
             width: 100%;
-            min-height: 420px;
+            min-height: min(520px, calc(100dvh - 14rem));
         }
 
         .bg {
@@ -1237,6 +1382,15 @@
             color: rgba(134, 200, 120, 0.5);
             letter-spacing: 0.04em;
             margin-bottom: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .greeting .ui-icon {
+            width: 14px;
+            height: 14px;
+            opacity: 0.85;
         }
 
         body.mode-backlog .greeting {
@@ -1247,7 +1401,7 @@
             font-size: clamp(1.75rem, 3vw, 2.25rem);
             font-weight: 600;
             color: var(--text-primary);
-            letter-spacing: -0.02em;
+            letter-spacing: 0.02em;
         }
 
         .title span {
@@ -1773,6 +1927,77 @@
 
         .check-wrap.checked .check-icon {
             opacity: 1;
+        }
+
+        .ui-icon {
+            display: block;
+            flex-shrink: 0;
+        }
+
+        .add-btn {
+            font-size: 0;
+        }
+
+        .add-btn .ui-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        .focus-ctrl .ui-icon {
+            width: 20px;
+            height: 20px;
+            display: block;
+        }
+
+        .subtask-pill-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .subtask-pill-icon .ui-icon {
+            width: 12px;
+            height: 12px;
+        }
+
+        .subtask-remove,
+        .cat-row-delete,
+        #focusPanel .focus-queue-delete {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+        }
+
+        .subtask-remove .ui-icon,
+        .cat-row-delete .ui-icon,
+        #focusPanel .focus-queue-delete .ui-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .matrix-drag-handle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0;
+            letter-spacing: 0;
+        }
+
+        .matrix-drag-handle .ui-icon {
+            width: 14px;
+            height: 18px;
+        }
+
+        .subtask-add-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .subtask-add-btn .ui-icon {
+            width: 12px;
+            height: 12px;
         }
 
         .task-body {
@@ -2832,9 +3057,9 @@
         }
 
         .subtask-pill-icon {
-            font-size: 11px;
-            line-height: 1;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .subtask-region {
@@ -3423,9 +3648,9 @@
 
         .notes-title {
             margin: 0;
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 700;
-            letter-spacing: -0.02em;
+            letter-spacing: 0.02em;
             color: rgba(230, 250, 235, 0.96);
         }
 
@@ -3832,7 +4057,7 @@
         <div class="task-shell">
             <div class="task-topbar">
                 <div class="header">
-                    <div class="greeting" id="greeting">Good day 👋</div>
+                    <div class="greeting" id="greeting"><span class="greeting-text">Good day</span></div>
                     <div class="title" id="pageTitle"><span>Today</span></div>
                 </div>
                 <div class="view-tabs">
@@ -3901,7 +4126,7 @@
                     </button>
                     <input class="add-input" id="addInput" placeholder="Add a new task…" maxlength="60"
                         autocomplete="off" />
-                    <button type="button" class="add-btn" id="addBtn" aria-label="Add task">+</button>
+                    <button type="button" class="add-btn" id="addBtn" aria-label="Add task"></button>
                 </div>
                 <div class="category-chip-popover" id="categoryChipPopover" role="menu"
                     aria-labelledby="categoryChip"></div>
@@ -3963,17 +4188,25 @@
                                 <label for="focusSecondsInput">S</label>
                                 <input type="number" class="focus-time-input" id="focusSecondsInput" min="0" max="59" value="0" inputmode="numeric" aria-label="Seconds">
                             </div>
-                            <button type="submit" class="add-btn" aria-label="Add focus task">+</button>
+                            <button type="submit" class="add-btn" aria-label="Add focus task"></button>
                         </form>
                         <div class="focus-queue-list" id="focusQueueList" role="list" aria-label="Focus queue"></div>
                     </div>
                     <div class="focus-daily-col focus-session-col">
                         <div id="focusCurrentTask" class="focus-current hidden">
-                            <p class="focus-current-label" id="focusCurrentLabel">Task 1 of 1</p>
-                            <h3 class="focus-current-title" id="focusCurrentTitle"></h3>
-                            <div class="focus-session-time" id="focusSessionTime" aria-live="polite">30:00</div>
-                            <div class="focus-progress" aria-hidden="true">
-                                <div class="focus-progress-bar" id="focusProgressBar"></div>
+                            <div class="focus-timer-stage focus-session-stage" id="focusSessionStage">
+                                <div class="timer-ring-wrap" aria-hidden="true">
+                                    <svg class="timer-ring" viewBox="0 0 120 120">
+                                        <circle class="timer-ring-track" cx="60" cy="60" r="52" pathLength="100"></circle>
+                                        <circle class="timer-ring-progress" id="focusSessionRing" cx="60" cy="60" r="52" pathLength="100"></circle>
+                                    </svg>
+                                    <div class="timer-ring-glow"></div>
+                                </div>
+                                <div class="focus-timer-core">
+                                    <p class="focus-current-label" id="focusCurrentLabel">Task 1 of 1</p>
+                                    <h3 class="focus-current-title" id="focusCurrentTitle"></h3>
+                                    <div class="focus-session-time" id="focusSessionTime" aria-live="polite">30:00</div>
+                                </div>
                             </div>
                             <button type="button" class="filter-btn focus-pause-btn" id="focusPauseBtn">Pause</button>
                         </div>
@@ -3987,8 +4220,19 @@
 
             <div id="focusPomodoroPanel" class="focus-pomodoro-panel hidden">
                 <div class="focus-card">
-                    <p class="focus-phase" id="focusPhase">Focus</p>
-                    <div class="focus-time" id="focusTime" aria-live="polite">25:00</div>
+                    <div class="focus-timer-stage" id="focusTimerStage">
+                        <div class="timer-ring-wrap" aria-hidden="true">
+                            <svg class="timer-ring" viewBox="0 0 120 120">
+                                <circle class="timer-ring-track" cx="60" cy="60" r="52" pathLength="100"></circle>
+                                <circle class="timer-ring-progress" id="focusTimerRing" cx="60" cy="60" r="52" pathLength="100"></circle>
+                            </svg>
+                            <div class="timer-ring-glow"></div>
+                        </div>
+                        <div class="focus-timer-core">
+                            <p class="focus-phase" id="focusPhase">Focus</p>
+                            <div class="focus-time" id="focusTime" aria-live="polite">25:00</div>
+                        </div>
+                    </div>
                     <div class="focus-durations" id="focusDurations" role="tablist" aria-label="Session length">
                         <div class="focus-dur-indicator" id="focusDurIndicator" aria-hidden="true"></div>
                         <button type="button" class="focus-dur-btn active" data-work="25" role="tab">25 min</button>
@@ -3997,9 +4241,9 @@
                     </div>
                 </div>
                 <div class="focus-controls">
-                    <button type="button" class="focus-ctrl" id="focusReset" title="Reset" aria-label="Reset timer">↺</button>
+                    <button type="button" class="focus-ctrl" id="focusReset" title="Reset" aria-label="Reset timer"></button>
                     <button type="button" class="focus-main-btn" id="focusMain">Start</button>
-                    <button type="button" class="focus-ctrl" id="focusSkip" title="Skip" aria-label="Skip phase">Skip</button>
+                    <button type="button" class="focus-ctrl" id="focusSkip" title="Skip" aria-label="Skip phase"></button>
                 </div>
             </div>
         </div>
@@ -4057,6 +4301,37 @@
 
     <script>
         const TODAY_CAP = 5;
+
+        function icon(name, size = 16) {
+            const svgAttrs = `class="ui-icon" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"`;
+            const icons = {
+                check: `<svg ${svgAttrs}><polyline points="4,12 9,17 20,7"/></svg>`,
+                plus: `<svg ${svgAttrs}><path d="M12 5v14M5 12h14"/></svg>`,
+                close: `<svg ${svgAttrs}><path d="M7 7l10 10M17 7 7 17"/></svg>`,
+                chevronDown: `<svg ${svgAttrs}><path d="M6 9l6 6 6-6"/></svg>`,
+                chevronRight: `<svg ${svgAttrs}><path d="M9 6l6 6-6 6"/></svg>`,
+                reset: `<svg ${svgAttrs}><polyline points="2 7 2 11 6 11"/><path d="M4.5 15.5a8.5 8.5 0 1 0 2-6.5L2 11"/></svg>`,
+                skip: `<svg ${svgAttrs}><path d="M6 6l6 6-6 6M13 6l6 6-6 6"/></svg>`,
+                grip: `<svg class="ui-icon" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>`,
+                sun: `<svg ${svgAttrs}><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`,
+                cloudSun: `<svg ${svgAttrs}><path d="M12 2v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M20 4v2"/><path d="M19.07 19.07l-1.41-1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.41-1.41"/><path d="M16 16a4 4 0 1 0-1.08-7.83A5 5 0 1 0 6.5 16H16z"/></svg>`,
+                moon: `<svg ${svgAttrs}><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>`,
+            };
+            return icons[name] || "";
+        }
+
+        function subtaskPillIconHtml(expanded, total, allDone) {
+            if (total === 0) return icon(expanded ? "chevronDown" : "plus", 12);
+            if (allDone) return icon("check", 12);
+            return icon(expanded ? "chevronDown" : "chevronRight", 12);
+        }
+
+        function mountStaticIcons() {
+            document.getElementById("addBtn").innerHTML = icon("plus", 18);
+            document.querySelector("#focusPanel .add-btn").innerHTML = icon("plus", 18);
+            document.getElementById("focusReset").innerHTML = icon("reset", 20);
+            document.getElementById("focusSkip").innerHTML = icon("skip", 20);
+        }
         const STORAGE_KEY = "organic-todo-v2";
         const TIMER_STORAGE_KEY = "organic-todo-timer-v1";
         const FOCUS_STORAGE_KEY = "organic-todo-focus-v1";
@@ -4187,6 +4462,21 @@
             return `${m}:${sec.toString().padStart(2, "0")}`;
         }
 
+        function setTimerRingProgress(ringEl, remainingSeconds, totalSeconds) {
+            if (!ringEl) return;
+            const total = Math.max(1, Number(totalSeconds) || 0);
+            const remaining = Math.max(0, Number(remainingSeconds) || 0);
+            const frac = Math.min(1, remaining / total);
+            ringEl.style.strokeDasharray = "100";
+            ringEl.style.strokeDashoffset = String(100 * (1 - frac));
+        }
+
+        function updateTimerStageState(stageEl, { running, isBreak }) {
+            if (!stageEl) return;
+            stageEl.classList.toggle("is-running", !!running);
+            stageEl.classList.toggle("is-break", !!isBreak);
+        }
+
         function clampTimerMinutes(value, fallback) {
             const n = Number(value);
             if (!Number.isFinite(n) || n <= 0) return fallback;
@@ -4267,12 +4557,19 @@
         function updateTimerUI() {
             const left = getTimerSecondsLeft();
             timerState.secondsLeft = left;
+            const total = phaseDurationSeconds();
 
             document.getElementById("focusTime").textContent = formatTimerDisplay(left);
             document.getElementById("focusPhase").textContent =
                 timerState.phase === "work" ? "Focus" : "Break";
             document.getElementById("focusMain").textContent =
                 timerState.running ? "Pause" : (left === 0 ? "Continue" : "Start");
+
+            setTimerRingProgress(document.getElementById("focusTimerRing"), left, total);
+            updateTimerStageState(document.getElementById("focusTimerStage"), {
+                running: timerState.running,
+                isBreak: timerState.phase === "break",
+            });
 
             document.body.classList.toggle("focus-running", timerState.running && timerState.phase === "work");
             document.body.classList.toggle("focus-break", timerState.phase === "break");
@@ -4697,7 +4994,7 @@
                         ? '<span class="focus-queue-badge today">Today</span>'
                         : '<span class="focus-queue-badge focus-only">Focus only</span>';
                     const deleteBtn = entry.type === "focus-only" && !focusSession.isRunning
-                        ? `<button type="button" class="filter-btn focus-queue-delete" data-focus-delete="${entry.id}" aria-label="Remove task">×</button>`
+                        ? `<button type="button" class="filter-btn focus-queue-delete" data-focus-delete="${entry.id}" aria-label="Remove task">${icon("close", 14)}</button>`
                         : "";
                     const durDisabled = focusSession.isRunning ? "disabled" : "";
                     return `<div class="focus-queue-item${completed ? " completed" : ""}${isActive ? " active" : ""}" role="listitem" data-focus-type="${entry.type}" data-focus-id="${entry.id}">
@@ -4749,10 +5046,15 @@
                 entry ? focusEntryTitle(entry) : "—";
             document.getElementById("focusSessionTime").textContent =
                 formatSessionCountdown(focusSession.remainingSeconds);
-            const pct = focusSession.totalSeconds > 0
-                ? ((focusSession.totalSeconds - focusSession.remainingSeconds) / focusSession.totalSeconds) * 100
-                : 0;
-            document.getElementById("focusProgressBar").style.width = `${Math.min(100, Math.max(0, pct))}%`;
+            setTimerRingProgress(
+                document.getElementById("focusSessionRing"),
+                focusSession.remainingSeconds,
+                focusSession.totalSeconds
+            );
+            updateTimerStageState(document.getElementById("focusSessionStage"), {
+                running: focusSession.isRunning && !focusSession.isPaused,
+                isBreak: false,
+            });
             pauseBtn.textContent = focusSession.isPaused ? "Resume" : "Pause";
             pauseBtn.classList.toggle("active", focusSession.isPaused);
         }
@@ -5479,15 +5781,13 @@
             if (total === 0) {
                 return `<button type="button" class="subtask-pill subtask-pill-empty"
                     data-subtask-toggle="${task.id}" aria-expanded="${expanded}"
-                    title="Add subtask"><span class="subtask-pill-icon">${expanded ? "▾" : "+"}</span></button>`;
+                    title="Add subtask"><span class="subtask-pill-icon">${subtaskPillIconHtml(expanded, 0, false)}</span></button>`;
             }
             const allDone = done === total && total > 0;
             const cls = "subtask-pill" + (allDone ? " subtask-pill-done" : "");
-            const arrow = expanded ? "▾" : "▸";
-            const icon = allDone ? "✓" : arrow;
             return `<button type="button" class="${cls}" data-subtask-toggle="${task.id}"
                 aria-expanded="${expanded}" title="Toggle subtasks">
-                <span class="subtask-pill-icon">${icon}</span>
+                <span class="subtask-pill-icon">${subtaskPillIconHtml(expanded, total, allDone)}</span>
                 <span class="subtask-pill-count">${done}/${total}</span>
             </button>`;
         }
@@ -5501,14 +5801,14 @@
                     </div>
                     <div class="subtask-title">${escapeHtml(s.title)}</div>
                     <button type="button" class="subtask-remove" data-subtask-remove="${task.id}|${s.id}"
-                        aria-label="Remove subtask">×</button>
+                        aria-label="Remove subtask">${icon("close", 14)}</button>
                 </div>
             `).join("");
             return `<div class="subtask-region" data-subtask-region="${task.id}">
                 <div class="subtask-region-inner">
                     <div class="subtask-list">${rows}</div>
                     <div class="subtask-add-row${editing ? " editing" : ""}" data-subtask-add-row="${task.id}">
-                        <button type="button" class="subtask-add-btn" data-subtask-add-btn="${task.id}">+ Add subtask</button>
+                        <button type="button" class="subtask-add-btn" data-subtask-add-btn="${task.id}">${icon("plus", 12)}<span>Add subtask</span></button>
                         <input type="text" class="subtask-add-input" data-subtask-add-input="${task.id}"
                             placeholder="New subtask…" maxlength="120" autocomplete="off" />
                     </div>
@@ -5540,9 +5840,7 @@
                     const allDone = total > 0 && done === total;
                     const iconEl = pill.querySelector(".subtask-pill-icon");
                     if (iconEl) {
-                        iconEl.textContent = total === 0
-                            ? (expanded ? "▾" : "+")
-                            : (allDone ? "✓" : (expanded ? "▾" : "▸"));
+                        iconEl.innerHTML = subtaskPillIconHtml(expanded, total, allDone);
                     }
                 }
                 const addRow = card.querySelector(`[data-subtask-add-row="${taskId}"]`);
@@ -5957,7 +6255,7 @@
                     <input type="text" class="cat-row-name" data-cat-name="${c.id}"
                         value="${escapeHtml(c.label)}" maxlength="24" />
                     <button type="button" class="cat-row-delete" data-cat-delete="${c.id}"
-                        title="Delete category" aria-label="Delete category">×</button>
+                        title="Delete category" aria-label="Delete category">${icon("close", 14)}</button>
                 </div>
             `).join("");
 
@@ -6352,10 +6650,16 @@
 
         function setGreeting() {
             const h = new Date().getHours();
-            let text = "Good evening 🌙";
-            if (h < 12) text = "Good morning ☀️";
-            else if (h < 17) text = "Good afternoon 🌤️";
-            greeting.textContent = text;
+            let text = "Good evening";
+            let iconName = "moon";
+            if (h < 12) {
+                text = "Good morning";
+                iconName = "sun";
+            } else if (h < 17) {
+                text = "Good afternoon";
+                iconName = "cloudSun";
+            }
+            greeting.innerHTML = `<span class="greeting-text">${text}</span>${icon(iconName, 14)}`;
         }
 
         function updateChrome() {
@@ -6493,7 +6797,7 @@
             const expanded = expandedSubtasks.has(t.id);
             const expandedClass = expanded ? " subtasks-expanded" : "";
             const matrixHandle = opts.matrix
-                ? `<button type="button" class="matrix-drag-handle" data-matrix-drag="${t.id}" aria-label="Drag to another quadrant" title="Drag to move">⠿</button>`
+                ? `<button type="button" class="matrix-drag-handle" data-matrix-drag="${t.id}" aria-label="Drag to another quadrant" title="Drag to move">${icon("grip", 14)}</button>`
                 : "";
             const lead = isBacklog
                 ? `<div class="card-slot" aria-hidden="true"></div>`
@@ -6943,6 +7247,7 @@
         });
 
         load();
+        mountStaticIcons();
         setGreeting();
         initFocus();
         initFocusDailyEvents();
