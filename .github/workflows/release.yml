@@ -122,14 +122,17 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: Grove ${{ github.ref_name }}
+          overwrite_files: true
           body: |
             Desktop builds for Windows, macOS (Apple Silicon), and Linux.
 
             | Platform | File | Notes |
             | --- | --- | --- |
             | Windows | `Grove-x64-setup.exe` or `Grove-x64.msi` | Windows 10/11, 64-bit |
-            | macOS | `Grove-aarch64.dmg` | Apple Silicon (M1/M2/M3). Unsigned — right-click → Open on first launch. |
+            | macOS | `Grove-aarch64.dmg` | Apple Silicon only. Unsigned — right-click → Open on first launch. |
             | Linux | `Grove-amd64.deb` or `Grove-amd64.rpm` | `.deb` for Ubuntu/Debian/Mint; `.rpm` for Fedora/RHEL |
+
+            See [CHANGELOG](https://github.com/3t1-1aN/Grove_organic_todo_website/blob/main/CHANGELOG.md) for release notes.
           files: release-assets/*
           draft: false
           prerelease: false

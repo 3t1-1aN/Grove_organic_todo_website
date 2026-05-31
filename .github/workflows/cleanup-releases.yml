@@ -1,0 +1,98 @@
+# One-time cleanup for releases page. Run manually from Actions → "Cleanup releases page" → Run workflow.
+# Safe to delete this file after the run succeeds.
+name: Cleanup releases page
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove v1.0.0 release and tag
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            try {
+              const { data: release } = await github.rest.repos.getReleaseByTag({
+                owner,
+                repo,
+                tag: 'v1.0.0',
+              });
+              await github.rest.repos.deleteRelease({
+                owner,
+                repo,
+                release_id: release.id,
+              });
+              core.info(`Deleted release v1.0.0 (id ${release.id})`);
+            } catch (error) {
+              if (error.status === 404) {
+                core.info('Release v1.0.0 not found — already removed');
+              } else {
+                throw error;
+              }
+            }
+
+            try {
+              await github.rest.git.deleteRef({
+                owner,
+                repo,
+                ref: 'tags/v1.0.0',
+              });
+              core.info('Deleted tag v1.0.0');
+            } catch (error) {
+              if (error.status === 404) {
+                core.info('Tag v1.0.0 not found — already removed');
+              } else {
+                throw error;
+              }
+            }
+
+      - name: Clean v1.0.1 assets and update release notes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const { data: release } = await github.rest.repos.getReleaseByTag({
+              owner,
+              repo,
+              tag: 'v1.0.1',
+            });
+
+            for (const asset of release.assets) {
+              if (asset.name === 'Grove-amd64.AppImage') {
+                await github.rest.repos.deleteReleaseAsset({
+                  owner,
+                  repo,
+                  asset_id: asset.id,
+                });
+                core.info(`Deleted stale asset: ${asset.name}`);
+              }
+            }
+
+            const body = `Desktop builds for Windows, macOS (Apple Silicon), and Linux.
+
+            | Platform | File | Notes |
+            | --- | --- | --- |
+            | Windows | \`Grove-x64-setup.exe\` or \`Grove-x64.msi\` | Windows 10/11, 64-bit |
+            | macOS | \`Grove-aarch64.dmg\` | Apple Silicon only. Unsigned — right-click → Open on first launch. |
+            | Linux | \`Grove-amd64.deb\` or \`Grove-amd64.rpm\` | \`.deb\` for Ubuntu/Debian/Mint; \`.rpm\` for Fedora/RHEL |
+
+            See [CHANGELOG](https://github.com/${owner}/${repo}/blob/main/CHANGELOG.md) for release notes.`;
+
+            await github.rest.repos.updateRelease({
+              owner,
+              repo,
+              release_id: release.id,
+              name: 'Grove v1.0.1',
+              body,
+            });
+            core.info('Updated v1.0.1 release notes');
