@@ -1,5 +1,8 @@
 # Grove
 
+<img width="596" height="598" alt="Grove_icon" src="https://github.com/user-attachments/assets/bf1e5e92-c7e4-4b11-b10c-5f34970b1561" />
+
+
 Tasks, focus & memo — a lightweight desktop app built with [Tauri 2](https://v2.tauri.app/) (Rust + WebView).
 
 **Developer:** Ethan Kunder  
