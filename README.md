@@ -21,8 +21,8 @@ The macOS build is unsigned — on first launch, right-click the app and choose 
 Pushing a version tag builds all three platforms and uploads stable asset names to GitHub Releases:
 
 ```bash
-git tag v1.0.1
-git push origin v1.0.1
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 The workflow lives at `.github/workflows/release.yml`. It runs on `windows-latest`, `macos-latest`, and `ubuntu-22.04`.

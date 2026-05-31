@@ -1,6 +1,6 @@
 [package]
 name = "organic-todo"
-version = "1.0.1"
+version = "1.0.0"
 description = "Grove — tasks, focus & memo for desktop"
 authors = ["Ethan"]
 edition = "2021"
