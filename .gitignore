@@ -40,8 +40,7 @@ assets/
 # OS junk
 Thumbs.db
 
-package.json
 
 #android and ios icons
-src-tauri\icons\android
-src-tauri\icons\ios
+src-tauri/icons/android
+src-tauri/icons/ios
