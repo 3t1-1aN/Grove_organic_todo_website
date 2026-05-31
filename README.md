@@ -87,12 +87,14 @@ Platform outputs:
 
 ```
 organic-ToDo/
+├── index.html          # Marketing landing page (web-only, not bundled in app)
+├── Grove_icon.png      # Landing page favicon and hero asset
+├── downloads/          # Optional local installer cache (gitignored)
 ├── src/
 │   └── index.html      # Full app UI + logic (vanilla JS)
 ├── src-tauri/
 │   ├── src/lib.rs      # Tray, single-instance, close-to-hide
 │   ├── tauri.conf.json
 │   └── icons/
-├── assets/             # Tray icon asset
-└── marketing/          # Landing page (web-only, not bundled in app)
+└── assets/             # Tray icon asset
 ```

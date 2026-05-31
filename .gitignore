@@ -27,7 +27,21 @@ dist-ssr
 src-tauri/target
 
 # Release installers (attach to GitHub Releases instead)
-marketing/downloads/*
-!marketing/downloads/.gitkeep
 downloads/*
 !downloads/.gitkeep
+
+# Editor / AI tooling (personal, not part of the project)
+.cursor/
+
+# Generated icon assets
+public/Grove_icon_square.png
+assets/
+
+# OS junk
+Thumbs.db
+
+package.json
+
+#android and ios icons
+src-tauri\icons\android
+src-tauri\icons\ios
