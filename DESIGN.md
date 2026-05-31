@@ -11,7 +11,7 @@ A lightweight desktop task app (Tauri 2) with three tabs:
 
 - **Tasks** — Today (max 5 active) + Backlog, four layouts (List, Kanban, Compact, Matrix)
 - **Focus** — Daily focus queue + Pomodoro timer
-- **Memo** — Quick sticky notes on a paper wall
+- **Memo** — Quick capture on a glass memo grid (same shell as Tasks and Focus)
 
 Data lives in `localStorage`. UI is a single `src/index.html` file (vanilla JS + CSS).
 
@@ -49,8 +49,8 @@ Category colors: `CATEGORY_COLORS` in JS (green, lime, amber, rose, sky, violet,
 
 ### Typography
 
-- **UI:** system stack (`-apple-system`, `Segoe UI`, sans-serif)
-- **Memo body:** `Caveat` cursive on paper cards only
+- **UI body:** `Patrick Hand` cursive (default body stack)
+- **Display + memo text:** `Caveat` cursive (headings, timer, memo composer and cards)
 
 ### Controls
 
@@ -66,7 +66,7 @@ Spring easing for selection/state changes: `cubic-bezier(0.34, 1.4, 0.64, 1)`. H
 
 - Blob drift: slow ambient background
 - Task dismiss: slide-out + collapse
-- Note crumple: scale + blur on delete
+- Memo dismiss: sink animation (`memoSink`) — fade, scale down, inset shadow
 - Priority bloom: tray scale-in from orb
 - Respect `prefers-reduced-motion` on focus indicators and memo cards
 
@@ -83,7 +83,7 @@ Spring easing for selection/state changes: `cubic-bezier(0.34, 1.4, 0.64, 1)`. H
 
 ### Memo
 
-Warm paper cards (`.note-card`) with tape strip, tilt, hover lift, and palette variants (`paper-v0`–`v3`). Visually distinct from task glass UI.
+Glass memo cards (`.note-card`) on the shared `.notes-shell` — same frosted shell as Tasks and Focus. Responsive grid (`.notes-wall`), green left accent stripe (`::before`), neumorphic inset composer (`.notes-input`), Caveat text, spring hover lift, and `memoEmerge` / `memoSink` enter/exit motion. Click a card to remove; relative timestamps in `.note-meta`.
 
 ### Focus
 

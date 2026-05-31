@@ -9,11 +9,11 @@
     <link rel="icon" type="image/png" href="Grove_icon.png">
     <link rel="apple-touch-icon" href="Grove_icon.png">
     <meta name="description"
-        content="A lightweight cross-platform desktop app — today’s tasks, daily focus, and sticky memos. Calm green glass, local data, stays out of the way.">
+        content="A lightweight cross-platform desktop app — today’s tasks, daily focus, and quick memos. Calm green glass, local data, stays out of the way.">
     <meta name="theme-color" content="#0b100e">
     <meta property="og:title" content="Grove — Tasks, focus & memo">
     <meta property="og:description"
-        content="Five tasks for today, a focus queue with Pomodoro, and a memo wall. Local, quiet, green.">
+        content="Five tasks for today, a focus queue with Pomodoro, and a glass memo grid. Local, quiet, green.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="Grove_icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1438,7 +1438,7 @@
             <div class="hero-eyebrow">Grove · desktop · local data</div>
             <h1 class="hero-title"><span class="brand-name">Grove</span> — tasks, focus &amp; memo, <em>one calm app</em></h1>
             <p class="hero-sub">Plan your day, protect your focus, and keep quick notes close at hand. Grove brings
-                Today’s tasks, Pomodoro sessions, and a memo wall into one calm desktop app—everything stays on
+                Today’s tasks, Pomodoro sessions, and a memo grid into one calm desktop app—everything stays on
                 your machine, with no account required.</p>
             <div class="hero-btns">
                 <a href="#download" class="btn-primary" id="hero-download-btn">Download Grove</a>
@@ -1526,12 +1526,13 @@
                     <article class="workspace-card">
                         <div class="workspace-tag">Tab 3</div>
                         <h3 class="workspace-name"><span>Memo</span></h3>
-                        <p class="workspace-desc">Quick sticky notes on a paper wall — Caveat handwriting, tape strips,
-                            soft tilt. Capture without turning it into a project.</p>
+                        <p class="workspace-desc">Quick capture on the same frosted-glass surface as Tasks and Focus —
+                            memo cards in a responsive grid, with a green accent stripe. Thoughts that are not quite
+                            tasks.</p>
                         <ul class="workspace-list">
-                            <li>Paper palette variants on the wall</li>
-                            <li>Composer feels like a torn slip in a tray</li>
-                            <li>Crumple animation when you let one go</li>
+                            <li>Glass memo cards with spring hover lift</li>
+                            <li>Inset composer — Enter to save, Shift+Enter for a new line</li>
+                            <li>Click to remove with a soft sink animation</li>
                         </ul>
                     </article>
                 </div>
@@ -1549,8 +1550,8 @@
                         <p>Dark forest-green glass over slow-drifting blobs. Cards lift on hover with spring easing;
                             checkboxes and trays use a soft neumorphic raised/inset language — tactile without skeuomorphic
                             chrome.</p>
-                        <p>Memo breaks the pattern on purpose: warm paper on the same stage, so capture feels lighter than
-                            execution. Focus stays minimal — queue, timer, one clear next action.</p>
+                        <p>All three tabs share that same shell — Tasks, Focus, and Memo use matching glass cards and
+                            neumorphic inset fields. Focus stays minimal: queue, timer, one clear next action.</p>
                         <div class="feel-pills">
                             <span class="pill">Spring physics</span>
                             <span class="pill">Frosted glass</span>
@@ -1620,8 +1621,8 @@
             <div class="section-inner">
                 <div class="section-eyebrow">Built into the app</div>
                 <h2 class="section-title">Small rules,<br><em>big clarity</em></h2>
-                <p class="section-sub">Grove nudges you toward a sustainable daily load — then gets out of the way
-                    with layouts and motion that match how you actually work.</p>
+                <p class="section-sub">Grove nudges you toward a sustainable daily load — then adds the small touches
+                    the onboarding tour skips: subtasks, your own labels, filters, and one-click moves.</p>
                 <div class="features">
                     <div class="feature-card">
                         <div class="feature-icon">
@@ -1668,9 +1669,9 @@
                                 <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
                             </svg>
                         </div>
-                        <div class="feature-name">Memo wall</div>
-                        <div class="feature-desc">Handwritten paper cards for thoughts that are not quite tasks — pin,
-                            tilt, and clear without opening a second app.</div>
+                        <div class="feature-name">Memo grid</div>
+                        <div class="feature-desc">Glass memo cards for quick thoughts that are not quite tasks — type in
+                            the composer, browse the grid, and click to clear without opening a second app.</div>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">
@@ -1694,8 +1695,61 @@
                             </svg>
                         </div>
                         <div class="feature-name">Completion motion</div>
-                        <div class="feature-desc">Strike-through, slide-away dismiss, note crumple — finishes feel like
+                        <div class="feature-desc">Strike-through, slide-away task dismiss, memo sink — finishes feel like
                             release, with reduced-motion respect when you need it.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#86efac"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 11l3 3L22 4" />
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                            </svg>
+                        </div>
+                        <div class="feature-name">Subtasks</div>
+                        <div class="feature-desc">Expand any task into a checklist — add steps inline, tick them off one
+                            by one, and keep the parent task honest without spawning five separate rows.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#86efac"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="8" height="8" rx="1.5" />
+                                <rect x="13" y="3" width="8" height="8" rx="1.5" />
+                                <rect x="3" y="13" width="8" height="8" rx="1.5" />
+                                <rect x="13" y="13" width="8" height="8" rx="1.5" />
+                                <path d="M17 6h2M17 17h2" opacity="0.55" />
+                            </svg>
+                        </div>
+                        <div class="feature-name">Your matrix labels</div>
+                        <div class="feature-desc">In Matrix layout, tap Edit quadrants to rename each title and subtitle —
+                            Do / Schedule / Delegate / Eliminate become whatever language you actually use. Drag tasks
+                            between quadrants when priorities shift.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#86efac"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+                                <circle cx="7" cy="7" r="1.5" fill="#86efac" stroke="none" />
+                            </svg>
+                        </div>
+                        <div class="feature-name">Custom categories</div>
+                        <div class="feature-desc">Create your own category labels with color dots, filter Today and Backlog
+                            by tag, and pick a default category from the chip when you add a task — Manage lives in the
+                            sidebar.</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#86efac"
+                                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M3 7h18M3 12h12M3 17h8" />
+                                <circle cx="19" cy="17" r="2" />
+                            </svg>
+                        </div>
+                        <div class="feature-name">Filters &amp; quick moves</div>
+                        <div class="feature-desc">Slice Today by Active, Done, or All; filter by priority from the sidebar.
+                            Select a task to move it between Today and Backlog or remove it — no buried menus.</div>
                     </div>
                 </div>
             </div>
