@@ -29,7 +29,7 @@ The workflow lives at `.github/workflows/release.yml`. It runs on `windows-lates
 
 ## Feedback
 
-Bug reports and feature ideas: [GitHub Issues](https://github.com/3t1-1aN/Grove_organic_todo_website/issues).
+Bug reports and feature ideas: [open a feedback issue](https://github.com/3t1-1aN/Grove_organic_todo_website/issues/new/choose) (GitHub account required to submit).
 
 ## Prerequisites
 

@@ -1,0 +1,59 @@
+name: Share feedback
+description: Report a bug, suggest a feature, or tell us what could be better
+title: "[Feedback]: "
+labels:
+  - feedback
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Grove. Pick a category, describe what you noticed, and submit — it goes straight to the issue tracker.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Bug report
+        - Feature idea
+        - UX / design
+        - Question
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Windows
+        - macOS
+        - Linux
+        - Website
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Details
+      description: What happened, or what would you like Grove to do differently?
+      placeholder: |
+        Example: When I complete the fifth task, the backlog doesn't slide into Today...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Grove version
+      placeholder: e.g. 1.0.1 (optional)
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Extra context
+      description: OS version, steps to reproduce, or anything else that helps
+      placeholder: Optional
