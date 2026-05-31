@@ -1,0 +1,126 @@
+name: Cleanup old deployments
+
+on:
+  workflow_dispatch:
+    inputs:
+      keep:
+        description: Number of recent deployments to keep per environment
+        required: false
+        default: "2"
+      environment:
+        description: Environment name (blank = all environments)
+        required: false
+        default: "github-pages"
+  schedule:
+    # Keep the deployment list tidy after routine pushes
+    - cron: "0 6 * * 0"
+  push:
+    paths:
+      - .github/workflows/cleanup-deployments.yml
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove stale deployment records
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const keep = Math.max(1, parseInt('${{ inputs.keep }}', 10) || 2);
+            const envFilter = '${{ inputs.environment }}'.trim();
+
+            const listParams = { owner, repo, per_page: 100 };
+            if (envFilter) listParams.environment = envFilter;
+
+            const deployments = await github.paginate(
+              github.rest.repos.listDeployments,
+              listParams
+            );
+
+            deployments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            const byEnvironment = new Map();
+            for (const dep of deployments) {
+              const key = dep.environment || 'unknown';
+              if (!byEnvironment.has(key)) byEnvironment.set(key, []);
+              byEnvironment.get(key).push(dep);
+            }
+
+            let deleted = 0;
+            let skipped = 0;
+            let failed = 0;
+
+            async function latestState(deploymentId) {
+              const { data } = await github.rest.repos.listDeploymentStatuses({
+                owner,
+                repo,
+                deployment_id: deploymentId,
+                per_page: 1,
+              });
+              return data[0]?.state || 'unknown';
+            }
+
+            async function removeDeployment(dep) {
+              try {
+                await github.rest.repos.deleteDeployment({
+                  owner,
+                  repo,
+                  deployment_id: dep.id,
+                });
+                deleted += 1;
+                core.info(`Deleted deployment ${dep.id} (${dep.environment}, ${dep.created_at})`);
+              } catch (error) {
+                if (error.status !== 422) {
+                  failed += 1;
+                  core.warning(`Failed to delete ${dep.id}: ${error.message}`);
+                  return;
+                }
+
+                try {
+                  await github.rest.repos.createDeploymentStatus({
+                    owner,
+                    repo,
+                    deployment_id: dep.id,
+                    state: 'inactive',
+                    description: 'Archived by cleanup workflow',
+                  });
+                  await github.rest.repos.deleteDeployment({
+                    owner,
+                    repo,
+                    deployment_id: dep.id,
+                  });
+                  deleted += 1;
+                  core.info(`Deleted deployment ${dep.id} after marking inactive`);
+                } catch (inner) {
+                  failed += 1;
+                  core.warning(`Could not delete ${dep.id}: ${inner.message}`);
+                }
+              }
+            }
+
+            for (const [environment, envDeployments] of byEnvironment.entries()) {
+              core.info(`Environment "${environment}": ${envDeployments.length} deployment(s), keeping ${keep}`);
+
+              for (let i = keep; i < envDeployments.length; i += 1) {
+                const dep = envDeployments[i];
+                const state = await latestState(dep.id);
+
+                if (state === 'active' || state === 'in_progress' || state === 'queued' || state === 'pending') {
+                  skipped += 1;
+                  core.info(`Skipping active deployment ${dep.id} (${state})`);
+                  continue;
+                }
+
+                await removeDeployment(dep);
+              }
+            }
+
+            core.summary.addHeading('Deployment cleanup');
+            core.summary.addRaw(`Deleted: **${deleted}** · Skipped: **${skipped}** · Failed: **${failed}**`);
+            await core.summary.write();
