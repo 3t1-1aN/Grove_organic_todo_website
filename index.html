@@ -41,6 +41,7 @@
             --ink: rgba(8, 18, 10, 0.88);
             --ink-muted: rgba(30, 60, 40, 0.58);
             --forest: #166534;
+            --brand-icon: #2d352d;
             --radius-lg: 24px;
             --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
             --font-display: 'Caveat', cursive;
@@ -243,24 +244,10 @@
             box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
         }
 
-        .download-brand {
-            width: 56px;
-            height: 56px;
-            margin: 0 auto 14px;
-            border-radius: 14px;
-        }
-
         .footer-brand {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-        }
-
-        .footer-brand .brand-mark {
-            width: 28px;
-            height: 28px;
-            border-radius: 7px;
         }
 
         a:focus-visible,
@@ -342,7 +329,7 @@
         }
 
         .hero-title .brand-name {
-            color: var(--green-soft);
+            color: var(--brand-icon);
         }
 
         .hero-eyebrow {
@@ -350,8 +337,7 @@
             font-weight: 500;
             letter-spacing: 0.14em;
             text-transform: uppercase;
-            color: var(--green-soft);
-            opacity: 0.7;
+            color: var(--forest);
             margin-bottom: 24px;
         }
 
@@ -1102,8 +1088,9 @@
         }
 
         .download-badge {
-            display: inline-block;
-            margin-bottom: 16px;
+            display: block;
+            width: fit-content;
+            margin: 0 auto 16px;
             padding: 5px 12px;
             border-radius: 999px;
             font-size: 12px;
@@ -1247,7 +1234,6 @@
         <!-- Nav -->
         <nav>
             <a href="#" class="nav-logo" aria-label="Grove home">
-                <img class="brand-mark" src="Grove_icon.png" width="34" height="34" alt="">
                 <span class="brand-name">Grove</span>
             </a>
             <div class="nav-links">
@@ -1555,7 +1541,6 @@
             <h2>Ready for a calmer <em>desktop</em>?</h2>
             <p>Free for Windows. No account, no cloud — just install and go.</p>
             <div class="download-card">
-                <img class="download-brand" src="Grove_icon.png" width="56" height="56" alt="">
                 <div class="download-badge">Version 1.0 · Windows</div>
                 <h3>Grove for Windows</h3>
                 <p class="download-tagline">Tasks, focus &amp; memo in one quiet desktop app.</p>
@@ -1589,7 +1574,6 @@
         <footer>
             <div class="footer-row">
                 <div class="footer-brand footer-logo">
-                    <img class="brand-mark" src="Grove_icon.png" width="28" height="28" alt="">
                     <span class="brand-name">Grove</span>
                 </div>
                 <div class="footer-links">
