@@ -12,7 +12,7 @@ Pre-built installers are on [GitHub Releases](https://github.com/3t1-1aN/Grove_o
 | --- | --- |
 | Windows | `Grove-x64-setup.exe`, `Grove-x64.msi` |
 | macOS (Apple Silicon) | `Grove-aarch64.dmg` |
-| Linux | `Grove-amd64.AppImage`, `Grove-amd64.deb` |
+| Linux | `Grove-amd64.deb`, `Grove-amd64.rpm` |
 
 The macOS build is unsigned — on first launch, right-click the app and choose **Open**.
 
@@ -66,7 +66,7 @@ Platform outputs:
 
 - **Windows:** NSIS setup (`.exe`), MSI (`.msi`)
 - **macOS:** `.dmg` (Apple Silicon when built on GitHub Actions)
-- **Linux:** `.AppImage`, `.deb`
+- **Linux:** `.deb` (Ubuntu/Debian/Mint), `.rpm` (Fedora/RHEL)
 
 ## App behavior
 

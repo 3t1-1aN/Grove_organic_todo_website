@@ -1729,7 +1729,7 @@
             <p>Free on desktop. No account, no cloud — just install and go.</p>
             <div class="download-grid">
                 <div class="download-card" id="download-windows">
-                    <div class="download-badge">Version 1.0.0 · Windows</div>
+                    <div class="download-badge">Version 1.0.1 · Windows</div>
                     <h3>Grove for Windows</h3>
                     <p class="download-tagline">NSIS setup or MSI — 64-bit Windows 10 and 11.</p>
                     <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/Grove-x64-setup.exe"
@@ -1754,7 +1754,7 @@
                 </div>
 
                 <div class="download-card" id="download-macos">
-                    <div class="download-badge">Version 1.0.0 · macOS</div>
+                    <div class="download-badge">Version 1.0.1 · macOS</div>
                     <h3>Grove for Mac</h3>
                     <p class="download-tagline">Apple Silicon build. Drag to Applications and launch.</p>
                     <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/Grove-aarch64.dmg"
@@ -1776,10 +1776,10 @@
                 </div>
 
                 <div class="download-card" id="download-linux">
-                    <div class="download-badge">Version 1.0.0 · Linux</div>
+                    <div class="download-badge">Version 1.0.1 · Linux</div>
                     <h3>Grove for Linux</h3>
-                    <p class="download-tagline">AppImage for any distro, or .deb for Debian/Ubuntu.</p>
-                    <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/Grove-amd64.AppImage"
+                    <p class="download-tagline">Native packages that install Grove in your app menu — not a standalone executable.</p>
+                    <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/Grove-amd64.deb"
                         class="download-btn-primary" rel="noopener noreferrer">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M12 3v10m0 0l4-4m-4 4L8 9" stroke="currentColor" stroke-width="2"
@@ -1787,17 +1787,18 @@
                             <path d="M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" />
                         </svg>
-                        Download AppImage
+                        Download .deb
                     </a>
                     <div class="download-formats">
-                        <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/Grove-amd64.deb"
-                            rel="noopener noreferrer">.deb package</a>
+                        <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/Grove-amd64.rpm"
+                            rel="noopener noreferrer">.rpm for Fedora/RHEL</a>
                     </div>
                     <ul class="download-specs">
                         <li>amd64</li>
-                        <li>AppImage or .deb</li>
-                        <li>Offline &amp; local</li>
+                        <li>Ubuntu, Debian, Mint, Fedora</li>
+                        <li>Shows in app launcher</li>
                     </ul>
+                    <p class="download-meta">Ubuntu/Debian: double-click the .deb or run <code>sudo apt install ./Grove-amd64.deb</code></p>
                 </div>
             </div>
             <p class="download-meta">Installers hosted on GitHub Releases · <a
@@ -1828,7 +1829,7 @@
             var assets = {
                 windows: { label: 'Download for Windows', href: releaseBase + 'Grove-x64-setup.exe' },
                 macos: { label: 'Download for macOS', href: releaseBase + 'Grove-aarch64.dmg' },
-                linux: { label: 'Download for Linux', href: releaseBase + 'Grove-amd64.AppImage' },
+                linux: { label: 'Download for Linux', href: releaseBase + 'Grove-amd64.deb' },
                 other: { label: 'Choose your platform', href: '#download' }
             };
 

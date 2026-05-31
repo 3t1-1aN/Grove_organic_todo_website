@@ -1746,8 +1746,14 @@
 
         .layout-kanban .task-tag {
             overflow: hidden;
+        }
+
+        .layout-kanban .task-tag .task-cat-label {
+            overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            min-width: 0;
+            flex-shrink: 1;
         }
 
         .kanban-empty {
@@ -2028,6 +2034,10 @@
         }
 
         .task-tag {
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            min-width: 0;
             font-size: 11px;
             font-weight: 500;
             color: var(--text-dim);
@@ -2609,15 +2619,51 @@
         }
 
         /* ===== Categories ===== */
+        .task-cat-dot,
+        .cat-chip-dot,
+        .cat-row-color,
+        .category-chip-dot,
+        .category-chip-option-dot,
+        .cat-color-swatch {
+            background-color: #4ade80;
+        }
+
+        [data-cat-color="green"] {
+            background-color: #4ade80;
+        }
+
+        [data-cat-color="lime"] {
+            background-color: #a3e635;
+        }
+
+        [data-cat-color="amber"] {
+            background-color: #fbbf24;
+        }
+
+        [data-cat-color="rose"] {
+            background-color: #f87171;
+        }
+
+        [data-cat-color="sky"] {
+            background-color: #38bdf8;
+        }
+
+        [data-cat-color="violet"] {
+            background-color: #a78bfa;
+        }
+
+        [data-cat-color="slate"] {
+            background-color: #94a3b8;
+        }
+
         .task-cat-dot {
             display: inline-block;
             width: 7px;
             height: 7px;
             border-radius: 50%;
             margin-right: 6px;
+            flex-shrink: 0;
             box-shadow: 0 0 6px rgba(255, 255, 255, 0.05), inset 0 0.5px 0 rgba(255, 255, 255, 0.25);
-            vertical-align: middle;
-            transform: translateY(-1px);
         }
 
         .task-tag .task-cat-label {
@@ -6049,6 +6095,10 @@
             }
 
             categoryFilters = new Set([...categoryFilters].filter(id => categories.find(c => c.id === id)));
+
+            categories.forEach(c => {
+                c.color = normalizeCategoryColorKey(c.color);
+            });
         }
 
         function save() {
@@ -6069,10 +6119,27 @@
             return categories.find(c => c.id === id) || null;
         }
 
+        function normalizeCategoryColorKey(color) {
+            if (color && CATEGORY_COLORS[color]) return color;
+            if (typeof color === "string" && color.startsWith("#")) {
+                const hex = color.toLowerCase();
+                const found = CATEGORY_COLOR_KEYS.find(k => CATEGORY_COLORS[k].toLowerCase() === hex);
+                if (found) return found;
+            }
+            return DEFAULT_CATEGORY_COLOR;
+        }
+
         function categoryColorHex(catId) {
             const c = getCategory(catId);
             if (!c) return CATEGORY_COLORS[DEFAULT_CATEGORY_COLOR];
-            return CATEGORY_COLORS[c.color] || CATEGORY_COLORS[DEFAULT_CATEGORY_COLOR];
+            return CATEGORY_COLORS[normalizeCategoryColorKey(c.color)];
+        }
+
+        function setCategoryColorAttr(el, colorKey) {
+            if (!el) return;
+            el.setAttribute("data-cat-color", normalizeCategoryColorKey(colorKey));
+            el.style.removeProperty("background");
+            el.style.removeProperty("background-color");
         }
 
         function getDefaultCategory() {
@@ -6620,7 +6687,7 @@
             const chips = categories.map(c => {
                 const active = categoryFilters.has(c.id);
                 return `<button type="button" class="cat-chip${active ? " active" : ""}" data-cat-filter="${c.id}">
-                    <span class="cat-chip-dot" style="background:${CATEGORY_COLORS[c.color] || CATEGORY_COLORS[DEFAULT_CATEGORY_COLOR]}"></span>
+                    <span class="cat-chip-dot" data-cat-color="${normalizeCategoryColorKey(c.color)}"></span>
                     ${escapeHtml(c.label)}
                 </button>`;
             }).join("");
@@ -6654,8 +6721,8 @@
 
             manageList.innerHTML = categories.map(c => `
                 <div class="cat-row" data-cat-row="${c.id}">
-                    <button type="button" class="cat-row-color" data-cat-color="${c.id}"
-                        style="background:${CATEGORY_COLORS[c.color] || CATEGORY_COLORS[DEFAULT_CATEGORY_COLOR]}"
+                    <button type="button" class="cat-row-color" data-cat-color-btn="${c.id}"
+                        data-cat-color="${normalizeCategoryColorKey(c.color)}"
                         title="Change color" aria-label="Change color"></button>
                     <input type="text" class="cat-row-name" data-cat-name="${c.id}"
                         value="${escapeHtml(c.label)}" maxlength="24" />
@@ -6664,10 +6731,10 @@
                 </div>
             `).join("");
 
-            manageList.querySelectorAll("[data-cat-color]").forEach(btn => {
+            manageList.querySelectorAll("[data-cat-color-btn]").forEach(btn => {
                 btn.addEventListener("click", e => {
                     e.stopPropagation();
-                    const id = btn.dataset.catColor;
+                    const id = btn.dataset.catColorBtn;
                     if (catColorPopId === id) {
                         catColorPopId = null;
                         renderCategoryManage();
@@ -6680,7 +6747,7 @@
                     const c = getCategory(id);
                     const swatches = CATEGORY_COLOR_KEYS.map(k =>
                         `<button type="button" class="cat-color-swatch${c && c.color === k ? " active" : ""}"
-                            data-cat-pick="${id}|${k}" style="background:${CATEGORY_COLORS[k]}"
+                            data-cat-pick="${id}|${k}" data-cat-color="${k}"
                             aria-label="${k}"></button>`
                     ).join("");
                     row.insertAdjacentHTML("beforeend",
@@ -6745,7 +6812,7 @@
             const labelEl = document.getElementById("categoryChipLabel");
             const c = getDefaultCategory();
             if (!c) return;
-            if (dot) dot.style.background = CATEGORY_COLORS[c.color] || CATEGORY_COLORS[DEFAULT_CATEGORY_COLOR];
+            if (dot) setCategoryColorAttr(dot, c.color);
             if (labelEl) labelEl.textContent = c.label;
         }
 
@@ -6779,7 +6846,7 @@
             const opts = categories.map(c => `
                 <button type="button" class="category-chip-option${c.id === defaultCategoryId ? " active" : ""}"
                     data-cat-pick-default="${c.id}">
-                    <span class="category-chip-option-dot" style="background:${CATEGORY_COLORS[c.color] || CATEGORY_COLORS[DEFAULT_CATEGORY_COLOR]}"></span>
+                    <span class="category-chip-option-dot" data-cat-color="${normalizeCategoryColorKey(c.color)}"></span>
                     <span>${escapeHtml(c.label)}</span>
                 </button>
             `).join("");
@@ -7021,6 +7088,7 @@
                 closePriorityBloom();
                 return;
             }
+            const prevPriority = normalizePriority(t.priority);
             t.priority = p;
             save();
             closePriorityBloom();
@@ -7030,18 +7098,23 @@
                 return;
             }
 
-            if (taskLayout === "kanban" || taskLayout === "eisenhower") {
-                render();
+            const card = list.querySelector(`.task-card[data-id="${id}"]`);
+            const kanbanNeedsMove = taskLayout === "kanban" && priorityFilter === "all" && prevPriority !== p;
+
+            if (card) {
+                refreshCardPriorityUI(card, t, p);
+            }
+
+            if (kanbanNeedsMove) {
+                setTimeout(() => render(), 560);
                 return;
             }
 
-            const card = list.querySelector(`.task-card[data-id="${id}"]`);
             if (!card) {
                 render();
                 return;
             }
 
-            refreshCardPriorityUI(card, t, p);
             reorderVisibleCardsIfNeeded();
         }
 
@@ -7184,9 +7257,9 @@
 
         function taskTagInnerHtml(task, p) {
             const cat = getCategory(task.categoryId) || getDefaultCategory();
-            const color = cat ? (CATEGORY_COLORS[cat.color] || CATEGORY_COLORS[DEFAULT_CATEGORY_COLOR]) : CATEGORY_COLORS[DEFAULT_CATEGORY_COLOR];
+            const colorKey = cat ? normalizeCategoryColorKey(cat.color) : DEFAULT_CATEGORY_COLOR;
             const label = cat ? cat.label : DEFAULT_CATEGORY_LABEL;
-            return `<span class="task-cat-dot" style="background:${color}" aria-hidden="true"></span>` +
+            return `<span class="task-cat-dot" data-cat-color="${colorKey}" aria-hidden="true"></span>` +
                 `<span class="task-cat-label">${escapeHtml(label)}</span>` +
                 ` · <span class="task-tag-priority">${PRIORITIES[p].label}</span>` +
                 subtaskPillHtml(task);

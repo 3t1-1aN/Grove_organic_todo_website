@@ -23,7 +23,7 @@ jobs:
           - platform: macos-latest
             args: ''
           - platform: ubuntu-22.04
-            args: ''
+            args: '--bundles deb,rpm'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -51,7 +51,8 @@ jobs:
             libwebkit2gtk-4.1-dev \
             libayatana-appindicator3-dev \
             librsvg2-dev \
-            patchelf
+            patchelf \
+            rpm
 
       - name: Install frontend dependencies
         run: npm ci
@@ -90,8 +91,8 @@ jobs:
           elif [ "${{ matrix.platform }}" = "macos-latest" ]; then
             require_file '*/bundle/dmg/*.dmg' 'Grove-aarch64.dmg'
           else
-            require_file '*/bundle/appimage/*.AppImage' 'Grove-amd64.AppImage'
             require_file '*/bundle/deb/*.deb' 'Grove-amd64.deb'
+            require_file '*/bundle/rpm/*.rpm' 'Grove-amd64.rpm'
           fi
 
           ls -la release-assets
@@ -128,7 +129,7 @@ jobs:
             | --- | --- | --- |
             | Windows | `Grove-x64-setup.exe` or `Grove-x64.msi` | Windows 10/11, 64-bit |
             | macOS | `Grove-aarch64.dmg` | Apple Silicon (M1/M2/M3). Unsigned — right-click → Open on first launch. |
-            | Linux | `Grove-amd64.AppImage` or `Grove-amd64.deb` | Ubuntu/Debian and most distros |
+            | Linux | `Grove-amd64.deb` or `Grove-amd64.rpm` | `.deb` for Ubuntu/Debian/Mint; `.rpm` for Fedora/RHEL |
           files: release-assets/*
           draft: false
           prerelease: false
