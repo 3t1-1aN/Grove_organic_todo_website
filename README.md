@@ -6,12 +6,26 @@ Tasks, focus & memo — a lightweight desktop app built with [Tauri 2](https://v
 
 ## Download
 
-Pre-built Windows installers are on [GitHub Releases](https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest):
+Pre-built installers are on [GitHub Releases](https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest):
 
-- NSIS setup (`.exe`)
-- MSI (`.msi`)
+| Platform | Files |
+| --- | --- |
+| Windows | `Grove-x64-setup.exe`, `Grove-x64.msi` |
+| macOS (Apple Silicon) | `Grove-aarch64.dmg` |
+| Linux | `Grove-amd64.AppImage`, `Grove-amd64.deb` |
 
-After `npm run build`, upload the files from `D:\rust\organic-todo-target\release\bundle\` to a new release tag (e.g. `v1.0.0`).
+The macOS build is unsigned — on first launch, right-click the app and choose **Open**.
+
+## Release builds (CI)
+
+Pushing a version tag builds all three platforms and uploads stable asset names to GitHub Releases:
+
+```bash
+git tag v1.0.1
+git push origin v1.0.1
+```
+
+The workflow lives at `.github/workflows/release.yml`. It runs on `windows-latest`, `macos-latest`, and `ubuntu-22.04`.
 
 ## Feedback
 
@@ -21,7 +35,7 @@ Bug reports and feature ideas: [GitHub Issues](https://github.com/3t1-1aN/Grove_
 
 - [Node.js](https://nodejs.org/) 18+
 - [Rust](https://rustup.rs/)
-- [Tauri prerequisites for Windows](https://v2.tauri.app/start/prerequisites/) (WebView2, MSVC build tools)
+- [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your OS
 
 If your system drive is low on space, install Rust to another drive:
 
@@ -46,12 +60,13 @@ Dev mode opens DevTools automatically (debug builds only).
 npm run build
 ```
 
-Installers are written to `D:\rust\organic-todo-target\release\bundle\` (custom `target-dir` in `src-tauri/.cargo/config.toml`).
+Installers are written to `D:\rust\organic-todo-target\release\bundle\` on Windows (custom `target-dir` in `src-tauri/.cargo/config.toml`). CI uses the default `src-tauri/target` path instead.
 
-Windows outputs:
+Platform outputs:
 
-- NSIS setup (`.exe`)
-- MSI (`.msi`)
+- **Windows:** NSIS setup (`.exe`), MSI (`.msi`)
+- **macOS:** `.dmg` (Apple Silicon when built on GitHub Actions)
+- **Linux:** `.AppImage`, `.deb`
 
 ## App behavior
 
@@ -74,8 +89,3 @@ organic-ToDo/
 ├── assets/             # Tray icon asset
 └── marketing/          # Landing page (web-only, not bundled in app)
 ```
-
-## Future platforms
-
-- **macOS**: same codebase — run `npm run build` on a Mac or macOS CI runner
-- **Android / iOS**: requires Tauri mobile init (`tauri android init` / `tauri ios init`) and responsive UI work — see migration plan

@@ -1,0 +1,124 @@
+name: Release Grove
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TARGET_DIR: src-tauri/target
+
+jobs:
+  build-tauri:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            args: ''
+          - platform: macos-latest
+            args: '--target aarch64-apple-darwin'
+          - platform: ubuntu-22.04
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build Tauri app
+        run: npm run tauri build -- ${{ matrix.args }}
+
+      - name: Prepare release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+
+          if [ "${{ matrix.platform }}" = "windows-latest" ]; then
+            setup_exe="$(find src-tauri/target -path '*/bundle/nsis/*-setup.exe' | head -n 1)"
+            msi_file="$(find src-tauri/target -path '*/bundle/msi/*.msi' | head -n 1)"
+            cp "$setup_exe" release-assets/Grove-x64-setup.exe
+            cp "$msi_file" release-assets/Grove-x64.msi
+          elif [ "${{ matrix.platform }}" = "macos-latest" ]; then
+            dmg_file="$(find src-tauri/target -path '*/bundle/dmg/*.dmg' | head -n 1)"
+            cp "$dmg_file" release-assets/Grove-aarch64.dmg
+          else
+            appimage_file="$(find src-tauri/target -path '*/bundle/appimage/*.AppImage' | head -n 1)"
+            deb_file="$(find src-tauri/target -path '*/bundle/deb/*.deb' | head -n 1)"
+            cp "$appimage_file" release-assets/Grove-amd64.AppImage
+            cp "$deb_file" release-assets/Grove-amd64.deb
+          fi
+
+          ls -la release-assets
+
+      - name: Upload platform artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}
+          path: release-assets/*
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build-tauri
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+
+      - name: List release assets
+        run: ls -la release-assets/
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Grove ${{ github.ref_name }}
+          body: |
+            Desktop builds for Windows, macOS (Apple Silicon), and Linux.
+
+            | Platform | File | Notes |
+            | --- | --- | --- |
+            | Windows | `Grove-x64-setup.exe` or `Grove-x64.msi` | Windows 10/11, 64-bit |
+            | macOS | `Grove-aarch64.dmg` | Apple Silicon (M1/M2/M3). Unsigned — right-click → Open on first launch. |
+            | Linux | `Grove-amd64.AppImage` or `Grove-amd64.deb` | Ubuntu/Debian and most distros |
+          files: release-assets/*
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
