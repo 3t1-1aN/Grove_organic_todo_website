@@ -2403,6 +2403,21 @@
             border-color: rgba(134, 239, 172, 0.22);
         }
 
+        .task-sidebar .add-area.onboarding-nudge {
+            border-color: rgba(134, 239, 172, 0.45);
+            animation: addAreaNudge 2.4s ease-in-out infinite;
+        }
+
+        @keyframes addAreaNudge {
+            0%, 100% {
+                box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.2), 0 0 16px rgba(74, 222, 128, 0.1);
+            }
+
+            50% {
+                box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.38), 0 0 24px rgba(74, 222, 128, 0.18);
+            }
+        }
+
         .add-input {
             flex: 1;
             min-width: 0;
@@ -4010,6 +4025,26 @@
                 opacity: 0;
                 transform: none;
             }
+
+            .onboarding-welcome,
+            .onboarding-welcome-shell,
+            .onboarding-wordmark,
+            .onboarding-brand-icon,
+            .onboarding-tagline,
+            .onboarding-kw,
+            .onboarding-tail,
+            .onboarding-feature,
+            .onboarding-actions,
+            .onboarding-hole,
+            .onboarding-card {
+                animation: none !important;
+                transition: opacity var(--duration-fast) ease !important;
+            }
+
+            .task-sidebar .add-area.onboarding-nudge {
+                animation: none !important;
+                box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.35);
+            }
         }
 
         @media (max-width: 760px) {
@@ -4033,6 +4068,345 @@
                 grid-template-columns: 1fr;
                 gap: 12px;
             }
+        }
+
+        /* ===== Onboarding ===== */
+        body.onboarding-active .app-panel {
+            pointer-events: none;
+        }
+
+        .onboarding-welcome {
+            position: fixed;
+            inset: 0;
+            z-index: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: max(1.25rem, env(safe-area-inset-top)) 1.25rem max(1.25rem, env(safe-area-inset-bottom));
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
+
+        .onboarding-welcome.is-visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .onboarding-welcome.is-exiting {
+            opacity: 0;
+            visibility: hidden;
+            transition-duration: 0.25s;
+        }
+
+        .onboarding-welcome-scrim {
+            position: absolute;
+            inset: 0;
+            background: rgba(5, 12, 8, 0.72);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        .onboarding-welcome-shell {
+            position: relative;
+            z-index: 1;
+            width: min(440px, 100%);
+            padding: 32px 28px 28px;
+            border-radius: var(--radius-lg);
+            background: var(--shell-bg);
+            backdrop-filter: blur(48px);
+            -webkit-backdrop-filter: blur(48px);
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+            box-shadow: var(--shadow-shell);
+            text-align: center;
+            transform: scale(0.98) translateY(8px);
+            opacity: 0;
+            transition: opacity 0.35s ease, transform 0.42s var(--ease-spring);
+        }
+
+        .onboarding-welcome.is-visible .onboarding-welcome-shell {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+
+        .onboarding-welcome.is-exiting .onboarding-welcome-shell {
+            opacity: 0;
+            transform: scale(0.98) translateY(8px);
+            transition-duration: 0.25s;
+        }
+
+        .onboarding-wordmark {
+            font-family: var(--font-display);
+            font-size: clamp(2.25rem, 6vw, 2.75rem);
+            font-weight: 600;
+            color: var(--accent-light);
+            letter-spacing: 0.02em;
+            margin-bottom: 8px;
+            opacity: 0;
+            transform: translateY(8px) scale(0.97);
+        }
+
+        .onboarding-brand-icon {
+            display: block;
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 14px;
+            opacity: 0;
+            transform: translateY(8px) scale(0.97);
+        }
+
+        .onboarding-wordmark.is-entered,
+        .onboarding-brand-icon.is-entered {
+            animation: onboardingWordIn 0.48s var(--ease-spring) forwards;
+        }
+
+        @keyframes onboardingWordIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .onboarding-tagline {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 4vw, 1.85rem);
+            color: var(--text-body);
+            line-height: 1.35;
+            margin-bottom: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .onboarding-tagline.is-visible {
+            opacity: 1;
+        }
+
+        .onboarding-kw {
+            opacity: 0.45;
+            color: var(--text-muted);
+            transition: color 0.35s ease, opacity 0.35s ease, transform 0.42s var(--ease-spring);
+        }
+
+        .onboarding-kw.is-lit {
+            color: var(--accent-light);
+            opacity: 1;
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.35);
+            transform: translateY(-1px);
+        }
+
+        .onboarding-tail {
+            opacity: 0;
+            color: var(--text-dim);
+            transition: opacity 0.4s ease;
+        }
+
+        .onboarding-tail.is-visible {
+            opacity: 1;
+        }
+
+        .onboarding-features {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .onboarding-feature {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-muted);
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        .onboarding-feature.is-entered {
+            animation: onboardingRowIn 0.32s var(--ease-spring) forwards;
+        }
+
+        @keyframes onboardingRowIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .onboarding-feature .ui-icon {
+            color: var(--accent-light);
+            opacity: 0.85;
+        }
+
+        .onboarding-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        .onboarding-actions.is-entered {
+            animation: onboardingRowIn 0.38s var(--ease-spring-bounce) forwards;
+        }
+
+        .onboarding-welcome:not(.is-ready) .onboarding-actions {
+            pointer-events: none;
+        }
+
+        .onboarding-btn {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 0.5px solid transparent;
+            transition: transform 0.18s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .onboarding-btn.primary {
+            color: rgba(5, 20, 10, 0.92);
+            background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent) 100%);
+            box-shadow: var(--shadow-raised);
+        }
+
+        .onboarding-btn.primary:hover {
+            transform: translateY(-1px);
+        }
+
+        .onboarding-btn.ghost {
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+            box-shadow: var(--shadow-inset-tray);
+        }
+
+        .onboarding-btn.ghost:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .onboarding-tour {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            pointer-events: none;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .onboarding-tour.is-active {
+            pointer-events: auto;
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .onboarding-hole {
+            position: fixed;
+            z-index: 501;
+            border-radius: var(--radius-md);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.62);
+            pointer-events: none;
+            transition: top 0.25s ease, left 0.25s ease, width 0.25s ease, height 0.25s ease;
+        }
+
+        .onboarding-hole.hidden {
+            display: none;
+        }
+
+        .onboarding-card {
+            position: fixed;
+            z-index: 510;
+            width: min(320px, calc(100vw - 2rem));
+            padding: 18px 18px 16px;
+            border-radius: var(--radius-lg);
+            background: var(--shell-bg);
+            backdrop-filter: blur(48px);
+            -webkit-backdrop-filter: blur(48px);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+            box-shadow: var(--shadow-shell);
+        }
+
+        .onboarding-card.is-centered {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .onboarding-card-title {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .onboarding-card-body {
+            font-size: 14px;
+            line-height: 1.45;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        .onboarding-step-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 14px;
+        }
+
+        .onboarding-step-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(134, 200, 140, 0.25);
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .onboarding-step-dot.is-active {
+            background: var(--accent-light);
+            transform: scale(1.15);
+        }
+
+        .onboarding-tour-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .onboarding-tour-skip {
+            padding: 8px 4px;
+            border: none;
+            background: none;
+            color: var(--text-dim);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .onboarding-tour-skip:hover {
+            color: var(--text-muted);
+        }
+
+        .onboarding-tour-next {
+            padding: 9px 16px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: rgba(74, 222, 128, 0.18);
+            color: var(--accent-light);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow-raised);
+        }
+
+        .onboarding-tour-next:hover {
+            background: rgba(74, 222, 128, 0.26);
         }
     </style>
 </head>
@@ -4118,7 +4492,7 @@
                     </div>
                 </div>
 
-                <div class="add-area">
+                <div class="add-area" id="taskAddArea">
                     <button type="button" class="category-chip" id="categoryChip" aria-haspopup="true"
                         aria-expanded="false" title="Category for new task">
                         <span class="category-chip-dot" id="categoryChipDot"></span>
@@ -4316,6 +4690,9 @@
                 sun: `<svg ${svgAttrs}><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>`,
                 cloudSun: `<svg ${svgAttrs}><path d="M12 2v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M20 4v2"/><path d="M19.07 19.07l-1.41-1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M4.93 19.07l1.41-1.41"/><path d="M16 16a4 4 0 1 0-1.08-7.83A5 5 0 1 0 6.5 16H16z"/></svg>`,
                 moon: `<svg ${svgAttrs}><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"/></svg>`,
+                list: `<svg ${svgAttrs}><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>`,
+                timer: `<svg ${svgAttrs}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>`,
+                note: `<svg ${svgAttrs}><path d="M14 3H8a2 2 0 0 0-2 2v14l4-2 4 2 4-2 4 2V5a2 2 0 0 0-2-2z"/></svg>`,
             };
             return icons[name] || "";
         }
@@ -4333,6 +4710,7 @@
             document.getElementById("focusSkip").innerHTML = icon("skip", 20);
         }
         const STORAGE_KEY = "organic-todo-v2";
+        const ONBOARDING_STORAGE_KEY = "grove-onboarding-v1";
         const TIMER_STORAGE_KEY = "organic-todo-timer-v1";
         const FOCUS_STORAGE_KEY = "organic-todo-focus-v1";
         const NOTES_STORAGE_KEY = "organic-notes-v1";
@@ -5511,7 +5889,7 @@
             }
 
             if (!data) {
-                tasks = structuredClone(DEFAULT_TASKS);
+                tasks = [];
             } else {
                 tasks = Array.isArray(data.tasks) ? data.tasks : structuredClone(DEFAULT_TASKS);
                 if (typeof data.nextId === "number") nextId = data.nextId;
@@ -7243,8 +7621,441 @@
                     positionLayoutTabIndicator(false);
                 }
                 positionAppNavIndicator(false);
+                if (typeof repositionTourStep === "function") repositionTourStep();
             });
         });
+
+        // ===== Onboarding =====
+        const WELCOME_MS = {
+            scrim: 0,
+            wordmark: 180,
+            tagline: 350,
+            kw0: 520,
+            kw1: 800,
+            kw2: 1080,
+            tail: 1320,
+            features: 1520,
+            ctas: 1880,
+            ready: 2200,
+        };
+
+        let welcomeTimers = [];
+        let tourStepIndex = 0;
+        let tourEl = null;
+
+        const TOUR_STEPS = [
+            {
+                title: "Today",
+                body: "Work on up to five tasks at a time.",
+                prep() {
+                    setAppTab("tasks");
+                    view = "today";
+                    render();
+                },
+                target() {
+                    return document.getElementById("todayCap");
+                },
+            },
+            {
+                title: "Backlog",
+                body: "Everything else waits in Backlog until you pull it into Today.",
+                prep() {
+                    setAppTab("tasks");
+                    view = "backlog";
+                    render();
+                },
+                target() {
+                    return document.querySelector('#tasksPanel .view-tab[data-view="backlog"]');
+                },
+            },
+            {
+                title: "Focus",
+                body: "Queue what matters, then run Pomodoro on it.",
+                prep() {
+                    setAppTab("focus");
+                },
+                target() {
+                    return document.querySelector('.app-nav-btn[data-app="focus"]');
+                },
+            },
+            {
+                title: "Memo",
+                body: "Quick sticky notes on the paper wall.",
+                prep() {
+                    setAppTab("notes");
+                },
+                target() {
+                    return document.querySelector('.app-nav-btn[data-app="notes"]');
+                },
+            },
+            {
+                title: "System tray",
+                body: "Closing hides Grove to the system tray. Use tray → Quit to exit.",
+                centered: true,
+                prep() {
+                    setAppTab("tasks");
+                    view = "today";
+                    render();
+                },
+                target() {
+                    return null;
+                },
+            },
+        ];
+
+        function loadOnboardingState() {
+            try {
+                const raw = localStorage.getItem(ONBOARDING_STORAGE_KEY);
+                if (!raw) return null;
+                return JSON.parse(raw);
+            } catch {
+                return null;
+            }
+        }
+
+        function saveOnboardingState(state) {
+            localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(state));
+        }
+
+        function shouldShowOnboarding() {
+            if (localStorage.getItem(ONBOARDING_STORAGE_KEY)) return false;
+            if (localStorage.getItem(STORAGE_KEY)) return false;
+            return true;
+        }
+
+        function shouldResumeTour() {
+            const state = loadOnboardingState();
+            return !!(state && state.path === "tour" && state.welcomeDone && !state.completed);
+        }
+
+        function cancelWelcomeAnimation() {
+            welcomeTimers.forEach(id => clearTimeout(id));
+            welcomeTimers = [];
+        }
+
+        function playWelcomeAnimation(welcomeEl) {
+            cancelWelcomeAnimation();
+            const schedule = (ms, fn) => {
+                welcomeTimers.push(setTimeout(fn, ms));
+            };
+            schedule(WELCOME_MS.scrim, () => welcomeEl.classList.add("is-visible"));
+            schedule(WELCOME_MS.wordmark, () => {
+                welcomeEl.querySelector(".onboarding-wordmark")?.classList.add("is-entered");
+            });
+            schedule(WELCOME_MS.wordmark + 100, () => {
+                welcomeEl.querySelector(".onboarding-brand-icon")?.classList.add("is-entered");
+            });
+            schedule(WELCOME_MS.tagline, () => {
+                welcomeEl.querySelector(".onboarding-tagline")?.classList.add("is-visible");
+            });
+            schedule(WELCOME_MS.kw0, () => {
+                welcomeEl.querySelector('.onboarding-kw[data-step="0"]')?.classList.add("is-lit");
+            });
+            schedule(WELCOME_MS.kw1, () => {
+                welcomeEl.querySelector('.onboarding-kw[data-step="1"]')?.classList.add("is-lit");
+            });
+            schedule(WELCOME_MS.kw2, () => {
+                welcomeEl.querySelector('.onboarding-kw[data-step="2"]')?.classList.add("is-lit");
+            });
+            schedule(WELCOME_MS.tail, () => {
+                welcomeEl.querySelector(".onboarding-tail")?.classList.add("is-visible");
+            });
+            schedule(WELCOME_MS.features, () => {
+                welcomeEl.querySelectorAll(".onboarding-feature").forEach((row, i) => {
+                    welcomeTimers.push(setTimeout(() => row.classList.add("is-entered"), i * 80));
+                });
+            });
+            schedule(WELCOME_MS.ctas, () => {
+                welcomeEl.querySelector(".onboarding-actions")?.classList.add("is-entered");
+            });
+            schedule(WELCOME_MS.ready, () => {
+                welcomeEl.classList.add("is-ready");
+                document.getElementById("onboardingTourBtn")?.focus();
+            });
+        }
+
+        function buildWelcomeElement() {
+            const el = document.createElement("div");
+            el.id = "onboardingWelcome";
+            el.className = "onboarding-welcome";
+            el.innerHTML = `
+                <div class="onboarding-welcome-scrim"></div>
+                <div class="onboarding-welcome-shell" role="dialog" aria-modal="true" aria-labelledby="onboardingWelcomeTitle">
+                    <p class="onboarding-wordmark" aria-hidden="true">Grove</p>
+                    <img class="onboarding-brand-icon" src="Grove_icon.png" width="56" height="56" alt="" aria-hidden="true">
+                    <p class="onboarding-tagline" id="onboardingWelcomeTitle"
+                        aria-label="Tasks, focus, and memos — all on your machine.">
+                        <span class="onboarding-kw" data-step="0">Tasks</span><span class="onboarding-plain">, </span>
+                        <span class="onboarding-kw" data-step="1">focus</span><span class="onboarding-plain"> and </span>
+                        <span class="onboarding-kw" data-step="2">memos</span>
+                        <span class="onboarding-tail"> — all on your machine.</span>
+                    </p>
+                    <div class="onboarding-features">
+                        <div class="onboarding-feature">${icon("list", 16)}<span>Today (max 5)</span></div>
+                        <div class="onboarding-feature">${icon("timer", 16)}<span>Focus queue</span></div>
+                        <div class="onboarding-feature">${icon("note", 16)}<span>Sticky memos</span></div>
+                    </div>
+                    <div class="onboarding-actions">
+                        <button type="button" class="onboarding-btn primary" id="onboardingTourBtn">Get started</button>
+                    </div>
+                </div>
+            `;
+            el.querySelector("#onboardingTourBtn").addEventListener("click", chooseTourPath);
+            return el;
+        }
+
+        function showWelcome() {
+            document.body.classList.add("onboarding-active");
+            const welcomeEl = buildWelcomeElement();
+            document.body.appendChild(welcomeEl);
+            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                welcomeEl.classList.add("is-visible", "is-ready");
+                welcomeEl.querySelector(".onboarding-wordmark")?.classList.add("is-entered");
+                welcomeEl.querySelector(".onboarding-brand-icon")?.classList.add("is-entered");
+                welcomeEl.querySelector(".onboarding-tagline")?.classList.add("is-visible");
+                welcomeEl.querySelectorAll(".onboarding-kw").forEach(k => k.classList.add("is-lit"));
+                welcomeEl.querySelector(".onboarding-tail")?.classList.add("is-visible");
+                welcomeEl.querySelectorAll(".onboarding-feature").forEach(n => n.classList.add("is-entered"));
+                welcomeEl.querySelector(".onboarding-actions")?.classList.add("is-entered");
+                requestAnimationFrame(() => document.getElementById("onboardingTourBtn")?.focus());
+                return;
+            }
+            playWelcomeAnimation(welcomeEl);
+        }
+
+        function exitWelcome(nextFn) {
+            const welcomeEl = document.getElementById("onboardingWelcome");
+            if (!welcomeEl) {
+                nextFn?.();
+                return;
+            }
+            cancelWelcomeAnimation();
+            welcomeEl.classList.add("is-exiting");
+            const finish = () => {
+                welcomeEl.remove();
+                nextFn?.();
+            };
+            let done = false;
+            const onEnd = () => {
+                if (done) return;
+                done = true;
+                finish();
+            };
+            welcomeEl.addEventListener("transitionend", onEnd, { once: true });
+            setTimeout(onEnd, 300);
+        }
+
+        function resetToFreshWorkspace() {
+            tasks = [];
+            categories = [];
+            defaultCategoryId = null;
+            categoryFilters = new Set();
+            nextId = 10;
+            migrateTasksAndCategories();
+            save();
+        }
+
+        function showAddTaskNudge() {
+            const area = document.getElementById("taskAddArea");
+            if (!area) return;
+            area.classList.add("onboarding-nudge");
+            const dismiss = () => {
+                area.classList.remove("onboarding-nudge");
+                input.removeEventListener("focus", dismiss);
+                input.removeEventListener("keydown", dismiss);
+                area.removeEventListener("click", dismiss);
+            };
+            input.addEventListener("focus", dismiss, { once: true });
+            input.addEventListener("keydown", dismiss, { once: true });
+            area.addEventListener("click", dismiss, { once: true });
+        }
+
+        function chooseTourPath() {
+            saveOnboardingState({
+                version: 1,
+                welcomeDone: true,
+                path: "tour",
+                tourStep: 0,
+                tourCompleted: false,
+                completed: false,
+            });
+            tasks = structuredClone(DEFAULT_TASKS);
+            nextId = Math.max(nextId || 0, ...tasks.map(t => +t.id || 0)) + 1;
+            save();
+            exitWelcome(() => {
+                document.body.classList.remove("onboarding-active");
+                render();
+                startTour(0);
+            });
+        }
+
+        function ensureTourElement() {
+            if (tourEl) return tourEl;
+            tourEl = document.createElement("div");
+            tourEl.id = "onboardingTour";
+            tourEl.className = "onboarding-tour";
+            tourEl.innerHTML = `
+                <div class="onboarding-hole hidden" id="onboardingHole"></div>
+                <div class="onboarding-card" id="onboardingCard">
+                    <div class="onboarding-step-dots" id="onboardingStepDots"></div>
+                    <div class="onboarding-card-title" id="onboardingCardTitle"></div>
+                    <div class="onboarding-card-body" id="onboardingCardBody"></div>
+                    <div class="onboarding-tour-actions">
+                        <button type="button" class="onboarding-tour-skip" id="onboardingTourSkip">Skip tour</button>
+                        <button type="button" class="onboarding-tour-next" id="onboardingTourNext">Next</button>
+                    </div>
+                </div>
+            `;
+            tourEl.querySelector("#onboardingTourSkip").addEventListener("click", () => completeOnboarding());
+            tourEl.querySelector("#onboardingTourNext").addEventListener("click", () => advanceTour());
+            document.body.appendChild(tourEl);
+            return tourEl;
+        }
+
+        function getTourTargetRect(el, padding = 8) {
+            const r = el.getBoundingClientRect();
+            const top = Math.max(8, r.top - padding);
+            const left = Math.max(8, r.left - padding);
+            const right = Math.min(window.innerWidth - 8, r.right + padding);
+            const bottom = Math.min(window.innerHeight - 8, r.bottom + padding);
+            return {
+                top,
+                left,
+                width: Math.max(0, right - left),
+                height: Math.max(0, bottom - top),
+            };
+        }
+
+        function positionCardNearRect(card, rect) {
+            card.classList.remove("is-centered");
+            card.style.transform = "";
+            const cardRect = card.getBoundingClientRect();
+            const cardW = cardRect.width || 320;
+            const cardH = cardRect.height || 160;
+            const gap = 14;
+            let top = rect.top + rect.height + gap;
+            if (top + cardH > window.innerHeight - 16) {
+                top = rect.top - cardH - gap;
+            }
+            if (top < 16) top = 16;
+            let left = rect.left + rect.width / 2 - cardW / 2;
+            left = Math.max(16, Math.min(left, window.innerWidth - cardW - 16));
+            card.style.top = `${top}px`;
+            card.style.left = `${left}px`;
+        }
+
+        function renderTourChrome(stepIndex) {
+            const dotsEl = document.getElementById("onboardingStepDots");
+            const titleEl = document.getElementById("onboardingCardTitle");
+            const bodyEl = document.getElementById("onboardingCardBody");
+            const nextBtn = document.getElementById("onboardingTourNext");
+            const step = TOUR_STEPS[stepIndex];
+            if (!step || !dotsEl) return;
+            dotsEl.innerHTML = TOUR_STEPS.map((_, i) =>
+                `<span class="onboarding-step-dot${i === stepIndex ? " is-active" : ""}"></span>`
+            ).join("");
+            titleEl.textContent = step.title;
+            bodyEl.textContent = step.body;
+            nextBtn.textContent = stepIndex >= TOUR_STEPS.length - 1 ? "Got it" : "Next";
+        }
+
+        function goTourStep(stepIndex) {
+            tourStepIndex = stepIndex;
+            const step = TOUR_STEPS[stepIndex];
+            if (!step) {
+                completeOnboarding();
+                return;
+            }
+            step.prep?.();
+            renderTourChrome(stepIndex);
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    const hole = document.getElementById("onboardingHole");
+                    const card = document.getElementById("onboardingCard");
+                    if (!hole || !card) return;
+                    if (step.centered) {
+                        hole.classList.add("hidden");
+                        card.classList.add("is-centered");
+                        card.style.top = "";
+                        card.style.left = "";
+                        return;
+                    }
+                    const targetEl = step.target?.();
+                    if (!targetEl) {
+                        hole.classList.add("hidden");
+                        card.classList.add("is-centered");
+                        return;
+                    }
+                    hole.classList.remove("hidden");
+                    card.classList.remove("is-centered");
+                    const rect = getTourTargetRect(targetEl);
+                    hole.style.top = `${rect.top}px`;
+                    hole.style.left = `${rect.left}px`;
+                    hole.style.width = `${rect.width}px`;
+                    hole.style.height = `${rect.height}px`;
+                    positionCardNearRect(card, rect);
+                });
+            });
+        }
+
+        function repositionTourStep() {
+            if (!tourEl?.classList.contains("is-active")) return;
+            goTourStep(tourStepIndex);
+        }
+
+        function startTour(fromStep) {
+            document.body.classList.add("onboarding-active");
+            ensureTourElement();
+            tourEl.classList.add("is-active");
+            const state = loadOnboardingState() || {};
+            const step = Number.isFinite(fromStep) ? fromStep : (state.tourStep || 0);
+            goTourStep(Math.min(Math.max(0, step), TOUR_STEPS.length - 1));
+        }
+
+        function hideTour() {
+            tourEl?.classList.remove("is-active");
+            document.body.classList.remove("onboarding-active");
+        }
+
+        function advanceTour() {
+            const next = tourStepIndex + 1;
+            if (next >= TOUR_STEPS.length) {
+                completeOnboarding();
+                return;
+            }
+            const state = loadOnboardingState() || {};
+            state.tourStep = next;
+            saveOnboardingState(state);
+            goTourStep(next);
+        }
+
+        function completeOnboarding() {
+            const state = loadOnboardingState() || {};
+            state.completed = true;
+            state.tourCompleted = true;
+            state.tourStep = TOUR_STEPS.length - 1;
+            saveOnboardingState(state);
+            hideTour();
+            resetToFreshWorkspace();
+            setAppTab("tasks");
+            view = "today";
+            render();
+            requestAnimationFrame(() => {
+                positionAppNavIndicator(false);
+                showAddTaskNudge();
+            });
+        }
+
+        function initOnboarding() {
+            if (shouldResumeTour()) {
+                const state = loadOnboardingState();
+                startTour(state.tourStep || 0);
+                return;
+            }
+            if (shouldShowOnboarding()) {
+                showWelcome();
+            }
+        }
 
         load();
         mountStaticIcons();
@@ -7253,6 +8064,7 @@
         initFocusDailyEvents();
         initNotes();
         render();
+        initOnboarding();
         requestAnimationFrame(() => positionAppNavIndicator(false));
     </script>
 </body>
