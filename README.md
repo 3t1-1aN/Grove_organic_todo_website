@@ -2,6 +2,7 @@
 
 Tasks, focus & memo — a lightweight desktop app built with [Tauri 2](https://v2.tauri.app/) (Rust + WebView).
 
+**Developer:** Ethan Kunder  
 **License:** [Apache-2.0](LICENSE)
 
 ## Download

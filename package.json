@@ -17,7 +17,7 @@
     "productivity",
     "tauri"
   ],
-  "author": "Ethan",
+  "author": "Ethan Kunder",
   "license": "Apache-2.0",
   "devDependencies": {
     "@tauri-apps/cli": "^2"

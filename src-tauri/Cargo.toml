@@ -2,7 +2,7 @@
 name = "organic-todo"
 version = "1.0.1"
 description = "Grove — tasks, focus & memo for desktop"
-authors = ["Ethan"]
+authors = ["Ethan Kunder"]
 edition = "2021"
 
 [lib]
