@@ -1,12 +1,15 @@
 # Grove
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/bf1e5e92-c7e4-4b11-b10c-5f34970b1561" alt="Grove_icon" width="200" /><br>
-  Tasks, focus & memo — a lightweight desktop app built with [Tauri 2](https://v2.tauri.app/) (Rust + WebView).<br>
-  **Developer:** Ethan Kunder<br>
-  **License:** [Apache-2.0](LICENSE)
+  <img src="https://github.com/user-attachments/assets/bf1e5e92-c7e4-4b11-b10c-5f34970b1561" alt="Grove_icon" width="200" />
 </p>
 
+<p align="center">
+  Tasks, focus & memo — a lightweight desktop app built with
+  <a href="https://v2.tauri.app/">Tauri 2</a> (Rust + WebView).<br>
+  <strong>Developer:</strong> Ethan Kunder<br>
+  <strong>License:</strong> <a href="LICENSE">Apache-2.0</a>
+</p>
 
 ## Download
 
