@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="dark">
     <title>Grove — Tasks, focus & memo for desktop</title>
     <link rel="icon" type="image/png" href="Grove_icon.png">
     <link rel="apple-touch-icon" href="Grove_icon.png">
@@ -42,6 +43,8 @@
             --text-body: rgba(190, 218, 200, 0.72);
             --text-em: #86efac;
             --glass-bg: rgba(16, 24, 19, 0.82);
+            --glass-bg-solid: #141c17;
+            --nav-bg-solid: #101512;
             --glass-border: rgba(255, 255, 255, 0.08);
             --ink: var(--text-heading);
             --ink-muted: var(--text-body);
@@ -49,8 +52,31 @@
             --brand-icon: #a8ddb0;
             --radius-lg: 24px;
             --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
-            --font-display: 'Caveat', cursive;
-            --font-body: 'Patrick Hand', cursive;
+            --font-display: 'Caveat', 'Segoe Script', 'Bradley Hand', cursive;
+            --font-body: 'Patrick Hand', 'Segoe Print', 'Comic Sans MS', cursive;
+        }
+
+        /* ── Cross-browser consistency ──
+           Keeps the dark Grove theme stable across OS light/dark mode,
+           zoom, transparency settings, and missing backdrop-filter. */
+        html {
+            color-scheme: dark;
+            scroll-behavior: smooth;
+            scroll-padding-top: 88px;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            font-family: var(--font-body);
+            background: var(--page-bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -60,21 +86,146 @@
                 animation: none !important;
             }
 
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
             html {
                 scroll-behavior: auto;
             }
         }
 
-        html {
-            scroll-behavior: smooth;
-            scroll-padding-top: 88px;
+        a {
+            color: inherit;
         }
 
-        body {
-            font-family: var(--font-body);
-            background: var(--page-bg);
-            color: var(--text);
-            overflow-x: hidden;
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .download-btn-primary svg,
+        .feel-row-check svg {
+            display: block;
+            flex-shrink: 0;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+            color: inherit;
+        }
+
+        @media (prefers-reduced-transparency: reduce) {
+
+            nav,
+            .feature-card,
+            .workspace-card,
+            .app-frame,
+            .feel-row,
+            .philosophy,
+            footer,
+            .download-card,
+            .pill {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background: var(--glass-bg-solid) !important;
+            }
+
+            nav {
+                background: var(--nav-bg-solid) !important;
+            }
+        }
+
+        @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+
+            nav,
+            .feature-card,
+            .workspace-card,
+            .app-frame,
+            .feel-row,
+            .philosophy,
+            footer,
+            .download-card,
+            .pill {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background: var(--glass-bg-solid) !important;
+            }
+
+            nav {
+                background: var(--nav-bg-solid) !important;
+            }
+        }
+
+        @media (prefers-contrast: more) {
+            :root {
+                --text: rgba(240, 252, 245, 0.98);
+                --text-body: rgba(215, 238, 224, 0.92);
+                --text-dim: rgba(180, 220, 190, 0.78);
+                --glass-border: rgba(255, 255, 255, 0.18);
+                --green-dim: rgba(74, 222, 128, 0.2);
+            }
+        }
+
+        @media (forced-colors: active) {
+            :root {
+                --page-bg: Canvas;
+                --text: CanvasText;
+                --text-heading: CanvasText;
+                --text-body: CanvasText;
+                --text-dim: CanvasText;
+                --text-em: LinkText;
+                --accent: LinkText;
+                --accent-light: LinkText;
+                --green-soft: LinkText;
+                --glass-bg-solid: Canvas;
+                --nav-bg-solid: Canvas;
+                --glass-border: CanvasText;
+            }
+
+            .bg-fixed,
+            .blob,
+            .grain,
+            .preview-glow {
+                display: none !important;
+            }
+
+            body {
+                background: Canvas;
+                color: CanvasText;
+            }
+
+            nav,
+            .feature-card,
+            .workspace-card,
+            .app-frame,
+            .feel-row,
+            .philosophy,
+            footer,
+            .download-card,
+            .pill,
+            .btn-primary,
+            .nav-cta {
+                backdrop-filter: none !important;
+                -webkit-backdrop-filter: none !important;
+                background: Canvas !important;
+                border: 1px solid CanvasText !important;
+                box-shadow: none !important;
+            }
+
+            .download-btn-primary {
+                background: ButtonFace !important;
+                color: ButtonText !important;
+                border: 1px solid ButtonText !important;
+            }
         }
 
         h1,
