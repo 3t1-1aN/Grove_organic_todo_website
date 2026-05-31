@@ -1,2 +1,3 @@
-[build]
-target-dir = "D:/rust/organic-todo-target"
+# Do not set target-dir here — it breaks CI and non-Windows builds.
+# For local Windows dev with low disk space, set in your shell instead:
+#   $env:CARGO_TARGET_DIR = "D:\rust\organic-todo-target"

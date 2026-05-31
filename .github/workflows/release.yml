@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 env:
-  CARGO_TARGET_DIR: src-tauri/target
+  CARGO_TARGET_DIR: ${{ github.workspace }}/src-tauri/target
 
 jobs:
   build-tauri:
@@ -21,7 +21,7 @@ jobs:
           - platform: windows-latest
             args: ''
           - platform: macos-latest
-            args: '--target aarch64-apple-darwin'
+            args: ''
           - platform: ubuntu-22.04
             args: ''
 
@@ -37,8 +37,6 @@ jobs:
 
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -67,19 +65,33 @@ jobs:
           set -euo pipefail
           mkdir -p release-assets
 
+          find_bundles() {
+            find "$GITHUB_WORKSPACE" -path '*/bundle/*' -type f 2>/dev/null
+          }
+
+          require_file() {
+            local pattern="$1"
+            local dest="$2"
+            local file
+            file="$(find "$GITHUB_WORKSPACE" -path "$pattern" -type f 2>/dev/null | head -n 1)"
+            if [ -z "$file" ]; then
+              echo "Could not find bundle matching: $pattern"
+              echo "Bundle files discovered:"
+              find_bundles || true
+              exit 1
+            fi
+            cp "$file" "release-assets/$dest"
+            echo "Copied $file -> release-assets/$dest"
+          }
+
           if [ "${{ matrix.platform }}" = "windows-latest" ]; then
-            setup_exe="$(find src-tauri/target -path '*/bundle/nsis/*-setup.exe' | head -n 1)"
-            msi_file="$(find src-tauri/target -path '*/bundle/msi/*.msi' | head -n 1)"
-            cp "$setup_exe" release-assets/Grove-x64-setup.exe
-            cp "$msi_file" release-assets/Grove-x64.msi
+            require_file '*/bundle/nsis/*-setup.exe' 'Grove-x64-setup.exe'
+            require_file '*/bundle/msi/*.msi' 'Grove-x64.msi'
           elif [ "${{ matrix.platform }}" = "macos-latest" ]; then
-            dmg_file="$(find src-tauri/target -path '*/bundle/dmg/*.dmg' | head -n 1)"
-            cp "$dmg_file" release-assets/Grove-aarch64.dmg
+            require_file '*/bundle/dmg/*.dmg' 'Grove-aarch64.dmg'
           else
-            appimage_file="$(find src-tauri/target -path '*/bundle/appimage/*.AppImage' | head -n 1)"
-            deb_file="$(find src-tauri/target -path '*/bundle/deb/*.deb' | head -n 1)"
-            cp "$appimage_file" release-assets/Grove-amd64.AppImage
-            cp "$deb_file" release-assets/Grove-amd64.deb
+            require_file '*/bundle/appimage/*.AppImage' 'Grove-amd64.AppImage'
+            require_file '*/bundle/deb/*.deb' 'Grove-amd64.deb'
           fi
 
           ls -la release-assets

@@ -60,7 +60,7 @@ Dev mode opens DevTools automatically (debug builds only).
 npm run build
 ```
 
-Installers are written to `D:\rust\organic-todo-target\release\bundle\` on Windows (custom `target-dir` in `src-tauri/.cargo/config.toml`). CI uses the default `src-tauri/target` path instead.
+Installers are written to `src-tauri/target/release/bundle/` by default. For a custom target dir on Windows (low disk space), set `$env:CARGO_TARGET_DIR = "D:\rust\organic-todo-target"` before building locally.
 
 Platform outputs:
 
