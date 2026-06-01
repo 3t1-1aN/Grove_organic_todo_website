@@ -1,4 +1,4 @@
-name: Release Grove
+﻿name: Release Grove
 
 on:
   push:
@@ -124,6 +124,10 @@ jobs:
           name: Grove ${{ github.ref_name }}
           overwrite_files: true
           body: |
+            ### Highlights (v1.0.1)
+
+            - **Kanban workflow board**: To Do, In Progress, and Done columns with drag-and-drop between stages. Priority and Active/Done filters are hidden in Kanban; List, Compact, and Matrix still show priority.
+            - **Linux**: Native `.deb` and `.rpm` packages replace AppImage for launcher-friendly installs.
             Desktop builds for Windows, macOS (Apple Silicon), and Linux.
 
             | Platform | File | Notes |
