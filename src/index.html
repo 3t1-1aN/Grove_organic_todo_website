@@ -1669,16 +1669,22 @@
             transition: border-color 0.35s ease, box-shadow 0.35s ease;
         }
 
-        .kanban-col.priority-high {
-            border-color: rgba(255, 112, 112, 0.15);
+        .kanban-col.stage-todo {
+            border-color: rgba(160, 200, 170, 0.12);
         }
 
-        .kanban-col.priority-med {
-            border-color: rgba(255, 176, 96, 0.12);
+        .kanban-col.stage-in_progress {
+            border-color: rgba(255, 176, 96, 0.18);
         }
 
-        .kanban-col.priority-low {
-            border-color: rgba(74, 222, 128, 0.12);
+        .kanban-col.stage-done {
+            border-color: rgba(74, 222, 128, 0.15);
+        }
+
+        .kanban-col.drag-over {
+            box-shadow: 0 0 0 2px rgba(134, 239, 172, 0.45),
+                inset 0 0 30px rgba(134, 239, 172, 0.06);
+            border-color: rgba(134, 239, 172, 0.5);
         }
 
         .kanban-col-head {
@@ -1698,15 +1704,15 @@
             text-transform: uppercase;
         }
 
-        .kanban-col.priority-high .kanban-col-title {
-            color: rgba(255, 160, 160, 0.9);
+        .kanban-col.stage-todo .kanban-col-title {
+            color: rgba(180, 220, 190, 0.85);
         }
 
-        .kanban-col.priority-med .kanban-col-title {
+        .kanban-col.stage-in_progress .kanban-col-title {
             color: rgba(255, 200, 130, 0.9);
         }
 
-        .kanban-col.priority-low .kanban-col-title {
+        .kanban-col.stage-done .kanban-col-title {
             color: rgba(134, 239, 172, 0.9);
         }
 
@@ -1765,8 +1771,69 @@
             border: 1px dashed rgba(255, 255, 255, 0.06);
         }
 
-        .kanban-board.cols-1 {
-            grid-template-columns: 1fr;
+        .kanban-drag-handle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            width: 22px;
+            height: 28px;
+            margin-right: -4px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(160, 200, 170, 0.45);
+            cursor: grab;
+            touch-action: none;
+            font-size: 0;
+            letter-spacing: 0;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .kanban-drag-handle .ui-icon {
+            width: 14px;
+            height: 18px;
+        }
+
+        .kanban-drag-handle:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(180, 220, 190, 0.75);
+        }
+
+        .kanban-drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .kanban-drag-placeholder {
+            flex-shrink: 0;
+            border-radius: 18px;
+            border: 1px dashed rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.02);
+            box-sizing: border-box;
+        }
+
+        body.kanban-drag-active {
+            cursor: grabbing;
+            user-select: none;
+        }
+
+        body.kanban-drag-active .kanban-col {
+            transition: none;
+        }
+
+        body.kanban-drag-active .task-card:not(.dragging) {
+            cursor: grabbing;
+        }
+
+        .layout-kanban .task-card.dragging {
+            pointer-events: none;
+            z-index: 500;
+            margin: 0;
+            box-shadow: 8px 12px 28px rgba(0, 0, 0, 0.55);
+            transform: rotate(-0.6deg);
+            transition: none !important;
+            background: rgba(5, 12, 8, 0.92);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .task-card {
@@ -3661,13 +3728,6 @@
                 max-height: var(--kanban-board-stacked-height);
             }
 
-            .kanban-board.cols-1 {
-                grid-template-rows: var(--kanban-col-height-mobile);
-                height: var(--kanban-col-height-mobile);
-                min-height: var(--kanban-col-height-mobile);
-                max-height: var(--kanban-col-height-mobile);
-            }
-
             .task-list.layout-kanban {
                 overflow-y: auto;
             }
@@ -4796,6 +4856,13 @@
             low: { label: "Low", order: 2 },
         };
 
+        const STAGE_ORDER = ["todo", "in_progress", "done"];
+        const STAGES = {
+            todo: { label: "To Do", order: 0 },
+            in_progress: { label: "In Progress", order: 1 },
+            done: { label: "Done", order: 2 },
+        };
+
         const CATEGORY_COLORS = {
             green: "#4ade80",
             lime: "#a3e635",
@@ -4858,6 +4925,7 @@
         const editingSubtaskAdd = new Set();
 
         let matrixDrag = null;
+        let kanbanDrag = null;
         let matrixSuppressCardClick = false;
         let matrixQuadrantEditOpen = false;
         let quadrantLabels = null;
@@ -6057,6 +6125,10 @@
                 if (!t.place) t.place = "today";
                 t.priority = normalizePriority(t.priority);
                 t.done = !!t.done;
+                if (!STAGE_ORDER.includes(t.stage)) {
+                    t.stage = t.done ? "done" : "todo";
+                }
+                t.done = t.stage === "done";
 
                 if (typeof t.urgency !== "string" || (t.urgency !== "urgent" && t.urgency !== "not-urgent")) {
                     t.urgency = (t.priority === "high" || t.priority === "med") ? "urgent" : "not-urgent";
@@ -6678,6 +6750,139 @@
             });
         }
 
+        function kanbanDragBlockedTarget(target) {
+            return !!target.closest(
+                ".priority-bloom, .priority-orb, [data-priority-toggle], [data-choose-priority], " +
+                "[data-subtask-toggle], .subtask-pill, .subtask-region, [data-check], .check-wrap, " +
+                "[data-move-today], button:not(.kanban-drag-handle), input, textarea, select, a"
+            );
+        }
+
+        function kanbanDragSurface(target, card) {
+            if (!card.contains(target)) return false;
+            if (target.closest(".kanban-drag-handle")) return true;
+            if (kanbanDragBlockedTarget(target)) return false;
+            return !!target.closest(".task-body, .task-title, .task-tag");
+        }
+
+        function clearKanbanDragOver() {
+            list.querySelectorAll(".kanban-col.drag-over").forEach(col => col.classList.remove("drag-over"));
+        }
+
+        function kanbanColumnAt(x, y) {
+            const el = document.elementFromPoint(x, y);
+            return el ? el.closest(".kanban-col[data-stage]") : null;
+        }
+
+        function endKanbanDrag(apply) {
+            const d = kanbanDrag;
+            if (!d) return;
+            const taskId = d.taskId;
+            const targetStage = d.overStage;
+            const shouldApply = apply && d.active && targetStage != null && taskId != null;
+
+            if (d.active) matrixSuppressCardClick = true;
+
+            if (d.active && d.card) {
+                d.card.classList.remove("dragging");
+                d.card.removeAttribute("style");
+                if (d.placeholder && d.placeholder.parentNode) {
+                    d.placeholder.parentNode.insertBefore(d.card, d.placeholder);
+                    d.placeholder.remove();
+                }
+            }
+
+            try { d.card?.releasePointerCapture(d.pointerId); } catch { /* ignore */ }
+            clearKanbanDragOver();
+            document.body.classList.remove("kanban-drag-active");
+            kanbanDrag = null;
+
+            if (shouldApply) {
+                const t = tasks.find(x => x.id === taskId);
+                const currentStage = t ? getTaskStage(t) : null;
+                if (currentStage !== targetStage) setTaskStage(taskId, targetStage);
+            }
+        }
+
+        function bindKanbanEvents() {
+            const DRAG_THRESHOLD = 6;
+
+            list.querySelectorAll(".task-card").forEach(card => {
+                card.addEventListener("pointerdown", e => {
+                    if (e.button !== 0) return;
+                    if (!kanbanDragSurface(e.target, card)) return;
+
+                    const taskId = +card.dataset.id;
+                    const startX = e.clientX;
+                    const startY = e.clientY;
+                    let overStage = null;
+
+                    const onMove = ev => {
+                        if (!kanbanDrag) return;
+                        const dx = ev.clientX - startX;
+                        const dy = ev.clientY - startY;
+                        if (!kanbanDrag.active) {
+                            if (dx * dx + dy * dy < DRAG_THRESHOLD * DRAG_THRESHOLD) return;
+                            const rect = card.getBoundingClientRect();
+                            const placeholder = document.createElement("div");
+                            placeholder.className = "kanban-drag-placeholder";
+                            placeholder.style.height = `${rect.height}px`;
+                            card.parentNode.insertBefore(placeholder, card);
+
+                            document.body.appendChild(card);
+                            card.classList.add("dragging");
+                            card.style.position = "fixed";
+                            card.style.left = `${rect.left}px`;
+                            card.style.top = `${rect.top}px`;
+                            card.style.width = `${rect.width}px`;
+
+                            kanbanDrag.active = true;
+                            kanbanDrag.placeholder = placeholder;
+                            kanbanDrag.offsetX = ev.clientX - rect.left;
+                            kanbanDrag.offsetY = ev.clientY - rect.top;
+                            document.body.classList.add("kanban-drag-active");
+                            try { card.setPointerCapture(ev.pointerId); } catch { /* ignore */ }
+                        }
+                        ev.preventDefault();
+                        card.style.left = `${ev.clientX - kanbanDrag.offsetX}px`;
+                        card.style.top = `${ev.clientY - kanbanDrag.offsetY}px`;
+                        clearKanbanDragOver();
+                        const col = kanbanColumnAt(ev.clientX, ev.clientY);
+                        if (col) {
+                            col.classList.add("drag-over");
+                            overStage = col.dataset.stage;
+                        } else {
+                            overStage = null;
+                        }
+                        kanbanDrag.overStage = overStage;
+                    };
+
+                    const onUp = () => {
+                        document.removeEventListener("pointermove", onMove);
+                        document.removeEventListener("pointerup", onUp);
+                        document.removeEventListener("pointercancel", onUp);
+                        if (!kanbanDrag) return;
+                        endKanbanDrag(kanbanDrag.active && overStage != null);
+                    };
+
+                    kanbanDrag = {
+                        taskId,
+                        card,
+                        pointerId: e.pointerId,
+                        active: false,
+                        placeholder: null,
+                        offsetX: 0,
+                        offsetY: 0,
+                        overStage: null,
+                    };
+
+                    document.addEventListener("pointermove", onMove);
+                    document.addEventListener("pointerup", onUp);
+                    document.addEventListener("pointercancel", onUp);
+                });
+            });
+        }
+
         // ===== Category sidebar UI =====
         function renderCategoryFilter() {
             const wrap = document.getElementById("categoryFilterChips");
@@ -6965,6 +7170,27 @@
             return PRIORITY_ORDER.includes(p) ? p : "med";
         }
 
+        function normalizeStage(s) {
+            return STAGE_ORDER.includes(s) ? s : "todo";
+        }
+
+        function getTaskStage(t) {
+            if (t.stage && STAGE_ORDER.includes(t.stage)) return t.stage;
+            return t.done ? "done" : "todo";
+        }
+
+        function setTaskStage(id, stage) {
+            const t = tasks.find(x => x.id === id);
+            if (!t) return;
+            const s = normalizeStage(stage);
+            if (getTaskStage(t) === s) return;
+            t.stage = s;
+            t.done = s === "done";
+            save();
+            closePriorityBloom();
+            render();
+        }
+
         function sortByPriority(list) {
             return [...list].sort((a, b) => {
                 const diff = PRIORITIES[normalizePriority(a.priority)].order
@@ -7088,7 +7314,6 @@
                 closePriorityBloom();
                 return;
             }
-            const prevPriority = normalizePriority(t.priority);
             t.priority = p;
             save();
             closePriorityBloom();
@@ -7099,15 +7324,9 @@
             }
 
             const card = list.querySelector(`.task-card[data-id="${id}"]`);
-            const kanbanNeedsMove = taskLayout === "kanban" && priorityFilter === "all" && prevPriority !== p;
 
             if (card) {
                 refreshCardPriorityUI(card, t, p);
-            }
-
-            if (kanbanNeedsMove) {
-                setTimeout(() => render(), 560);
-                return;
             }
 
             if (!card) {
@@ -7142,10 +7361,13 @@
 
         function updateChrome() {
             const isBacklog = view === "backlog";
+            const isKanban = taskLayout === "kanban";
             document.body.classList.toggle("mode-backlog", isBacklog);
             todayCap.classList.toggle("hidden", isBacklog);
             backlogHint.classList.toggle("hidden", !isBacklog);
-            todayFilters.classList.toggle("hidden", isBacklog);
+            todayFilters.classList.toggle("hidden", isBacklog || isKanban);
+            const priorityFiltersEl = document.getElementById("priorityFilters");
+            if (priorityFiltersEl) priorityFiltersEl.classList.toggle("hidden", isKanban);
 
             backlogBadge.textContent = String(backlogCount());
 
@@ -7255,19 +7477,23 @@
             </div>`;
         }
 
-        function taskTagInnerHtml(task, p) {
+        function taskTagInnerHtml(task, p, opts = {}) {
             const cat = getCategory(task.categoryId) || getDefaultCategory();
             const colorKey = cat ? normalizeCategoryColorKey(cat.color) : DEFAULT_CATEGORY_COLOR;
             const label = cat ? cat.label : DEFAULT_CATEGORY_LABEL;
+            const priorityPart = opts.kanban
+                ? ""
+                : ` · <span class="task-tag-priority">${PRIORITIES[p].label}</span>`;
             return `<span class="task-cat-dot" data-cat-color="${colorKey}" aria-hidden="true"></span>` +
                 `<span class="task-cat-label">${escapeHtml(label)}</span>` +
-                ` · <span class="task-tag-priority">${PRIORITIES[p].label}</span>` +
+                priorityPart +
                 subtaskPillHtml(task);
         }
 
         function renderTaskCard(t, opts) {
             const isBacklog = opts.inBacklog;
             const compact = !!opts.compact;
+            const isKanban = !!opts.kanban;
             const sel = selected === t.id;
             const p = normalizePriority(t.priority);
             const priorityClass = ` priority-${p}`;
@@ -7277,6 +7503,9 @@
             const matrixHandle = opts.matrix
                 ? `<button type="button" class="matrix-drag-handle" data-matrix-drag="${t.id}" aria-label="Drag to another quadrant" title="Drag to move">${icon("grip", 14)}</button>`
                 : "";
+            const kanbanHandle = isKanban
+                ? `<button type="button" class="kanban-drag-handle" data-kanban-drag="${t.id}" aria-label="Drag to another stage" title="Drag to move">${icon("grip", 14)}</button>`
+                : "";
             const lead = isBacklog
                 ? `<div class="card-slot" aria-hidden="true"></div>`
                 : `<div class="check-wrap${t.done ? " checked" : ""}" data-check="${t.id}">
@@ -7285,15 +7514,16 @@
             const todayBtn = isBacklog
                 ? `<button type="button" class="card-today-btn" data-move-today="${t.id}" ${canAddToToday() ? "" : "disabled"}>Add to today</button>`
                 : "";
+            const priorityControl = isKanban ? "" : priorityControlHtml(t.id, p);
 
-            return `<div class="task-card${priorityClass}${compactClass}${expandedClass}${t.done ? " done" : ""}${sel ? " selected" : ""}" data-id="${t.id}">
-                ${matrixHandle}
+            return `<div class="task-card${priorityClass}${compactClass}${expandedClass}${t.done ? " done" : ""}${sel ? " selected" : ""}" data-id="${t.id}" data-stage="${getTaskStage(t)}">
+                ${matrixHandle}${kanbanHandle}
                 ${lead}
                 <div class="task-body">
-                    <div class="task-tag">${taskTagInnerHtml(t, p)}</div>
+                    <div class="task-tag">${taskTagInnerHtml(t, p, { kanban: isKanban })}</div>
                     <div class="task-title">${escapeHtml(t.title)}</div>
                 </div>
-                ${priorityControlHtml(t.id, p)}
+                ${priorityControl}
                 ${todayBtn}
                 ${subtaskRegionHtml(t)}
             </div>`;
@@ -7312,26 +7542,24 @@
 
         function renderKanbanBoard(visible) {
             const inBacklog = view === "backlog";
-            const cols = priorityFilter === "all" ? PRIORITY_ORDER : [priorityFilter];
-            const byPriority = Object.fromEntries(PRIORITY_ORDER.map(p => [p, []]));
-            visible.forEach(t => byPriority[normalizePriority(t.priority)].push(t));
+            const byStage = Object.fromEntries(STAGE_ORDER.map(s => [s, []]));
+            visible.forEach(t => byStage[getTaskStage(t)].push(t));
 
-            const colClass = cols.length === 1 ? " cols-1" : "";
-            const columns = cols.map(p => {
-                const items = byPriority[p];
+            const columns = STAGE_ORDER.map(stage => {
+                const items = byStage[stage];
                 const cards = items.length
-                    ? items.map(t => renderTaskCard(t, { inBacklog, compact: false })).join("")
+                    ? items.map(t => renderTaskCard(t, { inBacklog, kanban: true })).join("")
                     : `<div class="kanban-empty">Empty</div>`;
-                return `<section class="kanban-col priority-${p}" aria-label="${PRIORITIES[p].label} priority">
+                return `<section class="kanban-col stage-${stage}" data-stage="${stage}" aria-label="${STAGES[stage].label}">
                     <header class="kanban-col-head">
-                        <span class="kanban-col-title">${PRIORITIES[p].label}</span>
+                        <span class="kanban-col-title">${STAGES[stage].label}</span>
                         <span class="kanban-col-count">${items.length}</span>
                     </header>
                     <div class="kanban-col-body">${cards}</div>
                 </section>`;
             }).join("");
 
-            return `<div class="kanban-board${colClass}">${columns}</div>`;
+            return `<div class="kanban-board">${columns}</div>`;
         }
 
         function applyCategoryFilter(list) {
@@ -7340,15 +7568,19 @@
         }
 
         function getVisibleTasks() {
+            const isKanban = taskLayout === "kanban";
             let subset;
             if (view === "backlog") {
-                subset = tasks.filter(t => t.place === "backlog" && !t.done);
+                subset = tasks.filter(t => t.place === "backlog");
+                if (!isKanban) subset = subset.filter(t => !t.done);
             } else {
                 subset = tasks.filter(t => t.place === "today");
-                if (filter === "active") subset = subset.filter(t => !t.done);
-                else if (filter === "done") subset = subset.filter(t => t.done);
+                if (!isKanban) {
+                    if (filter === "active") subset = subset.filter(t => !t.done);
+                    else if (filter === "done") subset = subset.filter(t => t.done);
+                }
             }
-            subset = applyPriorityFilter(subset);
+            if (!isKanban) subset = applyPriorityFilter(subset);
             subset = applyCategoryFilter(subset);
             return sortByPriority(subset);
         }
@@ -7364,7 +7596,8 @@
                         e.target.closest(".priority-bloom") ||
                         e.target.closest("[data-subtask-toggle]") ||
                         e.target.closest(".subtask-region") ||
-                        e.target.closest(".matrix-drag-handle")) return;
+                        e.target.closest(".matrix-drag-handle") ||
+                        e.target.closest(".kanban-drag-handle")) return;
                     const id = +card.dataset.id;
                     selected = selected === id ? null : id;
                     closePriorityBloom();
@@ -7386,11 +7619,13 @@
                     e.stopPropagation();
                     const t = tasks.find(x => x.id === +chk.dataset.check);
                     if (!t) return;
-                    t.done = !t.done;
+                    const markingDone = !t.done;
+                    t.done = markingDone;
+                    t.stage = markingDone ? "done" : "todo";
                     save();
                     if (selected === t.id) selected = null;
 
-                    if (filter === "active" && t.done && view === "today") {
+                    if (filter === "active" && t.done && view === "today" && taskLayout !== "kanban") {
                         const card = chk.closest(".task-card");
                         card.style.animation = "none";
                         card.style.transform = "translateY(0)";
@@ -7431,6 +7666,10 @@
             if (taskLayout === "eisenhower") {
                 bindMatrixEvents();
                 bindMatrixQuadrantEditEvents();
+            }
+
+            if (taskLayout === "kanban") {
+                bindKanbanEvents();
             }
         }
 
@@ -7483,7 +7722,7 @@
             const inBacklog = view === "backlog";
 
             if (!visible.length) {
-                if (taskLayout === "kanban" && priorityFilter === "all" && categoryFilters.size === 0) {
+                if (taskLayout === "kanban" && categoryFilters.size === 0) {
                     list.innerHTML = renderKanbanBoard([]);
                 } else if (taskLayout === "eisenhower") {
                     list.innerHTML = renderEisenhowerMatrix([]);
@@ -7634,6 +7873,7 @@
                 title: v,
                 priority: "med",
                 done: false,
+                stage: "todo",
                 place,
                 urgency: "urgent",
                 importance: "important",

@@ -10,6 +10,7 @@
 A lightweight desktop task app (Tauri 2) with three tabs:
 
 - **Tasks** — Today (max 5 active) + Backlog, four layouts (List, Kanban, Compact, Matrix)
+- **Kanban layout** — workflow board with To Do, In Progress, and Done columns; drag cards between stages (priority stays on the task model but is hidden in this view)
 - **Focus** — Daily focus queue + Pomodoro timer
 - **Memo** — Quick capture on a glass memo grid (same shell as Tasks and Focus)
 
@@ -78,6 +79,7 @@ Spring easing for selection/state changes: `cubic-bezier(0.34, 1.4, 0.64, 1)`. H
 
 - **Today cap meter** — dot row showing `N of 5 tasks`; amber state when full
 - **Task cards** — priority stripe (`::before`), checkbox, priority orb bloom, expandable subtasks
+- **Kanban board** — three workflow columns (To Do / In Progress / Done), drag handle on cards, column drop targets with drag-over glow
 - **Backlog cards** — left accent stripe + “Add to today” CTA (disabled when today full)
 - **Empty states** — illustrated checklist rows (`.task-empty-art`), context-specific copy
 

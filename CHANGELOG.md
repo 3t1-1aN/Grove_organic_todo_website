@@ -1,10 +1,11 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to Grove are documented here.
 
 ## [1.0.1] - 2026-05-31
 
 ### Changed
+- Kanban is now a **workflow board**: columns are To Do, In Progress, and Done. Drag cards between columns to update stage. Priority and Active/Done filters are hidden in Kanban; List, Compact, and Matrix still show priority.
 - Linux downloads now use native `.deb` and `.rpm` packages instead of AppImage, so Grove installs into the app launcher like a normal desktop app.
 
 ### Fixed
