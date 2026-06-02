@@ -30,6 +30,7 @@ src-tauri/target
 # Release installers (attach to GitHub Releases instead)
 downloads/*
 !downloads/.gitkeep
+!downloads/Grove-android-debug.apk
 
 # Editor / AI tooling (personal, not part of the project)
 .cursor/

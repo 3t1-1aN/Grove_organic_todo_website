@@ -25,6 +25,19 @@
           "value": "application/manifest+json"
         }
       ]
+    },
+    {
+      "source": "/downloads/Grove-android-debug.apk",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/vnd.android.package-archive"
+        },
+        {
+          "key": "Content-Disposition",
+          "value": "attachment; filename=\"Grove-android-debug.apk\""
+        }
+      ]
     }
   ]
 }

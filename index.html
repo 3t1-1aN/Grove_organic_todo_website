@@ -1615,6 +1615,12 @@
                 <a href="app/" class="btn-ghost">Use on your phone</a>
                 <a href="#workspaces" class="btn-ghost">View tab sections</a>
             </div>
+            <p id="android-download-hint" class="hero-install-hint" hidden
+                style="margin-top: 16px; font-size: 14px; color: var(--text-dim); max-width: 520px; line-height: 1.55;">
+                <strong style="color: var(--accent-light); font-weight: 600;">Install Grove:</strong>
+                When the download finishes, open your notification shade or <strong>Downloads</strong>, tap
+                <strong>Grove-android-debug.apk</strong>, and allow install from this browser or file manager if asked.
+            </p>
             <p class="hero-install-hint"
                 style="margin-top: 20px; font-size: 14px; color: var(--text-dim); max-width: 520px; line-height: 1.55;">
                 <strong style="color: var(--accent-light); font-weight: 600;">Mobile:</strong>
@@ -2152,8 +2158,9 @@
                     <div class="download-badge">Beta · Android</div>
                     <h3>Grove for Android</h3>
                     <p class="download-tagline">Capacitor wrapper — same app as the PWA, installable without the Play Store (debug build).</p>
-                    <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/Grove-android-debug.apk"
-                        class="download-btn-primary" rel="noopener noreferrer">
+                    <a href="/downloads/Grove-android-debug.apk"
+                        class="download-btn-primary" id="download-android-apk-btn" rel="noopener noreferrer"
+                        download="Grove-android-debug.apk">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M12 3v10m0 0l4-4m-4 4L8 9" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round" />
@@ -2205,13 +2212,35 @@
     <script>
         (function () {
             var releaseBase = 'https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/';
+            var androidApkUrl = '/downloads/Grove-android-debug.apk';
             var assets = {
                 windows: { label: 'Download for Windows', href: releaseBase + 'Grove-x64-setup.exe' },
                 macos: { label: 'Download for macOS', href: releaseBase + 'Grove-aarch64.dmg' },
                 linux: { label: 'Download for Linux', href: releaseBase + 'Grove-amd64.deb' },
-                android: { label: 'Download for Android', href: releaseBase + 'Grove-android-debug.apk' },
+                android: { label: 'Download for Android', href: androidApkUrl },
                 other: { label: 'Choose your platform', href: '#download' }
             };
+
+            function triggerAndroidApkDownload(url) {
+                var hint = document.getElementById('android-download-hint');
+                if (hint) hint.hidden = false;
+                var a = document.createElement('a');
+                a.href = url;
+                a.setAttribute('download', 'Grove-android-debug.apk');
+                a.rel = 'noopener';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+
+            function bindAndroidApkLink(el) {
+                if (!el) return;
+                el.addEventListener('click', function (e) {
+                    if (detectPlatform() !== 'android') return;
+                    e.preventDefault();
+                    triggerAndroidApkDownload(el.getAttribute('href') || androidApkUrl);
+                });
+            }
 
             function detectPlatform() {
                 var ua = navigator.userAgent.toLowerCase();
@@ -2231,7 +2260,13 @@
             if (heroBtn && assets[platform]) {
                 heroBtn.textContent = assets[platform].label;
                 heroBtn.href = assets[platform].href;
+                if (platform === 'android') {
+                    heroBtn.setAttribute('download', 'Grove-android-debug.apk');
+                }
             }
+
+            bindAndroidApkLink(heroBtn);
+            bindAndroidApkLink(document.getElementById('download-android-apk-btn'));
 
             var card = document.getElementById('download-' + platform);
             if (card) {
