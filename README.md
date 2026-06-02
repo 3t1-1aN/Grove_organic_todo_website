@@ -5,8 +5,10 @@
 </p>
 
 <p align="center">
-  Tasks, focus & memo — a lightweight desktop app built with
-  <a href="https://v2.tauri.app/">Tauri 2</a> (Rust + WebView).<br>
+  Tasks, focus & memo — desktop (<a href="https://v2.tauri.app/">Tauri 2</a>) and mobile
+  (<strong>PWA</strong>).<br>
+  <strong>Live site:</strong> <a href="https://grove-todo.vercel.app/">grove-todo.vercel.app</a>
+  · <strong>PWA:</strong> <a href="https://grove-todo.vercel.app/app/">/app/</a><br>
   <strong>Developer:</strong> Ethan Kunder<br>
   <strong>License:</strong> <a href="LICENSE">Apache-2.0</a>
 </p>
@@ -22,6 +24,36 @@ Pre-built installers are on [GitHub Releases](https://github.com/3t1-1aN/Grove_o
 | Linux | `Grove-amd64.deb`, `Grove-amd64.rpm` |
 
 The macOS build is unsigned — on first launch, right-click the app and choose **Open**.
+
+## Web deploy (Vercel)
+
+**Production:** [https://grove-todo.vercel.app/](https://grove-todo.vercel.app/) · **PWA:** [https://grove-todo.vercel.app/app/](https://grove-todo.vercel.app/app/)
+
+The marketing landing page (`index.html`) and PWA (`app/`) deploy together on Vercel. Each push to `main` runs `npm run build:pwa` (see `vercel.json` and [DEPLOY.md](DEPLOY.md)).
+
+| URL | Content |
+| --- | --- |
+| https://grove-todo.vercel.app/ | Landing page + download links |
+| https://grove-todo.vercel.app/app/ | Installable PWA (tasks, focus, memo) |
+
+No `npm install` is required for the static site build — only Node to run `scripts/build-pwa.mjs`.
+
+## Use on your phone (PWA)
+
+Open **[https://grove-todo.vercel.app/app/](https://grove-todo.vercel.app/app/)** in your mobile browser.
+
+1. Open that URL in Safari (iOS) or Chrome (Android).
+2. **iOS:** Share → **Add to Home Screen**.
+3. **Android:** Use **Install app** when the browser offers it, or Add to Home Screen from the menu.
+
+Data stays on your device in `localStorage`. On iOS, Safari may clear site data if you do not open the installed app for an extended period.
+
+```bash
+npm run build:pwa      # output to app/
+npm run pwa:preview    # local http://localhost:4173
+```
+
+See [docs/MOBILE-NATIVE.md](docs/MOBILE-NATIVE.md) for the path to native App Store / Play builds.
 
 ## Release builds (CI)
 
@@ -88,10 +120,18 @@ Platform outputs:
 ```
 organic-ToDo/
 ├── index.html          # Marketing landing page (web-only, not bundled in app)
+├── vercel.json         # Vercel build + headers (landing + /app/ PWA)
+├── DEPLOY.md           # Canonical production URLs (grove-todo.vercel.app)
 ├── Grove_icon.png      # Landing page favicon and hero asset
 ├── downloads/          # Optional local installer cache (gitignored)
+├── app/                # PWA bundle (generated: npm run build:pwa)
 ├── src/
-│   └── index.html      # Full app UI + logic (vanilla JS)
+│   ├── index.html      # Full app UI + logic (vanilla JS)
+│   ├── mobile.css      # Phone / PWA layout
+│   ├── manifest.webmanifest
+│   └── sw.js
+├── docs/
+│   └── MOBILE-NATIVE.md
 ├── src-tauri/
 │   ├── src/lib.rs      # Tray, single-instance, close-to-hide
 │   ├── tauri.conf.json

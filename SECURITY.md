@@ -35,7 +35,7 @@ If neither option is available, contact the maintainer through GitHub and ask fo
 
 - The Grove desktop application (Tauri/Rust shell + bundled web UI)
 - Official release artifacts published under [GitHub Releases](https://github.com/3t1-1aN/Grove_organic_todo_website/releases)
-- The static marketing site served from this repo (`index.html` on GitHub Pages / Vercel)
+- The static marketing site and PWA at [grove-todo.vercel.app](https://grove-todo.vercel.app/) ([PWA](https://grove-todo.vercel.app/app/))
 - Local data handling, IPC, tray/single-instance behavior, and Tauri capability/CSP configuration
 
 ### Out of scope

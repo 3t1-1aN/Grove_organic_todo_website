@@ -2,11 +2,15 @@
   "name": "organic-todo",
   "private": true,
   "version": "1.0.1",
-  "description": "Grove — tasks, focus & memo for desktop",
+  "description": "Grove — tasks, focus & memo for desktop and mobile (PWA)",
+  "homepage": "https://grove-todo.vercel.app",
   "type": "module",
   "scripts": {
     "dev": "tauri dev",
     "build": "tauri build",
+    "build:pwa": "node scripts/build-pwa.mjs",
+    "vercel-build": "npm run build:pwa",
+    "pwa:preview": "npm run build:pwa && npx --yes serve app -p 4173",
     "icons": "python scripts/prepare-icon.py && tauri icon public/Grove_icon_square.png && node -e \"const fs=require('fs');const p='public/Grove_icon.png';fs.copyFileSync(p,'src/Grove_icon.png');fs.copyFileSync('public/Grove_icon_square.png','assets/tray-icon.png');\"",
     "tauri": "tauri"
   },

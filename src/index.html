@@ -3,10 +3,16 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a1410">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Grove</title>
     <link rel="icon" type="image/png" href="Grove_icon.png">
     <link rel="apple-touch-icon" href="Grove_icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="stylesheet" href="mobile.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Patrick+Hand&display=swap"
@@ -4545,6 +4551,22 @@
 </head>
 
 <body>
+    <div class="mobile-sheet-backdrop" id="mobileSheetBackdrop" hidden aria-hidden="true"></div>
+    <div class="pwa-install-banner" id="pwaInstallBanner" role="dialog" aria-labelledby="pwaInstallTitle" hidden>
+        <strong id="pwaInstallTitle">Install Grove on your phone</strong>
+        <span id="pwaInstallBody">Add to your home screen for a full-screen app experience.</span>
+        <div class="pwa-install-banner-actions">
+            <button type="button" class="pwa-install-dismiss" id="pwaInstallDismiss">Not now</button>
+            <a class="pwa-install-link" id="pwaInstallHelp" href="#">How to install</a>
+        </div>
+    </div>
+    <div class="mobile-sheet mobile-action-sheet" id="mobileActionSheet" aria-hidden="true" hidden>
+        <div class="mobile-sheet-head">
+            <span class="mobile-sheet-title">Task actions</span>
+            <button type="button" class="mobile-sheet-close" id="mobileActionSheetClose" aria-label="Close">&times;</button>
+        </div>
+        <div class="mobile-sheet-body" id="mobileActionSheetBody"></div>
+    </div>
     <nav class="app-nav" id="appNav" aria-label="Main">
         <div class="app-nav-indicator" id="appNavIndicator" aria-hidden="true"></div>
         <button type="button" class="app-nav-btn active" data-app="tasks">Tasks</button>
@@ -4574,9 +4596,11 @@
                         <span class="view-badge" id="backlogBadge">0</span>
                     </button>
                 </div>
+                <button type="button" class="mobile-filters-btn" id="mobileFiltersBtn" aria-expanded="false"
+                    aria-controls="taskSidebar">Filters &amp; add</button>
             </div>
 
-            <aside class="task-sidebar">
+            <aside class="task-sidebar" id="taskSidebar">
                 <div class="today-cap" id="todayCap">
                     <span class="today-cap-label" id="todayCapLabel">0 of 5 tasks</span>
                     <div class="today-cap-dots" id="todayCapDots"></div>
@@ -5979,8 +6003,196 @@
             });
         }
 
+        const PWA_INSTALL_KEY = "grove-pwa-install-dismissed";
+        let deferredInstallPrompt = null;
+        let timerPausedForVisibility = false;
+
+        function isPhoneViewport() {
+            return window.matchMedia("(max-width: 480px)").matches;
+        }
+
+        function isStandaloneDisplay() {
+            return window.matchMedia("(display-mode: standalone)").matches
+                || window.navigator.standalone === true;
+        }
+
+        function isMobileContext() {
+            return isPhoneViewport() || isStandaloneDisplay();
+        }
+
+        function syncPhoneBodyClass() {
+            document.body.classList.toggle("is-phone", isPhoneViewport());
+            document.body.classList.toggle("is-standalone", isStandaloneDisplay());
+        }
+
+        function setMobileFiltersOpen(open) {
+            document.body.classList.toggle("mobile-filters-open", open);
+            const btn = document.getElementById("mobileFiltersBtn");
+            const backdrop = document.getElementById("mobileSheetBackdrop");
+            if (btn) {
+                btn.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            if (backdrop) {
+                backdrop.hidden = !open;
+                backdrop.classList.toggle("is-open", open);
+                backdrop.setAttribute("aria-hidden", open ? "false" : "true");
+            }
+        }
+
+        function setMobileActionSheetOpen(open) {
+            document.body.classList.toggle("mobile-actions-open", open);
+            const sheet = document.getElementById("mobileActionSheet");
+            const backdrop = document.getElementById("mobileSheetBackdrop");
+            if (sheet) {
+                sheet.hidden = !open;
+                sheet.classList.toggle("is-open", open);
+                sheet.setAttribute("aria-hidden", open ? "false" : "true");
+            }
+            if (backdrop && !document.body.classList.contains("mobile-filters-open")) {
+                backdrop.hidden = !open;
+                backdrop.classList.toggle("is-open", open);
+                backdrop.setAttribute("aria-hidden", open ? "false" : "true");
+            }
+        }
+
+        function populateMobileActionSheet() {
+            const body = document.getElementById("mobileActionSheetBody");
+            const t = selected ? tasks.find(x => x.id === selected) : null;
+            if (!body || !t) {
+                if (body) body.innerHTML = "";
+                return;
+            }
+            const parts = [];
+            if (view === "today") {
+                if (!t.done) {
+                    parts.push('<button type="button" class="action-btn" data-mobile-act="backlog">Move to backlog</button>');
+                }
+            } else {
+                const disabled = canAddToToday() ? "" : " disabled";
+                const label = canAddToToday() ? "Add to today" : "Today is full";
+                parts.push(`<button type="button" class="action-btn primary" data-mobile-act="today"${disabled}>${label}</button>`);
+            }
+            parts.push('<button type="button" class="action-btn" data-mobile-act="delete">Remove</button>');
+            body.innerHTML = parts.join("");
+            body.querySelector('[data-mobile-act="backlog"]')?.addEventListener("click", () => {
+                document.getElementById("actMoveBacklog")?.click();
+                setMobileActionSheetOpen(false);
+            });
+            body.querySelector('[data-mobile-act="today"]')?.addEventListener("click", () => {
+                document.getElementById("actMoveToday")?.click();
+                setMobileActionSheetOpen(false);
+            });
+            body.querySelector('[data-mobile-act="delete"]')?.addEventListener("click", () => {
+                document.getElementById("actDelete")?.click();
+                setMobileActionSheetOpen(false);
+            });
+        }
+
+        function initPwaMobile() {
+            syncPhoneBodyClass();
+
+            const filtersBtn = document.getElementById("mobileFiltersBtn");
+            const backdrop = document.getElementById("mobileSheetBackdrop");
+            const actionClose = document.getElementById("mobileActionSheetClose");
+
+            if (filtersBtn) {
+                filtersBtn.addEventListener("click", () => {
+                    setMobileFiltersOpen(!document.body.classList.contains("mobile-filters-open"));
+                });
+            }
+            if (backdrop) {
+                backdrop.addEventListener("click", () => {
+                    setMobileFiltersOpen(false);
+                    setMobileActionSheetOpen(false);
+                });
+            }
+            if (actionClose) {
+                actionClose.addEventListener("click", () => setMobileActionSheetOpen(false));
+            }
+
+            window.addEventListener("beforeinstallprompt", e => {
+                e.preventDefault();
+                deferredInstallPrompt = e;
+            });
+
+            const banner = document.getElementById("pwaInstallBanner");
+            const dismiss = document.getElementById("pwaInstallDismiss");
+            const help = document.getElementById("pwaInstallHelp");
+            const bodyCopy = document.getElementById("pwaInstallBody");
+
+            const showInstallBanner = () => {
+                if (!banner || isStandaloneDisplay()) return;
+                if (localStorage.getItem(PWA_INSTALL_KEY)) return;
+                const ua = navigator.userAgent || "";
+                const isIos = /iPhone|iPad|iPod/i.test(ua);
+                const isAndroid = /Android/i.test(ua);
+                if (!isIos && !isAndroid && !deferredInstallPrompt) return;
+                if (bodyCopy) {
+                    bodyCopy.textContent = isIos
+                        ? "Tap Share, then “Add to Home Screen” to install Grove."
+                        : isAndroid
+                            ? "Use your browser menu to install Grove, or tap Install when offered."
+                            : "Add Grove to your home screen for a full-screen experience.";
+                }
+                if (help) {
+                    help.hidden = true;
+                    if (deferredInstallPrompt) {
+                        help.hidden = false;
+                        help.textContent = "Install";
+                        help.href = "#";
+                    }
+                }
+                banner.hidden = false;
+                banner.classList.add("is-visible");
+            };
+
+            dismiss?.addEventListener("click", () => {
+                localStorage.setItem(PWA_INSTALL_KEY, "1");
+                banner?.classList.remove("is-visible");
+                if (banner) banner.hidden = true;
+            });
+
+            help?.addEventListener("click", e => {
+                if (!deferredInstallPrompt) return;
+                e.preventDefault();
+                deferredInstallPrompt.prompt();
+                deferredInstallPrompt.userChoice.finally(() => {
+                    deferredInstallPrompt = null;
+                    banner?.classList.remove("is-visible");
+                    if (banner) banner.hidden = true;
+                });
+            });
+
+            if (isMobileContext() && !isStandaloneDisplay()) {
+                setTimeout(showInstallBanner, 1200);
+            }
+
+            if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+                navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {});
+            }
+
+            window.addEventListener("resize", () => {
+                syncPhoneBodyClass();
+                if (!isPhoneViewport()) {
+                    setMobileFiltersOpen(false);
+                    setMobileActionSheetOpen(false);
+                }
+            });
+
+            document.addEventListener("keydown", e => {
+                if (e.key !== "Escape") return;
+                setMobileFiltersOpen(false);
+                setMobileActionSheetOpen(false);
+            });
+        }
+
         function setAppTab(tab) {
+            const prev = appTab;
             appTab = tab;
+            if (prev !== tab && isPhoneViewport() && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+                document.body.classList.add("panel-animating");
+                window.setTimeout(() => document.body.classList.remove("panel-animating"), 340);
+            }
             document.body.classList.toggle("app-focus", tab === "focus");
             document.body.classList.toggle("app-notes", tab === "notes");
             document.getElementById("tasksPanel").classList.toggle("active", tab === "tasks");
@@ -7398,9 +7610,14 @@
             const t = selected ? tasks.find(x => x.id === selected) : null;
             if (!t) {
                 actionBar.classList.add("hidden");
+                if (isPhoneViewport()) setMobileActionSheetOpen(false);
                 return;
             }
             actionBar.classList.remove("hidden");
+            if (isPhoneViewport()) {
+                populateMobileActionSheet();
+                setMobileActionSheetOpen(true);
+            }
 
             const moveBacklog = document.getElementById("actMoveBacklog");
             const moveToday = document.getElementById("actMoveToday");
@@ -7939,7 +8156,15 @@
         });
 
         document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "visible" && timerState.running && timerState.endsAt) {
+            if (document.visibilityState === "hidden") {
+                if (timerState.running && !timerPausedForVisibility) {
+                    timerPausedForVisibility = true;
+                    pauseTimer();
+                }
+                return;
+            }
+            timerPausedForVisibility = false;
+            if (timerState.running && timerState.endsAt) {
                 const left = Math.max(0, Math.ceil((timerState.endsAt - Date.now()) / 1000));
                 timerState.secondsLeft = left;
                 if (left <= 0) onTimerPhaseComplete();
@@ -8397,6 +8622,7 @@
             }
         }
 
+        initPwaMobile();
         load();
         mountStaticIcons();
         setGreeting();

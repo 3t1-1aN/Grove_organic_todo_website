@@ -1,0 +1,384 @@
+/* === Grove mobile / PWA (max-width: 480px) === */
+
+:root {
+    --bottom-nav-clearance: calc(5.5rem + env(safe-area-inset-bottom));
+    --mobile-sheet-radius: 22px 22px 0 0;
+}
+
+/* PWA install hint */
+.pwa-install-banner {
+    display: none;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(var(--bottom-nav-clearance) + 6px);
+    z-index: 450;
+    max-width: min(360px, calc(100vw - 2rem));
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: rgba(5, 12, 8, 0.94);
+    border: 0.5px solid rgba(134, 239, 172, 0.25);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--text-body);
+}
+
+.pwa-install-banner.is-visible {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pwa-install-banner strong {
+    color: var(--accent-pale);
+    font-weight: 600;
+}
+
+.pwa-install-banner-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.pwa-install-dismiss,
+.pwa-install-link {
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 12px;
+}
+
+.pwa-install-dismiss {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-muted);
+}
+
+.pwa-install-link {
+    background: rgba(74, 222, 128, 0.2);
+    color: var(--accent-pale);
+    text-decoration: none;
+}
+
+/* Panel cross-fade */
+body.panel-animating .app-panel {
+    animation: mobilePanelIn 0.32s var(--ease-spring) both;
+}
+
+@keyframes mobilePanelIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile sheet (filters / task actions) */
+.mobile-sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 380;
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+}
+
+.mobile-sheet-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mobile-sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 390;
+    max-height: min(78dvh, 640px);
+    padding: 12px 16px calc(16px + env(safe-area-inset-bottom));
+    border-radius: var(--mobile-sheet-radius);
+    background: rgba(8, 16, 11, 0.96);
+    backdrop-filter: blur(32px) saturate(160%);
+    -webkit-backdrop-filter: blur(32px) saturate(160%);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+    transform: translateY(100%);
+    transition: transform 0.38s var(--ease-spring);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.mobile-sheet.is-open {
+    transform: translateY(0);
+}
+
+.mobile-sheet-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.08);
+}
+
+.mobile-sheet-title {
+    font-family: var(--font-display);
+    font-size: 20px;
+    color: var(--accent-pale);
+}
+
+.mobile-sheet-close {
+    min-width: 44px;
+    min-height: 44px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-muted);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.mobile-filters-btn {
+    display: none;
+}
+
+.mobile-action-sheet .action-bar-actions {
+    flex-direction: column;
+}
+
+.mobile-action-sheet .action-btn {
+    min-height: 48px;
+    width: 100%;
+    justify-content: center;
+}
+
+@media (max-width: 480px) {
+    body {
+        padding-left: max(0.5rem, env(safe-area-inset-left));
+        padding-right: max(0.5rem, env(safe-area-inset-right));
+        padding-bottom: var(--bottom-nav-clearance);
+    }
+
+    .app-nav-btn {
+        min-height: 44px;
+        padding: 10px 18px;
+    }
+
+    #tasksPanel.active,
+    #focusPanel.active,
+    #notesPanel.active {
+        min-height: calc(100dvh - var(--bottom-nav-clearance));
+    }
+
+    .task-shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        padding: 18px 14px 20px;
+        min-height: calc(100dvh - var(--bottom-nav-clearance) - 1rem);
+        gap: 0;
+    }
+
+    .task-topbar {
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 12px;
+        padding-bottom: 14px;
+    }
+
+    .mobile-filters-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 16px;
+        border: none;
+        border-radius: 14px;
+        background: rgba(74, 222, 128, 0.14);
+        color: var(--accent-pale);
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: var(--shadow-raised);
+    }
+
+    .task-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 390;
+        max-height: min(78dvh, 640px);
+        margin: 0;
+        padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+        border-radius: var(--mobile-sheet-radius);
+        background: rgba(8, 16, 11, 0.96);
+        backdrop-filter: blur(32px) saturate(160%);
+        -webkit-backdrop-filter: blur(32px) saturate(160%);
+        border: 0.5px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        transform: translateY(105%);
+        visibility: hidden;
+        pointer-events: none;
+        transition: transform 0.38s var(--ease-spring), visibility 0.38s;
+    }
+
+    body.mobile-filters-open .task-sidebar {
+        transform: translateY(0);
+        visibility: visible;
+        pointer-events: auto;
+    }
+
+    .task-main {
+        min-height: 280px;
+    }
+
+    .layout-toolbar {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .layout-tabs {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+    }
+
+    .layout-tab {
+        min-height: 44px;
+        flex-shrink: 0;
+        scroll-snap-align: start;
+    }
+
+    .check-wrap {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .kanban-drag-handle {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .filter-btn {
+        min-height: 40px;
+        padding: 8px 14px;
+    }
+
+    /* Kanban: horizontal swipe lanes */
+    .kanban-board {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        gap: 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        flex: 1;
+        min-height: min(58dvh, 520px);
+        max-height: min(58dvh, 520px);
+        height: auto;
+        padding-bottom: 4px;
+    }
+
+    .kanban-col {
+        flex: 0 0 min(86vw, 320px);
+        scroll-snap-align: start;
+        height: 100%;
+        max-height: none;
+    }
+
+  .kanban-col-body {
+        max-height: none;
+    }
+
+    /* Matrix: shorter cells, scroll container */
+    .matrix-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(4, minmax(200px, auto));
+        height: auto;
+        min-height: auto;
+        max-height: none;
+    }
+
+    .matrix-quadrant {
+        min-height: 200px;
+    }
+
+    .task-list.layout-eisenhower {
+        max-height: min(62dvh, 560px);
+        overflow-y: auto;
+    }
+
+    /* Focus: Pomodoro centered, lighter blobs */
+    .focus-shell {
+        padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    }
+
+    .focus-pomodoro-panel .focus-time {
+        font-size: clamp(3rem, 14vw, 4.5rem);
+    }
+
+    body.is-phone .blob {
+        opacity: 0.55;
+        filter: blur(72px);
+    }
+
+    .notes-shell {
+        padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    }
+
+    .notes-input-wrap {
+        position: sticky;
+        bottom: 0;
+        z-index: 2;
+        padding-bottom: env(safe-area-inset-bottom);
+        background: linear-gradient(180deg, transparent, rgba(5, 12, 8, 0.85) 24%);
+    }
+
+    .note-card {
+        min-height: 72px;
+    }
+
+    /* Selected task actions — sheet above nav */
+    body.mobile-actions-open .action-bar {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) and (prefers-reduced-motion: reduce) {
+    body.panel-animating .app-panel {
+        animation: none;
+    }
+
+    .mobile-sheet {
+        transition: opacity 0.2s ease;
+        transform: none;
+        opacity: 0;
+    }
+
+    .mobile-sheet.is-open {
+        opacity: 1;
+    }
+
+    body.is-phone .blob {
+        animation: none;
+    }
+}

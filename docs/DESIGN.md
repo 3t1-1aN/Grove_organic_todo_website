@@ -7,7 +7,7 @@
 
 ## Product shape
 
-A lightweight desktop task app (Tauri 2) with three tabs:
+A lightweight task app (Tauri 2 desktop + installable **PWA** on phones) with three tabs:
 
 - **Tasks** — Today (max 5 active) + Backlog, four layouts (List, Kanban, Compact, Matrix)
 - **Kanban layout** — workflow board with To Do, In Progress, and Done columns; drag cards between stages (priority stays on the task model but is hidden in this view)
@@ -102,6 +102,14 @@ Glass memo cards (`.note-card`) on the shared `.notes-shell` — same frosted sh
 | `min-width: 900px` | List layout → 2-column card grid |
 | `max-width: 820px` | Task shell → single column; sidebar stacks above list |
 | `max-width: 760px` | Notes/focus shell padding + note grid tighten |
+| `max-width: 480px` | Phone tier (`mobile.css`): filters drawer, horizontal Kanban lanes, 44px touch targets, bottom nav clearance |
+
+## PWA / mobile constraints
+
+- Install via `manifest.webmanifest` + `sw.js` (shell cache only; data in `localStorage`).
+- iOS may evict storage after extended disuse; see [docs/MOBILE-NATIVE.md](docs/MOBILE-NATIVE.md).
+- Pomodoro pauses when the page is hidden (background tab or app switch).
+- Native App Store / Play builds are a later phase (Capacitor or Tauri mobile).
 
 ---
 
