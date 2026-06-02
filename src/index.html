@@ -6011,9 +6011,15 @@
             return window.matchMedia("(max-width: 480px)").matches;
         }
 
+        function isCapacitorNative() {
+            const cap = window.Capacitor;
+            return !!(cap && typeof cap.isNativePlatform === "function" && cap.isNativePlatform());
+        }
+
         function isStandaloneDisplay() {
             return window.matchMedia("(display-mode: standalone)").matches
-                || window.navigator.standalone === true;
+                || window.navigator.standalone === true
+                || isCapacitorNative();
         }
 
         function isMobileContext() {
@@ -6086,6 +6092,12 @@
                 document.getElementById("actDelete")?.click();
                 setMobileActionSheetOpen(false);
             });
+        }
+
+        function initCapacitorNativeChrome() {
+            if (!isCapacitorNative()) return;
+            document.body.classList.add("is-native-app");
+            /* StatusBar + SplashScreen: capacitor.config.json + Android styles.xml */
         }
 
         function initPwaMobile() {
@@ -6167,9 +6179,15 @@
                 setTimeout(showInstallBanner, 1200);
             }
 
-            if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+            if (
+                !isCapacitorNative()
+                && "serviceWorker" in navigator
+                && (location.protocol === "https:" || location.hostname === "localhost")
+            ) {
                 navigator.serviceWorker.register("./sw.js", { scope: "./" }).catch(() => {});
             }
+
+            initCapacitorNativeChrome();
 
             window.addEventListener("resize", () => {
                 syncPhoneBodyClass();

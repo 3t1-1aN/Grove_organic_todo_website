@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0a1410</color>
+    <color name="colorPrimaryDark">#0a1410</color>
+    <color name="colorAccent">#4ade80</color>
+    <color name="grove_bg">#0a1410</color>
+</resources>

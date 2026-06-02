@@ -53,7 +53,26 @@ npm run build:pwa      # output to app/
 npm run pwa:preview    # local http://localhost:4173
 ```
 
-See [docs/MOBILE-NATIVE.md](docs/MOBILE-NATIVE.md) for the path to native App Store / Play builds.
+## Android test app (Capacitor APK)
+
+Sideload a **debug APK** built from the same PWA bundle (full-bleed phone UI, no service worker in the WebView).
+
+**Prerequisites:** [Android Studio](https://developer.android.com/studio) (SDK) and JDK (bundled JBR is fine).
+
+```powershell
+# Optional if Gradle cannot find Java:
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+
+npm run cap:apk:debug
+# APK: android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+Copy the APK to your phone and allow **Install unknown apps** when prompted. iOS is deferred (add Capacitor iOS on a Mac later).
+
+When a public beta is published, the APK will appear on [GitHub Releases](https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest) as `Grove-android-debug.apk` (optional).
+
+Details: [docs/MOBILE-NATIVE.md](docs/MOBILE-NATIVE.md).
 
 ## Release builds (CI)
 
@@ -121,6 +140,8 @@ Platform outputs:
 organic-ToDo/
 ├── index.html          # Marketing landing page (web-only, not bundled in app)
 ├── vercel.json         # Vercel build + headers (landing + /app/ PWA)
+├── capacitor.config.json
+├── android/            # Capacitor Android project
 ├── DEPLOY.md           # Canonical production URLs (grove-todo.vercel.app)
 ├── Grove_icon.png      # Landing page favicon and hero asset
 ├── downloads/          # Optional local installer cache (gitignored)

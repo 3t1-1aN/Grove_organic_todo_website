@@ -163,10 +163,63 @@ body.panel-animating .app-panel {
 }
 
 @media (max-width: 480px) {
+    /* Full-bleed glass: no green blob wallpaper behind a floating card */
     body {
-        padding-left: max(0.5rem, env(safe-area-inset-left));
-        padding-right: max(0.5rem, env(safe-area-inset-right));
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
         padding-bottom: var(--bottom-nav-clearance);
+        background: #0a1410;
+    }
+
+    body.mode-backlog {
+        background: #0c1008;
+    }
+
+    .bg {
+        background: #0a1410;
+        filter: none;
+    }
+
+    body.mode-backlog .bg {
+        background: #0c1008;
+    }
+
+    .bg::after {
+        opacity: 0.18;
+    }
+
+    .blob {
+        display: none !important;
+        animation: none !important;
+    }
+
+    .task-shell,
+    .focus-shell,
+    .notes-shell {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        border-radius: 0;
+        min-height: calc(100dvh - var(--bottom-nav-clearance));
+        box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+        background: rgba(5, 12, 8, 0.92);
+    }
+
+    body.mode-backlog .task-shell,
+    body.mode-backlog .focus-shell,
+    body.mode-backlog .notes-shell {
+        background: rgba(12, 14, 6, 0.94);
+        box-shadow: inset 0 0 0 0.5px rgba(217, 249, 157, 0.08);
+    }
+
+    .task-shell::before,
+    .focus-shell::before,
+    .notes-shell::before {
+        border-radius: 0;
+    }
+
+    body.mode-backlog .task-shell::after {
+        border-radius: 0;
     }
 
     .app-nav-btn {
@@ -184,7 +237,6 @@ body.panel-animating .app-panel {
         grid-template-columns: 1fr;
         grid-template-rows: auto 1fr;
         padding: 18px 14px 20px;
-        min-height: calc(100dvh - var(--bottom-nav-clearance) - 1rem);
         gap: 0;
     }
 
@@ -327,18 +379,12 @@ body.panel-animating .app-panel {
         overflow-y: auto;
     }
 
-    /* Focus: Pomodoro centered, lighter blobs */
     .focus-shell {
         padding-bottom: calc(20px + env(safe-area-inset-bottom));
     }
 
     .focus-pomodoro-panel .focus-time {
         font-size: clamp(3rem, 14vw, 4.5rem);
-    }
-
-    body.is-phone .blob {
-        opacity: 0.55;
-        filter: blur(72px);
     }
 
     .notes-shell {
@@ -378,7 +424,4 @@ body.panel-animating .app-panel {
         opacity: 1;
     }
 
-    body.is-phone .blob {
-        animation: none;
-    }
 }

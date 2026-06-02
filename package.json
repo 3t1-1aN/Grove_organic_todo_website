@@ -11,6 +11,11 @@
     "build:pwa": "node scripts/build-pwa.mjs",
     "vercel-build": "npm run build:pwa",
     "pwa:preview": "npm run build:pwa && npx --yes serve app -p 4173",
+    "cap:sync": "npm run build:pwa && npx cap sync android",
+    "cap:open:android": "npx cap open android",
+    "cap:run:android": "npx cap run android",
+    "cap:icons": "node scripts/copy-cap-android-icons.mjs",
+    "cap:apk:debug": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/assemble-debug-apk.ps1",
     "icons": "python scripts/prepare-icon.py && tauri icon public/Grove_icon_square.png && node -e \"const fs=require('fs');const p='public/Grove_icon.png';fs.copyFileSync(p,'src/Grove_icon.png');fs.copyFileSync('public/Grove_icon_square.png','assets/tray-icon.png');\"",
     "tauri": "tauri"
   },
@@ -23,7 +28,14 @@
   ],
   "author": "Ethan Kunder",
   "license": "Apache-2.0",
+  "dependencies": {
+    "@capacitor/android": "^7.4.2",
+    "@capacitor/core": "^7.4.2",
+    "@capacitor/splash-screen": "^7.0.1",
+    "@capacitor/status-bar": "^7.0.1"
+  },
   "devDependencies": {
+    "@capacitor/cli": "^7.4.2",
     "@tauri-apps/cli": "^2"
   }
 }

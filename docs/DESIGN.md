@@ -102,14 +102,14 @@ Glass memo cards (`.note-card`) on the shared `.notes-shell` — same frosted sh
 | `min-width: 900px` | List layout → 2-column card grid |
 | `max-width: 820px` | Task shell → single column; sidebar stacks above list |
 | `max-width: 760px` | Notes/focus shell padding + note grid tighten |
-| `max-width: 480px` | Phone tier (`mobile.css`): filters drawer, horizontal Kanban lanes, 44px touch targets, bottom nav clearance |
+| `max-width: 480px` | Phone tier (`mobile.css`): **full-bleed glass shell** (no blob wallpaper), filters drawer, horizontal Kanban, 44px touch targets, bottom nav clearance |
 
 ## PWA / mobile constraints
 
 - Install via `manifest.webmanifest` + `sw.js` (shell cache only; data in `localStorage`).
 - iOS may evict storage after extended disuse; see [docs/MOBILE-NATIVE.md](docs/MOBILE-NATIVE.md).
 - Pomodoro pauses when the page is hidden (background tab or app switch).
-- Native App Store / Play builds are a later phase (Capacitor or Tauri mobile).
+- **Android APK** via Capacitor (see README); iOS deferred.
 
 ---
 

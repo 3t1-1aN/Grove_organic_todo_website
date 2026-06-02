@@ -1,0 +1,18 @@
+{
+  "appId": "com.organic.todo",
+  "appName": "Grove",
+  "webDir": "app",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": true,
+      "backgroundColor": "#0a1410"
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#0a1410"
+    }
+  }
+}

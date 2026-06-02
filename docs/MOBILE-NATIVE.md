@@ -1,76 +1,124 @@
-# Grove mobile: PWA today, native stores later
+# Grove mobile: PWA + Android (Capacitor)
 
-## Current approach (PWA)
+## Current surfaces
 
-Grove ships as a **Progressive Web App** built from the same UI as desktop (`src/index.html`):
+| Surface | URL / artifact | Notes |
+|---------|----------------|-------|
+| **PWA** | [grove-todo.vercel.app/app/](https://grove-todo.vercel.app/app/) | Install via browser; `localStorage` |
+| **Android APK (debug)** | Build locally (see below) | Capacitor WebView; same bundle as PWA |
+| **Desktop** | [GitHub Releases](https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest) | Tauri 2 — unchanged |
+| **iOS** | Deferred | Add `@capacitor/ios` on a Mac later |
 
-- Hosted at **[https://grove-todo.vercel.app/app/](https://grove-todo.vercel.app/app/)** (landing at [grove-todo.vercel.app](https://grove-todo.vercel.app/); see `vercel.json`, [DEPLOY.md](../DEPLOY.md))
-- `manifest.webmanifest` + `sw.js` for installability and shell caching
-- `mobile.css` + `initPwaMobile()` for phone layout, sheets, and install hints
-- Data remains in **`localStorage`** (same keys as desktop)
+Phone layout uses **full-viewport glass** (no green blob wallpaper behind a floating card). See `src/mobile.css` at `max-width: 480px` and `body.is-phone`.
+
+## PWA build & preview
+
+```bash
+npm run build:pwa    # writes organic-ToDo/app/
+npm run pwa:preview  # serve app/ at http://localhost:4173
+```
+
+Vercel runs `npm run build:pwa` on deploy (`vercel.json`). The `app/` folder is gitignored; CI/host generates it.
 
 ### PWA limitations
 
 | Topic | Limitation |
 |-------|------------|
 | iOS storage | Safari may evict site data after ~7 days of no use |
-| Background timer | Pomodoro pauses when the app is hidden (Page Visibility) |
-| Push / widgets | Not available in PWA v1 |
-| Haptics | Weak or absent on iOS; defer to native wrapper |
+| Background timer | Pomodoro pauses when the app is hidden |
+| Push / widgets | Not in PWA v1 |
+| Haptics | Weak on iOS; native wrapper later |
 
-## Build & preview
+## Android (Capacitor) — debug APK
 
-```bash
-npm run build:pwa    # writes organic-ToDo/app/
-npm run pwa:preview  # serve app/ locally
+**Stack:** `@capacitor/core` + `@capacitor/android`, `webDir: app`, `appId: com.organic.todo`. Config: `capacitor.config.json`.
+
+### Prerequisites (Windows)
+
+1. [Android Studio](https://developer.android.com/studio) (SDK + platform tools)
+2. JDK 17+ — use Android Studio’s bundled JBR (`Program Files\Android\Android Studio\jbr`)
+3. Optional: physical device with USB debugging, or an emulator
+
+Set for manual Gradle runs (PowerShell):
+
+```powershell
+$env:JAVA_HOME = "C:\Program Files\Android\Android Studio\jbr"
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 ```
 
-Desktop Tauri builds are unchanged (`npm run build`).
+### Build commands
 
-## Native path (App Store / Google Play)
+```bash
+npm run cap:sync          # build:pwa + cap sync android
+npm run cap:icons         # copy launcher icons from src-tauri/icons/android (run npm run icons first if missing)
+npm run cap:apk:debug     # sync + icons + assembleDebug (needs JAVA_HOME)
+```
 
-When the PWA UX is proven, wrap the same web bundle:
+Or use the helper script (sets `JAVA_HOME` automatically):
 
-### Option A — Capacitor (recommended for speed)
+```powershell
+.\scripts\assemble-debug-apk.ps1
+```
 
-- Add `@capacitor/core` + iOS/Android platforms
-- Point `webDir` at `app/` (post `build:pwa`) or `src/`
-- Plugins: **Preferences** (storage), **Haptics**, **Local Notifications** (timer)
-- Pros: fast, large plugin ecosystem
-- Cons: second toolchain alongside Tauri
+**Output:** `android/app/build/outputs/apk/debug/app-debug.apk`
 
-### Option B — Tauri 2 mobile
+### Install on a device (sideload)
 
-- Repo already has `#[cfg_attr(mobile, tauri::mobile_entry_point)]` in `src-tauri/src/lib.rs`
-- Split desktop-only code (`tray`, `prevent_close`, single-instance) with `#[cfg(desktop)]`
-- Pros: one Rust project
-- Cons: heavier iOS/Android setup, Xcode/Android Studio required
+1. Copy `app-debug.apk` to the phone (USB, cloud, etc.).
+2. Open the file and allow **Install unknown apps** for your file manager or browser (varies by OEM).
+3. Launch **Grove**. Data uses the same `localStorage` keys as the PWA.
 
-### Storage migration (before stores)
+### Native WebView behavior (`src/index.html`)
 
-Move off raw `localStorage` if you need reliable persistence and backup:
+| Concern | Behavior on Capacitor |
+|---------|-------------------------|
+| PWA install banner | Hidden (`isStandaloneDisplay()` includes native) |
+| Service worker | Not registered |
+| Status / splash | `#0a1410` via `capacitor.config.json` + Android `styles.xml` |
+| Body class | `is-native-app` for future native-only CSS |
 
-| Runtime | Suggested store |
-|---------|-----------------|
-| Tauri desktop | `tauri-plugin-store` |
-| Capacitor | `@capacitor/preferences` |
-| PWA | Keep `localStorage` or IndexedDB wrapper with export |
+Open Android Studio project: `npm run cap:open:android`
 
-Ship a one-time migration: read existing `organic-todo-v2` keys, write to new store, keep fallback.
+### Icons
 
-### Desktop vs mobile feature matrix
+`npm run cap:icons` copies mipmap assets from `src-tauri/icons/android/` (generated by `npm run icons`). Splash uses dark background + launcher icon (`res/drawable/splash.xml`).
 
-| Feature | Desktop (Tauri) | PWA / native |
-|---------|-----------------|--------------|
+### Release APK (optional, not required for beta)
+
+Signed release builds need a keystore (never commit secrets). Use `assembleRelease` in Android Studio or Gradle after configuring signing.
+
+**GitHub Releases:** Upload `Grove-android-debug.apk` (or similar) on a tag when you want a public beta link from the landing page.
+
+## Storage (v1 vs follow-up)
+
+| Milestone | Approach |
+|-----------|----------|
+| **Debug APK (now)** | `localStorage` — same as PWA |
+| **Follow-up** | `@capacitor/preferences` migration + **local notifications** for Pomodoro in background |
+
+## Deferred: iOS
+
+When ready on a Mac:
+
+- `npm install @capacitor/ios` → `npx cap add ios` → Xcode archive
+- Reuse the same `app/` bundle and native guards in `src/index.html`
+- Apple Developer Program required for TestFlight/App Store
+
+## Desktop vs mobile matrix
+
+| Feature | Desktop (Tauri) | PWA / Android |
+|---------|-----------------|---------------|
 | System tray | Yes | No |
 | Close hides window | Yes | N/A |
 | Min window 1100px | Yes | No |
-| Install via store | No | Later |
-| Pomodoro background | Yes | Pause or native notification |
+| Full-bleed phone glass | N/A | Yes (≤480px) |
+| Pomodoro in background | Yes | Pause (or notifications later) |
 
 ## Related files
 
-- [`src/mobile.css`](../src/mobile.css) — phone breakpoints
-- [`src/manifest.webmanifest`](../src/manifest.webmanifest)
+- [`src/mobile.css`](../src/mobile.css) — phone breakpoints, full-bleed shells
+- [`capacitor.config.json`](../capacitor.config.json)
 - [`scripts/build-pwa.mjs`](../scripts/build-pwa.mjs)
-- [`DESIGN.md`](../DESIGN.md) — layout breakpoints
+- [`scripts/copy-cap-android-icons.mjs`](../scripts/copy-cap-android-icons.mjs)
+- [`scripts/assemble-debug-apk.ps1`](../scripts/assemble-debug-apk.ps1)
+- [`android/`](../android/) — Capacitor Android project (committed)

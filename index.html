@@ -1401,7 +1401,7 @@
 
         .download-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: 20px;
             max-width: 1080px;
             margin: 0 auto;
@@ -1617,9 +1617,10 @@
             </div>
             <p class="hero-install-hint"
                 style="margin-top: 20px; font-size: 14px; color: var(--text-dim); max-width: 520px; line-height: 1.55;">
-                <strong style="color: var(--accent-light); font-weight: 600;">Mobile (PWA):</strong>
-                open <a href="app/" style="color: var(--accent-light);">Grove in the browser</a>, then
-                <em>Add to Home Screen</em> (iOS: Share → Add to Home Screen; Android: Install app when offered).
+                <strong style="color: var(--accent-light); font-weight: 600;">Mobile:</strong>
+                <a href="app/" style="color: var(--accent-light);">PWA in the browser</a>
+                (<em>Add to Home Screen</em>) or
+                <a href="#download-android" style="color: var(--accent-light);">Android test APK</a> (sideload).
             </p>
 
             <div class="preview-wrap">
@@ -2146,6 +2147,32 @@
                         <code>sudo apt install ./Grove-amd64.deb</code>
                     </p>
                 </div>
+
+                <div class="download-card" id="download-android">
+                    <div class="download-badge">Beta · Android</div>
+                    <h3>Grove for Android</h3>
+                    <p class="download-tagline">Capacitor wrapper — same app as the PWA, installable without the Play Store (debug build).</p>
+                    <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest/download/Grove-android-debug.apk"
+                        class="download-btn-primary" rel="noopener noreferrer">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M12 3v10m0 0l4-4m-4 4L8 9" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
+                            <path d="M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                        Download APK
+                    </a>
+                    <div class="download-formats">
+                        <a href="https://github.com/3t1-1aN/Grove_organic_todo_website/blob/main/docs/MOBILE-NATIVE.md#android-capacitor--debug-apk"
+                            rel="noopener noreferrer">Build from source</a>
+                    </div>
+                    <ul class="download-specs">
+                        <li>Android 8+</li>
+                        <li>Sideload (unknown sources)</li>
+                        <li>Local data</li>
+                    </ul>
+                    <p class="download-meta">If the APK is not on Releases yet, run <code>npm run cap:apk:debug</code> in the repo (see docs).</p>
+                </div>
             </div>
             <p class="download-meta">Installers hosted on GitHub Releases · <a
                     href="https://github.com/3t1-1aN/Grove_organic_todo_website/releases/latest"
@@ -2182,6 +2209,7 @@
                 windows: { label: 'Download for Windows', href: releaseBase + 'Grove-x64-setup.exe' },
                 macos: { label: 'Download for macOS', href: releaseBase + 'Grove-aarch64.dmg' },
                 linux: { label: 'Download for Linux', href: releaseBase + 'Grove-amd64.deb' },
+                android: { label: 'Download for Android', href: releaseBase + 'Grove-android-debug.apk' },
                 other: { label: 'Choose your platform', href: '#download' }
             };
 
@@ -2190,6 +2218,8 @@
                 var platform = (navigator.platform || '').toLowerCase();
                 if (ua.indexOf('win') !== -1 || platform.indexOf('win') !== -1) return 'windows';
                 if (ua.indexOf('mac') !== -1 || platform.indexOf('mac') !== -1) return 'macos';
+                /* Before Linux: Android UA strings include "Linux; Android …" */
+                if (ua.indexOf('android') !== -1) return 'android';
                 if (ua.indexOf('linux') !== -1 || platform.indexOf('linux') !== -1 || ua.indexOf('x11') !== -1) {
                     return 'linux';
                 }
