@@ -12,7 +12,6 @@
     <link rel="icon" type="image/png" href="Grove_icon.png">
     <link rel="apple-touch-icon" href="Grove_icon.png">
     <link rel="manifest" href="manifest.webmanifest">
-    <link rel="stylesheet" href="mobile.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Patrick+Hand&display=swap"
@@ -4548,6 +4547,8 @@
             background: rgba(74, 222, 128, 0.26);
         }
     </style>
+    <!-- Must load after inline styles so phone rules override 820px / 760px breakpoints -->
+    <link rel="stylesheet" href="mobile.css">
 </head>
 
 <body>
