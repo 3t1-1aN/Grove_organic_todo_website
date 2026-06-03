@@ -3,8 +3,22 @@
 :root {
     --bottom-nav-clearance: calc(4.75rem + env(safe-area-inset-bottom));
     --mobile-sheet-radius: 22px 22px 0 0;
+    --mobile-backdrop-z: 400;
     --mobile-nav-z: 420;
-    --mobile-sheet-z: 430;
+    --mobile-sheet-z: 450;
+    --mobile-fab-z: 460;
+}
+
+button,
+.check-wrap,
+[role="button"] {
+    -webkit-tap-highlight-color: transparent;
+}
+
+button:focus-visible,
+.check-wrap:focus-visible {
+    outline: 2px solid rgba(74, 222, 128, 0.55);
+    outline-offset: 2px;
 }
 
 /* PWA install hint */
@@ -14,7 +28,7 @@
     left: 50%;
     transform: translateX(-50%);
     bottom: calc(var(--bottom-nav-clearance) + 6px);
-    z-index: 450;
+    z-index: 470;
     max-width: min(360px, calc(100vw - 2rem));
     padding: 12px 14px;
     border-radius: 16px;
@@ -81,11 +95,11 @@ body.panel-animating .app-panel {
     }
 }
 
-/* Mobile sheet (filters / task actions) */
+/* Mobile sheet (filters / task actions / add) */
 .mobile-sheet-backdrop {
     position: fixed;
     inset: 0;
-    z-index: calc(var(--mobile-sheet-z) - 10);
+    z-index: var(--mobile-backdrop-z);
     background: rgba(0, 0, 0, 0.55);
     opacity: 0;
     pointer-events: none;
@@ -95,6 +109,10 @@ body.panel-animating .app-panel {
 .mobile-sheet-backdrop.is-open {
     opacity: 1;
     pointer-events: auto;
+}
+
+.mobile-sheet-backdrop.is-open.is-guarded {
+    pointer-events: none;
 }
 
 .mobile-sheet {
@@ -115,10 +133,15 @@ body.panel-animating .app-panel {
     transition: transform 0.38s var(--ease-spring);
     overflow-y: auto;
     overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .mobile-sheet.is-open {
     transform: translateY(0);
+}
+
+.mobile-add-sheet {
+    max-height: min(85dvh, 680px);
 }
 
 .mobile-sheet-head {
@@ -154,6 +177,10 @@ body.panel-animating .app-panel {
     display: none;
 }
 
+.mobile-filters-icon {
+    flex-shrink: 0;
+}
+
 .mobile-action-sheet .action-bar-actions {
     flex-direction: column;
 }
@@ -164,8 +191,173 @@ body.panel-animating .app-panel {
     justify-content: center;
 }
 
+/* FAB — TickTick-style add entry */
+.mobile-fab {
+    display: none;
+    position: fixed;
+    right: max(16px, env(safe-area-inset-right));
+    bottom: calc(var(--bottom-nav-clearance) + 12px);
+    z-index: var(--mobile-fab-z);
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(145deg, rgba(74, 222, 128, 0.95), rgba(34, 197, 94, 0.88));
+    color: #052010;
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.35),
+        0 0 0 0.5px rgba(255, 255, 255, 0.12) inset;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+}
+
+.mobile-fab:not([hidden]) {
+    display: flex;
+}
+
+.mobile-fab-icon {
+    font-size: 32px;
+    font-weight: 300;
+    line-height: 1;
+    margin-top: -2px;
+}
+
+.mobile-fab:active {
+    transform: scale(0.94);
+}
+
+/* Mobile add sheet form */
+.mobile-add-body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.mobile-add-input {
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 16px 14px;
+    font-family: inherit;
+    font-size: 17px;
+    color: var(--text-body);
+    outline: none;
+    box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+}
+
+.mobile-add-input::placeholder {
+    color: rgba(120, 160, 130, 0.45);
+}
+
+.mobile-add-field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.mobile-add-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+}
+
+.mobile-priority-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mobile-priority-pill {
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-body);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.mobile-priority-pill.active {
+    background: rgba(74, 222, 128, 0.18);
+    border-color: rgba(74, 222, 128, 0.35);
+    color: var(--accent-pale);
+}
+
+.mobile-priority-pill[data-mobile-priority="high"].active {
+    background: rgba(255, 112, 112, 0.15);
+    border-color: rgba(255, 112, 112, 0.35);
+    color: #ffb0b0;
+}
+
+.mobile-priority-pill[data-mobile-priority="low"].active,
+.mobile-priority-pill[data-mobile-priority="none"].active {
+    background: rgba(74, 222, 128, 0.12);
+    border-color: rgba(74, 222, 128, 0.28);
+}
+
+.mobile-add-category-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.mobile-add-cat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 38px;
+    padding: 6px 12px;
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-body);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.mobile-add-cat-chip.active {
+    background: rgba(74, 222, 128, 0.14);
+    border-color: rgba(74, 222, 128, 0.32);
+    color: var(--accent-pale);
+}
+
+.mobile-add-cat-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.mobile-add-submit {
+    width: 100%;
+    min-height: 50px;
+    margin-top: 4px;
+    border: none;
+    border-radius: 14px;
+    background: rgba(74, 222, 128, 0.22);
+    color: var(--accent-pale);
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--shadow-raised);
+}
+
+.mobile-add-submit:active {
+    transform: scale(0.98);
+}
+
 @media (max-width: 480px) {
-    /* Full-bleed glass: no green blob wallpaper behind a floating card */
     html {
         overflow-x: hidden;
     }
@@ -312,16 +504,18 @@ body.panel-animating .app-panel {
     }
 
     .mobile-filters-btn {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 100%;
+        gap: 8px;
+        width: auto;
+        align-self: flex-start;
         min-height: 44px;
         padding: 0 16px;
         border: none;
         border-radius: 14px;
-        background: rgba(74, 222, 128, 0.14);
-        color: var(--accent-pale);
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-muted);
         font-family: inherit;
         font-size: 14px;
         font-weight: 600;
@@ -329,36 +523,15 @@ body.panel-animating .app-panel {
         box-shadow: var(--shadow-raised);
     }
 
+    /* Desktop sidebar hidden on phone — filters live in body-level sheet */
     .task-sidebar {
+        display: none !important;
+    }
+
+    #sidebarFiltersHost {
         display: flex;
         flex-direction: column;
         gap: 14px;
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        z-index: var(--mobile-sheet-z);
-        max-height: min(78dvh, 640px);
-        margin: 0;
-        padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
-        border-radius: var(--mobile-sheet-radius);
-        background: rgba(8, 16, 11, 0.96);
-        backdrop-filter: blur(32px) saturate(160%);
-        -webkit-backdrop-filter: blur(32px) saturate(160%);
-        border: 0.5px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        transform: translateY(105%);
-        visibility: hidden;
-        pointer-events: none;
-        transition: transform 0.38s var(--ease-spring), visibility 0.38s;
-    }
-
-    body.mobile-filters-open .task-sidebar {
-        transform: translateY(0);
-        visibility: visible;
-        pointer-events: auto;
     }
 
     .task-main {
@@ -412,7 +585,8 @@ body.panel-animating .app-panel {
         min-height: 44px;
     }
 
-    .kanban-drag-handle {
+    .kanban-drag-handle,
+    .matrix-drag-handle {
         min-width: 44px;
         min-height: 44px;
     }
@@ -422,7 +596,7 @@ body.panel-animating .app-panel {
         padding: 8px 14px;
     }
 
-    /* Kanban: horizontal swipe lanes */
+    /* Kanban: horizontal lanes + vertical scroll inside columns */
     .kanban-board {
         display: flex;
         flex-direction: row;
@@ -430,7 +604,8 @@ body.panel-animating .app-panel {
         gap: 12px;
         overflow-x: auto;
         overflow-y: hidden;
-        scroll-snap-type: x mandatory;
+        scroll-snap-type: x proximity;
+        touch-action: pan-x;
         -webkit-overflow-scrolling: touch;
         flex: 1;
         min-height: min(58dvh, 520px);
@@ -444,32 +619,51 @@ body.panel-animating .app-panel {
         scroll-snap-align: start;
         height: 100%;
         max-height: none;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
     }
 
-  .kanban-col-body {
+    .kanban-col-body {
+        flex: 1;
+        min-height: 0;
         max-height: none;
+        overflow-y: auto;
+        overflow-x: hidden;
+        touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
     }
 
-    /* Matrix: shorter cells, scroll container */
+    .task-list.layout-kanban {
+        overflow: visible;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    /* Matrix: single page scroll */
     .matrix-grid {
         grid-template-columns: 1fr;
-        grid-template-rows: repeat(4, minmax(200px, auto));
+        grid-template-rows: repeat(4, minmax(220px, auto));
         height: auto;
         min-height: auto;
         max-height: none;
     }
 
     .matrix-quadrant {
-        min-height: 200px;
+        min-height: 220px;
+    }
+
+    .matrix-quadrant-body {
+        overflow-y: visible;
+        overscroll-behavior: unset;
     }
 
     .task-list.layout-eisenhower {
         max-height: none;
-        overflow-y: visible;
-    }
-
-    .task-list.layout-kanban {
-        overflow: visible;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .task-list.layout-compact .task-card {
@@ -485,18 +679,8 @@ body.panel-animating .app-panel {
         line-height: 1.35;
     }
 
-    .add-area {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .add-area .add-input {
-        min-width: 0;
-        flex: 1 1 120px;
-    }
-
     .pwa-install-banner {
-        bottom: calc(var(--bottom-nav-clearance) + 8px);
+        bottom: calc(var(--bottom-nav-clearance) + 72px);
         max-width: min(360px, calc(100vw - 1.5rem - env(safe-area-inset-left) - env(safe-area-inset-right)));
     }
 
@@ -633,7 +817,6 @@ body.panel-animating .app-panel {
         min-height: 72px;
     }
 
-    /* Selected task actions — sheet above nav */
     body.mobile-actions-open .action-bar {
         display: none;
     }
@@ -653,5 +836,4 @@ body.panel-animating .app-panel {
     .mobile-sheet.is-open {
         opacity: 1;
     }
-
 }

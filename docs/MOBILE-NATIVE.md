@@ -11,6 +11,18 @@
 
 Phone layout uses **full-viewport glass** (no green blob wallpaper behind a floating card). See `src/mobile.css` at `max-width: 480px` and `body.is-phone`.
 
+### Mobile tasks UX (≤480px)
+
+| Control | Behavior |
+|---------|----------|
+| **+ FAB** | Bottom-right floating button opens the **New task** sheet (title, priority, category) |
+| **Filters** | Compact button in the task top bar opens a body-level filters sheet (priority, status, categories) |
+| **Task tap** | Opens the task actions sheet (move / remove) |
+
+Sheets and the backdrop are **direct children of `<body>`** so they sit above the task panel (avoids WebView stacking bugs with `backdrop-filter` on `.task-shell`). The backdrop ignores taps for ~350ms after open to prevent ghost-dismiss.
+
+Rebuild after UI changes: `npm run build:pwa` then `npm run cap:sync` or `npm run cap:apk:debug`.
+
 ## PWA build & preview
 
 ```bash

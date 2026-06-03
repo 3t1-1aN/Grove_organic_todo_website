@@ -4568,6 +4568,40 @@
         </div>
         <div class="mobile-sheet-body" id="mobileActionSheetBody"></div>
     </div>
+    <div class="mobile-sheet mobile-filters-sheet" id="mobileFiltersSheet" aria-hidden="true" hidden>
+        <div class="mobile-sheet-head">
+            <span class="mobile-sheet-title">Filters</span>
+            <button type="button" class="mobile-sheet-close" id="mobileFiltersSheetClose" aria-label="Close">&times;</button>
+        </div>
+        <div class="mobile-sheet-body" id="mobileFiltersSheetBody"></div>
+    </div>
+    <div class="mobile-sheet mobile-add-sheet" id="mobileAddSheet" aria-hidden="true" hidden>
+        <div class="mobile-sheet-head">
+            <span class="mobile-sheet-title">New task</span>
+            <button type="button" class="mobile-sheet-close" id="mobileAddSheetClose" aria-label="Close">&times;</button>
+        </div>
+        <div class="mobile-sheet-body mobile-add-body">
+            <input type="text" class="mobile-add-input" id="mobileAddInput" placeholder="What needs doing?" maxlength="60"
+                autocomplete="off" enterkeyhint="done" />
+            <div class="mobile-add-field">
+                <span class="mobile-add-label">Priority</span>
+                <div class="mobile-priority-pills" role="group" aria-label="Priority">
+                    <button type="button" class="mobile-priority-pill" data-mobile-priority="high">High</button>
+                    <button type="button" class="mobile-priority-pill active" data-mobile-priority="med">Med</button>
+                    <button type="button" class="mobile-priority-pill" data-mobile-priority="low">Low</button>
+                    <button type="button" class="mobile-priority-pill" data-mobile-priority="none">None</button>
+                </div>
+            </div>
+            <div class="mobile-add-field">
+                <span class="mobile-add-label">Category</span>
+                <div class="mobile-add-category-row" id="mobileAddCategoryRow"></div>
+            </div>
+            <button type="button" class="mobile-add-submit" id="mobileAddSubmit">Add task</button>
+        </div>
+    </div>
+    <button type="button" class="mobile-fab" id="mobileFab" aria-label="Add task" hidden>
+        <span class="mobile-fab-icon" aria-hidden="true">+</span>
+    </button>
     <nav class="app-nav" id="appNav" aria-label="Main">
         <div class="app-nav-indicator" id="appNavIndicator" aria-hidden="true"></div>
         <button type="button" class="app-nav-btn active" data-app="tasks">Tasks</button>
@@ -4598,10 +4632,17 @@
                     </button>
                 </div>
                 <button type="button" class="mobile-filters-btn" id="mobileFiltersBtn" aria-expanded="false"
-                    aria-controls="taskSidebar">Filters &amp; add</button>
+                    aria-controls="mobileFiltersSheet">
+                    <svg class="mobile-filters-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+                        <path d="M4 6h16M7 12h10M10 18h4" />
+                    </svg>
+                    Filters
+                </button>
             </div>
 
             <aside class="task-sidebar" id="taskSidebar">
+                <div id="sidebarFiltersHost">
                 <div class="today-cap" id="todayCap">
                     <span class="today-cap-label" id="todayCapLabel">0 of 5 tasks</span>
                     <div class="today-cap-dots" id="todayCapDots"></div>
@@ -4640,6 +4681,7 @@
                                 placeholder="+ Add category" maxlength="24" autocomplete="off" />
                         </div>
                     </div>
+                </div>
                 </div>
 
                 <div class="action-bar hidden" id="actionBar">
@@ -6030,36 +6072,147 @@
         function syncPhoneBodyClass() {
             document.body.classList.toggle("is-phone", isPhoneViewport());
             document.body.classList.toggle("is-standalone", isStandaloneDisplay());
+            layoutMobileFiltersHost();
+            syncMobileFabVisibility();
+        }
+
+        function isCoarsePointer() {
+            return window.matchMedia("(pointer: coarse)").matches;
+        }
+
+        let mobileBackdropGuardUntil = 0;
+        const MOBILE_BACKDROP_GUARD_MS = 350;
+        let mobileAddPriority = "med";
+        let mobileAddCategoryId = null;
+
+        function layoutMobileFiltersHost() {
+            const host = document.getElementById("sidebarFiltersHost");
+            const sheetBody = document.getElementById("mobileFiltersSheetBody");
+            const sidebar = document.getElementById("taskSidebar");
+            const actionBar = document.getElementById("actionBar");
+            if (!host || !sheetBody || !sidebar) return;
+            if (isPhoneViewport()) {
+                if (host.parentElement !== sheetBody) sheetBody.appendChild(host);
+            } else if (actionBar && host.parentElement !== sidebar) {
+                sidebar.insertBefore(host, actionBar);
+            }
+        }
+
+        function syncMobileFabVisibility() {
+            const fab = document.getElementById("mobileFab");
+            if (!fab) return;
+            fab.hidden = !isPhoneViewport() || appTab !== "tasks";
+        }
+
+        function updateMobileBackdrop() {
+            const backdrop = document.getElementById("mobileSheetBackdrop");
+            const anyOpen = document.body.classList.contains("mobile-filters-open")
+                || document.body.classList.contains("mobile-actions-open")
+                || document.body.classList.contains("mobile-add-open");
+            if (!backdrop) return;
+            backdrop.hidden = !anyOpen;
+            backdrop.classList.toggle("is-open", anyOpen);
+            backdrop.setAttribute("aria-hidden", anyOpen ? "false" : "true");
+            const guarded = Date.now() < mobileBackdropGuardUntil;
+            backdrop.classList.toggle("is-guarded", anyOpen && guarded);
+        }
+
+        function armMobileBackdropGuard() {
+            mobileBackdropGuardUntil = Date.now() + MOBILE_BACKDROP_GUARD_MS;
+            updateMobileBackdrop();
+            window.setTimeout(updateMobileBackdrop, MOBILE_BACKDROP_GUARD_MS + 30);
+        }
+
+        function closeAllMobileSheets() {
+            setMobileFiltersOpen(false);
+            setMobileActionSheetOpen(false);
+            setMobileAddSheetOpen(false);
         }
 
         function setMobileFiltersOpen(open) {
+            if (open) {
+                setMobileActionSheetOpen(false);
+                setMobileAddSheetOpen(false);
+                layoutMobileFiltersHost();
+            }
             document.body.classList.toggle("mobile-filters-open", open);
             const btn = document.getElementById("mobileFiltersBtn");
-            const backdrop = document.getElementById("mobileSheetBackdrop");
-            if (btn) {
-                btn.setAttribute("aria-expanded", open ? "true" : "false");
-            }
-            if (backdrop) {
-                backdrop.hidden = !open;
-                backdrop.classList.toggle("is-open", open);
-                backdrop.setAttribute("aria-hidden", open ? "false" : "true");
-            }
-        }
-
-        function setMobileActionSheetOpen(open) {
-            document.body.classList.toggle("mobile-actions-open", open);
-            const sheet = document.getElementById("mobileActionSheet");
-            const backdrop = document.getElementById("mobileSheetBackdrop");
+            const sheet = document.getElementById("mobileFiltersSheet");
+            if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
             if (sheet) {
                 sheet.hidden = !open;
                 sheet.classList.toggle("is-open", open);
                 sheet.setAttribute("aria-hidden", open ? "false" : "true");
             }
-            if (backdrop && !document.body.classList.contains("mobile-filters-open")) {
-                backdrop.hidden = !open;
-                backdrop.classList.toggle("is-open", open);
-                backdrop.setAttribute("aria-hidden", open ? "false" : "true");
+            if (open) armMobileBackdropGuard();
+            updateMobileBackdrop();
+        }
+
+        function setMobileActionSheetOpen(open) {
+            if (open) {
+                setMobileFiltersOpen(false);
+                setMobileAddSheetOpen(false);
             }
+            document.body.classList.toggle("mobile-actions-open", open);
+            const sheet = document.getElementById("mobileActionSheet");
+            if (sheet) {
+                sheet.hidden = !open;
+                sheet.classList.toggle("is-open", open);
+                sheet.setAttribute("aria-hidden", open ? "false" : "true");
+            }
+            if (open) armMobileBackdropGuard();
+            updateMobileBackdrop();
+        }
+
+        function renderMobileAddCategories() {
+            const row = document.getElementById("mobileAddCategoryRow");
+            if (!row) return;
+            const activeId = mobileAddCategoryId ?? defaultCategoryId;
+            row.innerHTML = categories.map(c => {
+                const active = c.id === activeId ? " active" : "";
+                const color = CATEGORY_COLORS[c.color] || CATEGORY_COLORS.green;
+                return `<button type="button" class="mobile-add-cat-chip${active}" data-mobile-cat="${c.id}">
+                    <span class="mobile-add-cat-dot" style="background:${color}"></span>
+                    <span>${escapeHtml(c.label)}</span>
+                </button>`;
+            }).join("");
+            row.querySelectorAll("[data-mobile-cat]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    mobileAddCategoryId = btn.getAttribute("data-mobile-cat");
+                    renderMobileAddCategories();
+                });
+            });
+        }
+
+        function resetMobileAddForm() {
+            const inp = document.getElementById("mobileAddInput");
+            if (inp) inp.value = "";
+            mobileAddPriority = "med";
+            mobileAddCategoryId = defaultCategoryId;
+            document.querySelectorAll(".mobile-priority-pill").forEach(p => {
+                p.classList.toggle("active", p.getAttribute("data-mobile-priority") === "med");
+            });
+            renderMobileAddCategories();
+        }
+
+        function setMobileAddSheetOpen(open) {
+            if (open) {
+                setMobileFiltersOpen(false);
+                setMobileActionSheetOpen(false);
+                resetMobileAddForm();
+            }
+            document.body.classList.toggle("mobile-add-open", open);
+            const sheet = document.getElementById("mobileAddSheet");
+            if (sheet) {
+                sheet.hidden = !open;
+                sheet.classList.toggle("is-open", open);
+                sheet.setAttribute("aria-hidden", open ? "false" : "true");
+            }
+            if (open) {
+                armMobileBackdropGuard();
+                window.setTimeout(() => document.getElementById("mobileAddInput")?.focus(), 380);
+            }
+            updateMobileBackdrop();
         }
 
         function populateMobileActionSheet() {
@@ -6107,16 +6260,59 @@
             const filtersBtn = document.getElementById("mobileFiltersBtn");
             const backdrop = document.getElementById("mobileSheetBackdrop");
             const actionClose = document.getElementById("mobileActionSheetClose");
+            const filtersClose = document.getElementById("mobileFiltersSheetClose");
+            const addClose = document.getElementById("mobileAddSheetClose");
+            const fab = document.getElementById("mobileFab");
+            const addSubmit = document.getElementById("mobileAddSubmit");
+            const mobileAddInput = document.getElementById("mobileAddInput");
 
             if (filtersBtn) {
-                filtersBtn.addEventListener("click", () => {
+                filtersBtn.addEventListener("click", e => {
+                    e.stopPropagation();
                     setMobileFiltersOpen(!document.body.classList.contains("mobile-filters-open"));
                 });
             }
+            if (filtersClose) {
+                filtersClose.addEventListener("click", () => setMobileFiltersOpen(false));
+            }
+            if (addClose) {
+                addClose.addEventListener("click", () => setMobileAddSheetOpen(false));
+            }
+            if (fab) {
+                fab.addEventListener("click", e => {
+                    e.stopPropagation();
+                    setMobileAddSheetOpen(true);
+                });
+            }
+            if (addSubmit) {
+                addSubmit.addEventListener("click", () => {
+                    addTask({
+                        title: mobileAddInput?.value,
+                        priority: mobileAddPriority,
+                        categoryId: mobileAddCategoryId ?? defaultCategoryId,
+                    });
+                    setMobileAddSheetOpen(false);
+                });
+            }
+            if (mobileAddInput) {
+                mobileAddInput.addEventListener("keydown", e => {
+                    if (e.key === "Enter") {
+                        addSubmit?.click();
+                    }
+                });
+            }
+            document.querySelectorAll(".mobile-priority-pill").forEach(pill => {
+                pill.addEventListener("click", () => {
+                    mobileAddPriority = pill.getAttribute("data-mobile-priority") || "med";
+                    document.querySelectorAll(".mobile-priority-pill").forEach(p => {
+                        p.classList.toggle("active", p === pill);
+                    });
+                });
+            });
             if (backdrop) {
                 backdrop.addEventListener("click", () => {
-                    setMobileFiltersOpen(false);
-                    setMobileActionSheetOpen(false);
+                    if (Date.now() < mobileBackdropGuardUntil) return;
+                    closeAllMobileSheets();
                 });
             }
             if (actionClose) {
@@ -6193,21 +6389,20 @@
             window.addEventListener("resize", () => {
                 syncPhoneBodyClass();
                 if (!isPhoneViewport()) {
-                    setMobileFiltersOpen(false);
-                    setMobileActionSheetOpen(false);
+                    closeAllMobileSheets();
                 }
             });
 
             document.addEventListener("keydown", e => {
                 if (e.key !== "Escape") return;
-                setMobileFiltersOpen(false);
-                setMobileActionSheetOpen(false);
+                closeAllMobileSheets();
             });
         }
 
         function setAppTab(tab) {
             const prev = appTab;
             appTab = tab;
+            syncMobileFabVisibility();
             if (prev !== tab && isPhoneViewport() && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
                 document.body.classList.add("panel-animating");
                 window.setTimeout(() => document.body.classList.remove("panel-animating"), 340);
@@ -6876,6 +7071,7 @@
         function matrixDragSurface(target, card) {
             if (!card.contains(target)) return false;
             if (target.closest(".matrix-drag-handle")) return true;
+            if (isCoarsePointer()) return false;
             if (matrixDragBlockedTarget(target)) return false;
             return !!target.closest(".task-body, .task-title, .task-tag");
         }
@@ -6992,6 +7188,7 @@
         function kanbanDragSurface(target, card) {
             if (!card.contains(target)) return false;
             if (target.closest(".kanban-drag-handle")) return true;
+            if (isCoarsePointer()) return false;
             if (kanbanDragBlockedTarget(target)) return false;
             return !!target.closest(".task-body, .task-title, .task-tag");
         }
@@ -8088,8 +8285,9 @@
             }
         });
 
-        function addTask() {
-            const v = input.value.trim();
+        function addTask(opts) {
+            const fromMobile = opts && typeof opts === "object";
+            const v = fromMobile ? String(opts.title || "").trim() : input.value.trim();
             if (!v) return;
 
             const inBacklogView = view === "backlog";
@@ -8103,20 +8301,27 @@
                 }
             }
 
-            const cat = getDefaultCategory();
+            let priority = fromMobile ? (opts.priority || "med") : "med";
+            if (priority === "none") priority = "low";
+
+            const catId = fromMobile
+                ? (opts.categoryId ?? defaultCategoryId)
+                : (getDefaultCategory()?.id ?? null);
+            const cat = getCategory(catId) || getDefaultCategory();
+
             tasks.unshift({
                 id: nextId++,
                 title: v,
-                priority: "med",
+                priority,
                 done: false,
                 stage: "todo",
                 place,
-                urgency: "urgent",
-                importance: "important",
+                urgency: priority === "high" || priority === "med" ? "urgent" : "not-urgent",
+                importance: priority === "high" || priority === "med" ? "important" : "not-important",
                 subtasks: [],
                 categoryId: cat ? cat.id : null,
             });
-            input.value = "";
+            if (!fromMobile) input.value = "";
             save();
 
             if (place === "backlog" && !todayFull && inBacklogView) {
@@ -8126,14 +8331,14 @@
             if (view === "today" && place === "today") {
                 filter = "active";
                 document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-                document.querySelector('[data-filter="active"]').classList.add("active");
+                document.querySelector('[data-filter="active"]')?.classList.add("active");
             }
 
             selected = null;
             render();
         }
 
-        document.getElementById("addBtn").addEventListener("click", addTask);
+        document.getElementById("addBtn").addEventListener("click", () => addTask());
         input.addEventListener("keydown", e => { if (e.key === "Enter") addTask(); });
 
         document.getElementById("actMoveBacklog").addEventListener("click", () => {
