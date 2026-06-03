@@ -1,0 +1,50 @@
+name: Sync Android APK to Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - downloads/Grove-android-debug.apk
+      - .github/workflows/sync-android-apk.yml
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag (leave empty for latest published release)
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  upload-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify APK exists
+        run: |
+          test -f downloads/Grove-android-debug.apk
+          ls -la downloads/Grove-android-debug.apk
+
+      - name: Resolve release tag
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+          else
+            TAG="$(gh release view --repo "${{ github.repository }}" --json tagName -q .tagName)"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Uploading APK to release: $TAG"
+
+      - name: Upload APK to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          files: downloads/Grove-android-debug.apk
+          overwrite_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
