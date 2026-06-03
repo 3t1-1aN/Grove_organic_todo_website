@@ -4884,6 +4884,7 @@
                 close: `<svg ${svgAttrs}><path d="M7 7l10 10M17 7 7 17"/></svg>`,
                 chevronDown: `<svg ${svgAttrs}><path d="M6 9l6 6 6-6"/></svg>`,
                 chevronRight: `<svg ${svgAttrs}><path d="M9 6l6 6-6 6"/></svg>`,
+                chevronLeft: `<svg ${svgAttrs}><path d="M15 6l-6 6 6 6"/></svg>`,
                 reset: `<svg ${svgAttrs}><polyline points="2 7 2 11 6 11"/><path d="M4.5 15.5a8.5 8.5 0 1 0 2-6.5L2 11"/></svg>`,
                 skip: `<svg ${svgAttrs}><path d="M6 6l6 6-6 6M13 6l6 6-6 6"/></svg>`,
                 grip: `<svg class="ui-icon" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>`,
@@ -4995,6 +4996,8 @@
         let kanbanDrag = null;
         let matrixSuppressCardClick = false;
         let matrixQuadrantEditOpen = false;
+        let matrixFocusedQuadrant = null;
+        const MATRIX_PHONE_PREVIEW_TASKS = 4;
         let quadrantLabels = null;
         let categoryChipOpen = false;
         let categoryChipNewMode = false;
@@ -6971,35 +6974,108 @@
         }
 
         // ===== Eisenhower matrix render =====
+        function renderMatrixQuadrantSection(q, items, inBacklog, opts = {}) {
+            const phoneOverview = !!opts.phoneOverview;
+            const previewLimit = phoneOverview ? MATRIX_PHONE_PREVIEW_TASKS : items.length;
+            const shown = phoneOverview ? items.slice(0, previewLimit) : items;
+            const overflow = phoneOverview ? Math.max(0, items.length - shown.length) : 0;
+            const cards = shown.length
+                ? shown.map(t => renderTaskCard(t, {
+                    inBacklog,
+                    compact: phoneOverview,
+                    matrix: true,
+                    matrixOverview: phoneOverview,
+                })).join("")
+                : `<div class="matrix-empty">${phoneOverview ? "Empty" : "Drop tasks here"}</div>`;
+            const overflowBtn = overflow > 0
+                ? `<button type="button" class="matrix-more-btn" data-matrix-open="${q.id}">+${overflow} more</button>`
+                : "";
+            const titles = matrixQuadrantEditOpen
+                ? `<input type="text" class="matrix-quadrant-title-input" data-matrix-q-label="${q.id}"
+                    value="${escapeHtml(q.label)}" maxlength="32" aria-label="Quadrant title" />
+                <input type="text" class="matrix-quadrant-sub-input" data-matrix-q-sub="${q.id}"
+                    value="${escapeHtml(q.sub)}" maxlength="48" aria-label="Quadrant subtitle" />`
+                : `<span class="matrix-quadrant-title">${escapeHtml(q.label)}</span>
+                <span class="matrix-quadrant-sub">${escapeHtml(q.sub)}</span>`;
+            const openAttr = phoneOverview && !matrixQuadrantEditOpen ? ` data-matrix-open="${q.id}"` : "";
+            const headOpenAttr = phoneOverview && !matrixQuadrantEditOpen ? ` data-matrix-open="${q.id}"` : "";
+            return `<section class="matrix-quadrant q-${q.id}${phoneOverview ? " matrix-quadrant-overview" : ""}"
+                data-quadrant="${q.id}"${openAttr}
+                aria-label="${escapeHtml(q.label)} — ${escapeHtml(q.sub)}">
+                <header class="matrix-quadrant-head${matrixQuadrantEditOpen ? " editing" : ""}"${headOpenAttr}>
+                    <div class="matrix-quadrant-titles">${titles}</div>
+                    <span class="matrix-quadrant-count">${items.length}</span>
+                </header>
+                <div class="matrix-quadrant-body" data-quadrant-body="${q.id}">${cards}${overflowBtn}</div>
+            </section>`;
+        }
+
         function renderEisenhowerMatrix(visible) {
             const inBacklog = view === "backlog";
             const quadrants = getQuadrants();
             const buckets = Object.fromEntries(quadrants.map(q => [q.id, []]));
             visible.forEach(t => buckets[getTaskQuadrantId(t)].push(t));
+            const phoneOverview = isPhoneViewport() && !matrixFocusedQuadrant && !matrixQuadrantEditOpen;
+            const phoneFocused = isPhoneViewport() && matrixFocusedQuadrant && !matrixQuadrantEditOpen;
 
-            const cols = quadrants.map(q => {
-                const items = sortByPriority(buckets[q.id]);
-                const cards = items.length
-                    ? items.map(t => renderTaskCard(t, { inBacklog, compact: false, matrix: true })).join("")
-                    : `<div class="matrix-empty">Drop tasks here</div>`;
-                const titles = matrixQuadrantEditOpen
-                    ? `<input type="text" class="matrix-quadrant-title-input" data-matrix-q-label="${q.id}"
-                        value="${escapeHtml(q.label)}" maxlength="32" aria-label="Quadrant title" />
-                    <input type="text" class="matrix-quadrant-sub-input" data-matrix-q-sub="${q.id}"
-                        value="${escapeHtml(q.sub)}" maxlength="48" aria-label="Quadrant subtitle" />`
-                    : `<span class="matrix-quadrant-title">${escapeHtml(q.label)}</span>
-                    <span class="matrix-quadrant-sub">${escapeHtml(q.sub)}</span>`;
-                return `<section class="matrix-quadrant q-${q.id}" data-quadrant="${q.id}"
-                    aria-label="${escapeHtml(q.label)} — ${escapeHtml(q.sub)}">
-                    <header class="matrix-quadrant-head${matrixQuadrantEditOpen ? " editing" : ""}">
-                        <div class="matrix-quadrant-titles">${titles}</div>
-                        <span class="matrix-quadrant-count">${items.length}</span>
-                    </header>
-                    <div class="matrix-quadrant-body" data-quadrant-body="${q.id}">${cards}</div>
-                </section>`;
-            }).join("");
+            if (phoneFocused) {
+                const q = quadrants.find(x => x.id === matrixFocusedQuadrant) || quadrants[0];
+                const items = sortByPriority(buckets[q.id] || []);
+                const section = renderMatrixQuadrantSection(q, items, inBacklog, { phoneOverview: false });
+                return `<div class="matrix-focus-shell">
+                    <button type="button" class="matrix-back-btn" id="matrixBackBtn" aria-label="Back to all quadrants">
+                        ${icon("chevronLeft", 16)} All quadrants
+                    </button>
+                    <div class="matrix-grid matrix-grid-focused">${section}</div>
+                </div>`;
+            }
 
-            return `<div class="matrix-grid">${cols}</div>`;
+            const cols = quadrants.map(q =>
+                renderMatrixQuadrantSection(q, sortByPriority(buckets[q.id]), inBacklog, { phoneOverview })
+            ).join("");
+
+            return `<div class="matrix-grid${phoneOverview ? " matrix-grid-overview" : ""}">${cols}</div>`;
+        }
+
+        function bindMatrixQuadrantFocusEvents() {
+            if (!isPhoneViewport() || matrixQuadrantEditOpen) return;
+
+            const backBtn = document.getElementById("matrixBackBtn");
+            if (backBtn) {
+                backBtn.addEventListener("click", () => {
+                    matrixFocusedQuadrant = null;
+                    selected = null;
+                    render();
+                });
+            }
+
+            if (matrixFocusedQuadrant) return;
+
+            const openQuadrant = id => {
+                if (!id || matrixQuadrantEditOpen) return;
+                matrixFocusedQuadrant = id;
+                selected = null;
+                closePriorityBloom();
+                render();
+            };
+
+            list.querySelectorAll("[data-matrix-open]").forEach(el => {
+                el.addEventListener("click", e => {
+                    if (matrixSuppressCardClick) return;
+                    if (e.target.closest(".task-card") ||
+                        e.target.closest(".matrix-drag-handle") ||
+                        e.target.closest("input, textarea, button.matrix-more-btn")) return;
+                    e.stopPropagation();
+                    openQuadrant(el.dataset.matrixOpen);
+                });
+            });
+
+            list.querySelectorAll(".matrix-more-btn[data-matrix-open]").forEach(btn => {
+                btn.addEventListener("click", e => {
+                    e.stopPropagation();
+                    openQuadrant(btn.dataset.matrixOpen);
+                });
+            });
         }
 
         function bindMatrixQuadrantEditEvents() {
@@ -7071,9 +7147,16 @@
         function matrixDragSurface(target, card) {
             if (!card.contains(target)) return false;
             if (target.closest(".matrix-drag-handle")) return true;
-            if (isCoarsePointer()) return false;
             if (matrixDragBlockedTarget(target)) return false;
             return !!target.closest(".task-body, .task-title, .task-tag");
+        }
+
+        function dragThresholdPx() {
+            return isCoarsePointer() ? 8 : 6;
+        }
+
+        function isDragHandleTarget(target) {
+            return !!target.closest(".matrix-drag-handle, .kanban-drag-handle");
         }
 
         function clearMatrixDragOver() {
@@ -7103,14 +7186,20 @@
         }
 
         function bindMatrixEvents() {
-            const DRAG_THRESHOLD = 6;
-
             list.querySelectorAll(".task-card").forEach(card => {
                 card.addEventListener("pointerdown", e => {
                     if (e.button !== 0) return;
                     if (!matrixDragSurface(e.target, card)) return;
+                    if (isDragHandleTarget(e.target)) {
+                        e.preventDefault();
+                        const handle = e.target.closest(".matrix-drag-handle");
+                        if (handle) {
+                            try { handle.setPointerCapture(e.pointerId); } catch { /* ignore */ }
+                        }
+                    }
 
                     const taskId = +card.dataset.id;
+                    const DRAG_THRESHOLD = dragThresholdPx();
                     const startX = e.clientX;
                     const startY = e.clientY;
                     let overQuadrant = null;
@@ -7188,7 +7277,6 @@
         function kanbanDragSurface(target, card) {
             if (!card.contains(target)) return false;
             if (target.closest(".kanban-drag-handle")) return true;
-            if (isCoarsePointer()) return false;
             if (kanbanDragBlockedTarget(target)) return false;
             return !!target.closest(".task-body, .task-title, .task-tag");
         }
@@ -7233,14 +7321,20 @@
         }
 
         function bindKanbanEvents() {
-            const DRAG_THRESHOLD = 6;
-
             list.querySelectorAll(".task-card").forEach(card => {
                 card.addEventListener("pointerdown", e => {
                     if (e.button !== 0) return;
                     if (!kanbanDragSurface(e.target, card)) return;
+                    if (isDragHandleTarget(e.target)) {
+                        e.preventDefault();
+                        const handle = e.target.closest(".kanban-drag-handle");
+                        if (handle) {
+                            try { handle.setPointerCapture(e.pointerId); } catch { /* ignore */ }
+                        }
+                    }
 
                     const taskId = +card.dataset.id;
+                    const DRAG_THRESHOLD = dragThresholdPx();
                     const startX = e.clientX;
                     const startY = e.clientY;
                     let overStage = null;
@@ -7571,6 +7665,10 @@
             });
             list.classList.remove("layout-list", "layout-kanban", "layout-compact", "layout-eisenhower");
             list.classList.add(`layout-${taskLayout}`);
+            list.classList.toggle("matrix-phone-overview",
+                taskLayout === "eisenhower" && isPhoneViewport() && !matrixFocusedQuadrant && !matrixQuadrantEditOpen);
+            list.classList.toggle("matrix-phone-focused",
+                taskLayout === "eisenhower" && isPhoneViewport() && !!matrixFocusedQuadrant && !matrixQuadrantEditOpen);
             const matrixEditBtn = document.getElementById("matrixQuadrantEditToggle");
             if (matrixEditBtn) {
                 const show = taskLayout === "eisenhower";
@@ -7914,6 +8012,9 @@
             const cat = getCategory(task.categoryId) || getDefaultCategory();
             const colorKey = cat ? normalizeCategoryColorKey(cat.color) : DEFAULT_CATEGORY_COLOR;
             const label = cat ? cat.label : DEFAULT_CATEGORY_LABEL;
+            if (opts.matrixOverview) {
+                return `<span class="task-cat-dot" data-cat-color="${colorKey}" aria-hidden="true"></span>`;
+            }
             const priorityPart = opts.kanban
                 ? ""
                 : ` · <span class="task-tag-priority">${PRIORITIES[p].label}</span>`;
@@ -7927,6 +8028,7 @@
             const isBacklog = opts.inBacklog;
             const compact = !!opts.compact;
             const isKanban = !!opts.kanban;
+            const matrixOverview = !!opts.matrixOverview;
             const sel = selected === t.id;
             const p = normalizePriority(t.priority);
             const priorityClass = ` priority-${p}`;
@@ -7947,18 +8049,18 @@
             const todayBtn = isBacklog
                 ? `<button type="button" class="card-today-btn" data-move-today="${t.id}" ${canAddToToday() ? "" : "disabled"}>Add to today</button>`
                 : "";
-            const priorityControl = isKanban ? "" : priorityControlHtml(t.id, p);
+            const priorityControl = (isKanban || matrixOverview) ? "" : priorityControlHtml(t.id, p);
 
-            return `<div class="task-card${priorityClass}${compactClass}${expandedClass}${t.done ? " done" : ""}${sel ? " selected" : ""}" data-id="${t.id}" data-stage="${getTaskStage(t)}">
+            return `<div class="task-card${priorityClass}${compactClass}${expandedClass}${matrixOverview ? " matrix-overview-card" : ""}${t.done ? " done" : ""}${sel ? " selected" : ""}" data-id="${t.id}" data-stage="${getTaskStage(t)}">
                 ${matrixHandle}${kanbanHandle}
                 ${lead}
                 <div class="task-body">
-                    <div class="task-tag">${taskTagInnerHtml(t, p, { kanban: isKanban })}</div>
+                    <div class="task-tag">${taskTagInnerHtml(t, p, { kanban: isKanban, matrixOverview })}</div>
                     <div class="task-title">${escapeHtml(t.title)}</div>
                 </div>
                 ${priorityControl}
                 ${todayBtn}
-                ${subtaskRegionHtml(t)}
+                ${matrixOverview ? "" : subtaskRegionHtml(t)}
             </div>`;
         }
 
@@ -8099,6 +8201,7 @@
             if (taskLayout === "eisenhower") {
                 bindMatrixEvents();
                 bindMatrixQuadrantEditEvents();
+                bindMatrixQuadrantFocusEvents();
             }
 
             if (taskLayout === "kanban") {
@@ -8186,6 +8289,7 @@
             tab.addEventListener("click", () => {
                 view = tab.dataset.view;
                 selected = null;
+                matrixFocusedQuadrant = null;
                 priorityMenuId = null;
                 render();
             });
@@ -8214,7 +8318,10 @@
             btn.addEventListener("click", () => {
                 const next = btn.dataset.layout;
                 if (!TASK_LAYOUTS.includes(next) || next === taskLayout) return;
-                if (next !== "eisenhower") matrixQuadrantEditOpen = false;
+                if (next !== "eisenhower") {
+                    matrixQuadrantEditOpen = false;
+                    matrixFocusedQuadrant = null;
+                }
                 taskLayout = next;
                 closePriorityBloom();
                 save();

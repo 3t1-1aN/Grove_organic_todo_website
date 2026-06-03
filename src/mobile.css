@@ -11,6 +11,11 @@
 
 button,
 .check-wrap,
+.task-card,
+.task-body,
+.task-title,
+.matrix-quadrant,
+.kanban-col,
 [role="button"] {
     -webkit-tap-highlight-color: transparent;
 }
@@ -19,6 +24,24 @@ button:focus-visible,
 .check-wrap:focus-visible {
     outline: 2px solid rgba(74, 222, 128, 0.55);
     outline-offset: 2px;
+}
+
+@media (hover: none) {
+    .task-card:not(.dismissing):not(.dragging):hover {
+        animation: none;
+        transform: none;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .task-card.selected {
+        animation: none;
+        transform: none;
+    }
+
+    .task-card:active:not(.dragging) {
+        background: rgba(255, 255, 255, 0.04);
+    }
 }
 
 /* PWA install hint */
@@ -589,6 +612,19 @@ body.panel-animating .app-panel {
     .matrix-drag-handle {
         min-width: 44px;
         min-height: 44px;
+        touch-action: none;
+    }
+
+    body.kanban-drag-active .kanban-board,
+    body.kanban-drag-active .kanban-col-body {
+        touch-action: none;
+        overflow: hidden;
+    }
+
+    body.matrix-drag-active .matrix-grid,
+    body.matrix-drag-active .task-list.layout-eisenhower {
+        touch-action: none;
+        overflow: hidden;
     }
 
     .filter-btn {
@@ -642,27 +678,149 @@ body.panel-animating .app-panel {
         min-height: 0;
     }
 
-    /* Matrix: single page scroll */
-    .matrix-grid {
+    /* Matrix: 2×2 overview fills the task area; drill into one quadrant on tap */
+    .task-list.layout-eisenhower.matrix-phone-overview,
+    .task-list.layout-eisenhower.matrix-phone-focused {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
+
+    .matrix-focus-shell {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .matrix-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        align-self: flex-start;
+        min-height: 40px;
+        padding: 0 12px;
+        border: none;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-muted);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .matrix-grid-overview {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 8px;
+        height: 100%;
+        max-height: none;
+    }
+
+    .matrix-grid-focused {
+        flex: 1;
+        min-height: 0;
+        display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: repeat(4, minmax(220px, auto));
-        height: auto;
-        min-height: auto;
+        grid-template-rows: 1fr;
+        height: 100%;
         max-height: none;
     }
 
-    .matrix-quadrant {
-        min-height: 220px;
+    .matrix-quadrant-overview {
+        min-height: 0;
+        cursor: pointer;
     }
 
-    .matrix-quadrant-body {
-        overflow-y: visible;
-        overscroll-behavior: unset;
+    .matrix-quadrant-overview .matrix-quadrant-head {
+        padding: 8px 10px;
     }
 
-    .task-list.layout-eisenhower {
+    .matrix-quadrant-overview .matrix-quadrant-title {
+        font-size: 9px;
+        letter-spacing: 0.05em;
+    }
+
+    .matrix-quadrant-overview .matrix-quadrant-sub {
+        display: none;
+    }
+
+    .matrix-quadrant-overview .matrix-quadrant-count {
+        font-size: 10px;
+        min-width: 22px;
+        height: 22px;
+    }
+
+    .matrix-quadrant-overview .matrix-quadrant-body {
+        overflow: hidden;
+        padding: 6px;
+        gap: 4px;
+    }
+
+    .matrix-quadrant-overview .task-card {
+        padding: 6px 8px 6px 10px;
         max-height: none;
+        border-radius: 10px;
+    }
+
+    .matrix-quadrant-overview .matrix-overview-card .task-tag {
+        margin-bottom: 2px;
+    }
+
+    .matrix-quadrant-overview .matrix-overview-card .task-cat-dot {
+        width: 6px;
+        height: 6px;
+    }
+
+    .matrix-quadrant-overview .matrix-overview-card .task-title {
+        font-size: 11px;
+        line-height: 1.25;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .matrix-quadrant-overview .matrix-overview-card .check-wrap,
+    .matrix-quadrant-overview .matrix-overview-card .card-slot {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        min-height: 28px;
+    }
+
+    .matrix-quadrant-overview .matrix-empty {
+        padding: 8px 6px;
+        font-size: 10px;
+    }
+
+    .matrix-more-btn {
+        width: 100%;
+        margin-top: 2px;
+        padding: 4px 6px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(160, 200, 170, 0.75);
+        font-family: inherit;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .matrix-grid-focused .matrix-quadrant {
+        min-height: 0;
+    }
+
+    .matrix-grid-focused .matrix-quadrant-body {
         overflow-y: auto;
+        touch-action: pan-y;
         -webkit-overflow-scrolling: touch;
     }
 
