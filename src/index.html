@@ -4,10 +4,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="color-scheme" content="dark">
     <meta name="theme-color" content="#0a1410">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
+    <script id="grove-boot">
+        (function () {
+            var root = document.documentElement;
+            var standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
+            var cap = window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform();
+            var narrow = window.innerWidth <= 480;
+            var locked = cap || standalone || narrow;
+
+            root.classList.add("grove-app");
+            if (locked) root.classList.add("grove-app-tier");
+
+            var viewport = document.querySelector('meta[name="viewport"]');
+            if (!viewport) return;
+
+            if (cap || standalone) {
+                if (window.innerWidth > 480) {
+                    viewport.setAttribute(
+                        "content",
+                        "width=480, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+                    );
+                } else {
+                    viewport.setAttribute(
+                        "content",
+                        "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+                    );
+                }
+            } else if (narrow) {
+                viewport.setAttribute(
+                    "content",
+                    "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+                );
+            }
+        })();
+    </script>
     <title>Grove</title>
     <link rel="icon" type="image/png" href="Grove_icon.png">
     <link rel="apple-touch-icon" href="Grove_icon.png">
@@ -16,6 +51,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Patrick+Hand&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="grove-tokens.css">
     <style>
         * {
             box-sizing: border-box;
@@ -29,54 +65,6 @@
             display: none;
             width: 0;
             height: 0;
-        }
-
-        :root {
-            --accent: #4ade80;
-            --accent-light: #86efac;
-            --accent-pale: #bbf7d0;
-            --accent-backlog: #d9f99d;
-            --accent-backlog-mid: #a3e635;
-            --text-primary: rgba(210, 240, 215, 0.9);
-            --text-bright: rgba(220, 250, 230, 0.96);
-            --text-body: rgba(200, 230, 210, 0.82);
-            --text-dim: rgba(134, 200, 140, 0.45);
-            --text-muted: rgba(160, 200, 170, 0.55);
-            --priority-high: #ff7070;
-            --priority-med: #ffb060;
-            --priority-low: #4ade80;
-            --shell-bg: rgba(5, 12, 8, 0.82);
-            --shell-bg-backlog: rgba(12, 14, 6, 0.86);
-            --page-bg: #0a1410;
-            --accent-tint: rgba(74, 222, 128, 0.14);
-            --accent-tint-strong: rgba(74, 222, 128, 0.18);
-            --accent-border: rgba(134, 239, 172, 0.2);
-            --backlog-tint: rgba(217, 249, 157, 0.12);
-            --backlog-border: rgba(217, 249, 157, 0.22);
-            --radius-sm: 10px;
-            --radius-md: 14px;
-            --radius-lg: 24px;
-            --shadow-raised: 3px 3px 8px rgba(0, 0, 0, 0.4), -1px -1px 4px rgba(255, 255, 255, 0.04);
-            --shadow-raised-lg: 4px 4px 16px rgba(0, 0, 0, 0.5), -3px -3px 12px rgba(255, 255, 255, 0.03),
-                inset 0 1px 0 rgba(255, 255, 255, 0.07);
-            --shadow-inset: inset 3px 3px 8px rgba(0, 0, 0, 0.4), inset -1px -1px 4px rgba(74, 222, 128, 0.08);
-            --shadow-inset-tray: inset 2px 2px 6px rgba(0, 0, 0, 0.45), inset -1px -1px 3px rgba(255, 255, 255, 0.025);
-            --shadow-shell: 0 24px 64px rgba(0, 0, 0, 0.22), 10px 10px 28px rgba(0, 0, 0, 0.18),
-                inset 0 0 0 0.5px rgba(255, 255, 255, 0.08);
-            --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
-            --ease-spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-            --matrix-cell-height: 240px;
-            --matrix-grid-gap: 14px;
-            --matrix-grid-height: calc(var(--matrix-cell-height) * 2 + var(--matrix-grid-gap));
-            --app-max-width: none;
-            --app-gutter: 10px;
-            --kanban-col-height-mobile: 280px;
-            --kanban-board-stacked-height: calc(var(--kanban-col-height-mobile) * 3 + var(--matrix-grid-gap) * 2);
-            --duration-fast: 0.2s;
-            --duration-normal: 0.35s;
-            --duration-spring: 0.42s;
-            --font-display: 'Caveat', cursive;
-            --font-body: 'Patrick Hand', cursive;
         }
 
         body {
@@ -4574,6 +4562,7 @@
     </style>
     <!-- Must load after inline styles so phone rules override 820px / 760px breakpoints -->
     <link rel="stylesheet" href="mobile.css">
+    <link rel="stylesheet" href="app-ui-lock.css">
 </head>
 
 <body>
@@ -6081,8 +6070,9 @@
         let deferredInstallPrompt = null;
         let timerPausedForVisibility = false;
 
-        function isPhoneViewport() {
-            return window.matchMedia("(max-width: 480px)").matches;
+        function isStandalonePwa() {
+            return window.matchMedia("(display-mode: standalone)").matches
+                || window.navigator.standalone === true;
         }
 
         function isCapacitorNative() {
@@ -6090,21 +6080,66 @@
             return !!(cap && typeof cap.isNativePlatform === "function" && cap.isNativePlatform());
         }
 
+        function isPhoneViewport() {
+            if (isCapacitorNative() || isStandalonePwa()) return true;
+            return window.matchMedia("(max-width: 480px)").matches;
+        }
+
         function isStandaloneDisplay() {
-            return window.matchMedia("(display-mode: standalone)").matches
-                || window.navigator.standalone === true
-                || isCapacitorNative();
+            return isStandalonePwa() || isCapacitorNative();
         }
 
         function isMobileContext() {
-            return isPhoneViewport() || isStandaloneDisplay();
+            return isPhoneViewport();
+        }
+
+        function lockAppViewport() {
+            const viewport = document.querySelector('meta[name="viewport"]');
+            if (!viewport) return;
+
+            const lockedShell = isCapacitorNative() || isStandalonePwa();
+            if (!lockedShell && !isPhoneViewport()) return;
+
+            if (lockedShell && window.innerWidth > 480) {
+                viewport.setAttribute(
+                    "content",
+                    "width=480, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+                );
+                return;
+            }
+
+            viewport.setAttribute(
+                "content",
+                "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+            );
         }
 
         function syncPhoneBodyClass() {
-            document.body.classList.toggle("is-phone", isPhoneViewport());
+            const phoneTier = isPhoneViewport();
+            document.documentElement.classList.add("grove-app");
+            document.documentElement.classList.toggle("grove-app-tier", phoneTier);
+            document.body.classList.toggle("is-phone", phoneTier);
             document.body.classList.toggle("is-standalone", isStandaloneDisplay());
+            document.documentElement.classList.toggle("grove-android", isCapacitorNative());
             layoutMobileFiltersHost();
             syncMobileFabVisibility();
+        }
+
+        function initAppUiLock() {
+            syncPhoneBodyClass();
+            lockAppViewport();
+
+            if (isCapacitorNative()) {
+                document.body.classList.add("is-native-app");
+                const StatusBar = window.Capacitor?.Plugins?.StatusBar;
+                if (StatusBar) {
+                    Promise.all([
+                        StatusBar.setStyle?.({ style: "DARK" }),
+                        StatusBar.setBackgroundColor?.({ color: "#0a1410" }),
+                        StatusBar.setOverlaysWebView?.({ overlay: false }),
+                    ]).catch(() => {});
+                }
+            }
         }
 
         function isCoarsePointer() {
@@ -6348,12 +6383,11 @@
 
         function initCapacitorNativeChrome() {
             if (!isCapacitorNative()) return;
-            document.body.classList.add("is-native-app");
-            /* StatusBar + SplashScreen: capacitor.config.json + Android styles.xml */
+            initAppUiLock();
         }
 
         function initPwaMobile() {
-            syncPhoneBodyClass();
+            initAppUiLock();
 
             const filtersBtn = document.getElementById("mobileFiltersBtn");
             const backdrop = document.getElementById("mobileSheetBackdrop");
@@ -6495,6 +6529,7 @@
 
             window.addEventListener("resize", () => {
                 syncPhoneBodyClass();
+                lockAppViewport();
                 if (!isPhoneViewport()) {
                     closeAllMobileSheets();
                 }

@@ -1,4 +1,5 @@
 /* === Grove mobile / PWA (max-width: 480px) === */
+/* Design tokens: grove-tokens.css. Phone layout: mobile.css. Cross-device lock: app-ui-lock.css. */
 
 :root {
     --bottom-nav-clearance: calc(4.75rem + env(safe-area-inset-bottom));
@@ -455,6 +456,10 @@ body.panel-animating .app-panel {
         padding-bottom: var(--bottom-nav-clearance);
         background: #0a1410;
         overflow-x: hidden;
+    }
+
+    body.grove-app-tier {
+        padding-top: max(env(safe-area-inset-top), 6px);
     }
 
     body.is-native-app {

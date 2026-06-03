@@ -1,0 +1,159 @@
+/**
+ * Grove app UI lock — consistent look on phone browsers, installed PWA, and native wrappers.
+ * Requires html.grove-app + body.grove-app-tier (set by grove-boot script + syncPhoneBodyClass).
+ * Tokens: grove-tokens.css. Phone layout: mobile.css. Native WebView extras: MainActivity.java.
+ */
+
+html.grove-app {
+    background-color: #0a1410;
+}
+
+body.grove-app-tier {
+    touch-action: manipulation;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: #0a1410;
+    /* Pin tokens on the mobile tier so system / forced-light cannot drift */
+    --page-bg: #0a1410;
+    --shell-bg: rgba(5, 12, 8, 0.82);
+    --shell-bg-backlog: rgba(12, 14, 6, 0.86);
+    --app-gutter: 10px;
+    --bottom-nav-clearance: calc(4.75rem + env(safe-area-inset-bottom));
+}
+
+body.grove-app-tier.mode-backlog {
+    background-color: #0c1008;
+}
+
+body.grove-app-tier input,
+body.grove-app-tier textarea,
+body.grove-app-tier select,
+body.grove-app-tier .mobile-add-input {
+    font-size: 16px;
+}
+
+body.grove-app-tier button,
+body.grove-app-tier .task-title,
+body.grove-app-tier .mobile-sheet-title {
+    font-family: var(--font-body);
+}
+
+body.grove-app-tier h1,
+body.grove-app-tier h2,
+body.grove-app-tier h3,
+body.grove-app-tier .title,
+body.grove-app-tier .focus-current-title {
+    font-family: var(--font-display);
+}
+
+body.grove-app-tier input,
+body.grove-app-tier textarea,
+body.grove-app-tier select,
+body.grove-app-tier button {
+    max-height: none;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body.grove-app-tier .task-shell,
+body.grove-app-tier .focus-shell,
+body.grove-app-tier .notes-shell,
+body.grove-app-tier .mobile-sheet,
+body.grove-app-tier .app-nav {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+/* Neutralize tablet-tier inline breakpoints when app tier is active on a wide viewport */
+@media (min-width: 481px) {
+    html.grove-app-tier .task-shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        min-height: calc(100dvh - var(--bottom-nav-clearance));
+    }
+
+    html.grove-app-tier .task-sidebar {
+        display: none !important;
+    }
+
+    html.grove-app-tier .kanban-board:not(.kanban-board--mobile) {
+        display: none;
+    }
+}
+
+@supports not ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
+    body.grove-app-tier .task-shell,
+    body.grove-app-tier .focus-shell,
+    body.grove-app-tier .notes-shell {
+        background: rgba(5, 12, 8, 0.96);
+    }
+
+    body.grove-app-tier .mobile-sheet {
+        background: rgba(5, 12, 8, 0.98);
+    }
+
+    body.grove-app-tier .app-nav {
+        background: rgba(5, 12, 8, 0.94);
+    }
+}
+
+/* Wide installed PWA / native: phone layout until viewport lock script runs */
+@media (min-width: 481px) {
+    html.grove-app-tier {
+        overflow-x: hidden;
+        background: #0a1410;
+    }
+
+    html.grove-app-tier body {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+        padding-top: max(env(safe-area-inset-top), 6px);
+        padding-bottom: var(--bottom-nav-clearance);
+        background: #0a1410;
+        overflow-x: hidden;
+    }
+
+    html.grove-app-tier .bg {
+        background: #0a1410;
+        filter: none;
+    }
+
+    html.grove-app-tier .blob {
+        display: none !important;
+        animation: none !important;
+    }
+
+    html.grove-app-tier .task-shell,
+    html.grove-app-tier .focus-shell,
+    html.grove-app-tier .notes-shell {
+        width: 100%;
+        max-width: 100%;
+        min-height: calc(100dvh - var(--bottom-nav-clearance));
+        border-radius: 0;
+        box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+        margin: 0;
+        background: rgba(5, 12, 8, 0.92);
+    }
+
+    html.grove-app-tier .app-nav {
+        position: fixed;
+        left: max(12px, env(safe-area-inset-left));
+        right: max(12px, env(safe-area-inset-right));
+        width: auto;
+        max-width: none;
+        transform: none;
+        bottom: max(10px, env(safe-area-inset-bottom));
+        z-index: var(--mobile-nav-z);
+    }
+
+    html.grove-app-tier .mobile-filters-btn {
+        display: inline-flex;
+    }
+}
+
+/* Capacitor-only hook (inherits grove-app-tier) */
+body.is-native-app {
+    padding-top: max(env(safe-area-inset-top), 6px);
+}

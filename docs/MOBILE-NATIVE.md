@@ -80,6 +80,24 @@ Or use the helper script (sets `JAVA_HOME` automatically):
 2. Open the file and allow **Install unknown apps** for your file manager or browser (varies by OEM).
 3. Launch **Grove**. Data uses the same `localStorage` keys as the PWA.
 
+### App UI lock (PWA + native — cross-device consistency)
+
+Grove uses the same locked phone UI on mobile browsers, installed PWAs, and Capacitor wrappers:
+
+| Layer | File | What it locks |
+|-------|------|----------------|
+| Boot | `index.html` `#grove-boot` | Early `grove-app-tier` class + viewport before first paint |
+| Design tokens | `src/grove-tokens.css` | Colors, radii, shadows, fonts (`:root`) |
+| Phone layout | `src/mobile.css` | Full-bleed glass, sheets, FAB, ≤480px |
+| App overrides | `src/app-ui-lock.css` | Text scaling, overscroll, dark scheme, wide-tablet fallback |
+| Runtime | `initAppUiLock()` in `index.html` | Classes, viewport lock, StatusBar on native |
+| WebView settings | `MainActivity.java` | `textZoom=100`, no pinch zoom, `#0a1410` background |
+| System chrome | `styles.xml`, `colors.xml`, StatusBar plugin | Status + nav bar colors, cutout mode |
+
+**Phone tier** applies when: viewport ≤480px, installed PWA (`display-mode: standalone`), or Capacitor native. Wide installed/native viewports use `width=480` so `mobile.css` phone rules always match.
+
+All stylesheets above are copied into the PWA bundle (`npm run build:pwa`). Rebuild the APK after changing them.
+
 ### Native WebView behavior (`src/index.html`)
 
 | Concern | Behavior on Capacitor |
@@ -87,7 +105,10 @@ Or use the helper script (sets `JAVA_HOME` automatically):
 | PWA install banner | Hidden (`isStandaloneDisplay()` includes native) |
 | Service worker | Not registered |
 | Status / splash | `#0a1410` via `capacitor.config.json` + Android `styles.xml` |
-| Body class | `is-native-app` for future native-only CSS |
+| Body class | `is-native-app` + `grove-app-tier` + `html.grove-android` |
+| Phone layout tier | Always on (`isPhoneViewport()` true when native) |
+| Typography / zoom | `MainActivity` + `app-ui-lock.css` |
+| Orientation | Portrait locked in `AndroidManifest.xml` |
 
 Open Android Studio project: `npm run cap:open:android`
 
@@ -128,7 +149,9 @@ When ready on a Mac:
 
 ## Related files
 
+- [`src/grove-tokens.css`](../src/grove-tokens.css) — design tokens (`:root`)
 - [`src/mobile.css`](../src/mobile.css) — phone breakpoints, full-bleed shells
+- [`src/app-ui-lock.css`](../src/app-ui-lock.css) — PWA + native UI lock (cross-device)
 - [`capacitor.config.json`](../capacitor.config.json)
 - [`scripts/build-pwa.mjs`](../scripts/build-pwa.mjs)
 - [`scripts/copy-cap-android-icons.mjs`](../scripts/copy-cap-android-icons.mjs)

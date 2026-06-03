@@ -106,6 +106,7 @@ Glass memo cards (`.note-card`) on the shared `.notes-shell` — same frosted sh
 
 ## PWA / mobile constraints
 
+- Design tokens: `src/grove-tokens.css`; phone layout: `src/mobile.css`; cross-device lock: `src/app-ui-lock.css` (see [MOBILE-NATIVE.md](docs/MOBILE-NATIVE.md)).
 - Install via `manifest.webmanifest` + `sw.js` (shell cache only; data in `localStorage`).
 - iOS may evict storage after extended disuse; see [docs/MOBILE-NATIVE.md](docs/MOBILE-NATIVE.md).
 - Pomodoro pauses when the page is hidden (background tab or app switch).

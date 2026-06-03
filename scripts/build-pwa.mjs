@@ -14,7 +14,9 @@ const appDir = path.join(root, "app");
 
 const COPY_NAMES = [
   "index.html",
+  "grove-tokens.css",
   "mobile.css",
+  "app-ui-lock.css",
   "manifest.webmanifest",
   "sw.js",
   "Grove_icon.png",

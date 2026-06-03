@@ -1,7 +1,14 @@
 /* Grove PWA — shell cache only; task data stays in localStorage */
 const CACHE = "grove-pwa-v__SW_VERSION__";
 
-const PRECACHE = ["./", "./index.html", "./mobile.css", "./manifest.webmanifest"];
+const PRECACHE = [
+  "./",
+  "./index.html",
+  "./grove-tokens.css",
+  "./mobile.css",
+  "./app-ui-lock.css",
+  "./manifest.webmanifest",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

@@ -2,6 +2,10 @@
   "appId": "com.organic.todo",
   "appName": "Grove",
   "webDir": "app",
+  "android": {
+    "backgroundColor": "#0a1410",
+    "allowMixedContent": false
+  },
   "server": {
     "androidScheme": "https"
   },
