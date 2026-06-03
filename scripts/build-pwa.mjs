@@ -2,6 +2,7 @@
  * Copies Grove web app (src/) into app/ for https://grove-todo.vercel.app/app/
  * Run: npm run build:pwa — see DEPLOY.md
  */
+import { execSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -34,7 +35,22 @@ function copyFile(src, dest) {
   fs.copyFileSync(src, dest);
 }
 
+function ensurePaddedIcons() {
+  const iconScript = path.join(root, "scripts", "prepare-icon.py");
+  if (!fs.existsSync(iconScript)) return;
+  try {
+    execSync("python scripts/prepare-icon.py", { cwd: root, stdio: "inherit" });
+  } catch (err) {
+    console.warn("warn: prepare-icon.py failed; using existing icon files", err?.message || err);
+  }
+}
+
 function ensureIcon(size, dest) {
+  const padded = path.join(srcDir, "icons", `icon-${size}.png`);
+  if (fs.existsSync(padded)) {
+    copyFile(padded, dest);
+    return;
+  }
   const candidates = [
     path.join(srcDir, "Grove_icon.png"),
     path.join(root, "Grove_icon.png"),
@@ -62,6 +78,8 @@ function patchManifestForAppPath() {
   sw = sw.replace(/__SW_VERSION__/g, version);
   fs.writeFileSync(swPath, sw);
 }
+
+ensurePaddedIcons();
 
 rmrf(appDir);
 fs.mkdirSync(appDir, { recursive: true });

@@ -4202,7 +4202,8 @@
                 transition: opacity var(--duration-fast) ease !important;
             }
 
-            .task-sidebar .add-area.onboarding-nudge {
+            .task-sidebar .add-area.onboarding-nudge,
+            .mobile-fab.onboarding-nudge {
                 animation: none !important;
                 box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.35);
             }
@@ -4312,6 +4313,7 @@
             width: 56px;
             height: 56px;
             margin: 0 auto 14px;
+            object-fit: contain;
             opacity: 0;
             transform: translateY(8px) scale(0.97);
         }
@@ -4937,7 +4939,7 @@
             document.getElementById("focusSkip").innerHTML = icon("skip", 20);
         }
         const STORAGE_KEY = "organic-todo-v2";
-        const ONBOARDING_STORAGE_KEY = "grove-onboarding-v1";
+        const ONBOARDING_STORAGE_KEY = "grove-onboarding-v2";
         const TIMER_STORAGE_KEY = "organic-todo-timer-v1";
         const FOCUS_STORAGE_KEY = "organic-todo-focus-v1";
         const NOTES_STORAGE_KEY = "organic-notes-v1";
@@ -8687,65 +8689,105 @@
         let tourStepIndex = 0;
         let tourEl = null;
 
-        const TOUR_STEPS = [
-            {
-                title: "Today",
-                body: "Work on up to five tasks at a time.",
-                prep() {
-                    setAppTab("tasks");
-                    view = "today";
-                    render();
+        function isMobileOnboardingContext() {
+            return isPhoneViewport() || isCapacitorNative();
+        }
+
+        function getTourSteps() {
+            const showTasksToday = () => {
+                setAppTab("tasks");
+                view = "today";
+                render();
+            };
+
+            const core = [
+                {
+                    title: "Today",
+                    body: isMobileOnboardingContext()
+                        ? "Up to five active tasks. Use List, Kanban, or Matrix in the layout bar."
+                        : "Work on up to five tasks at a time.",
+                    prep: showTasksToday,
+                    target() {
+                        return document.getElementById("todayCap");
+                    },
                 },
-                target() {
-                    return document.getElementById("todayCap");
+                {
+                    title: "Backlog",
+                    body: "Everything else waits in Backlog until you pull it into Today.",
+                    prep() {
+                        setAppTab("tasks");
+                        view = "backlog";
+                        render();
+                    },
+                    target() {
+                        return document.querySelector('#tasksPanel .view-tab[data-view="backlog"]');
+                    },
                 },
-            },
-            {
-                title: "Backlog",
-                body: "Everything else waits in Backlog until you pull it into Today.",
-                prep() {
-                    setAppTab("tasks");
-                    view = "backlog";
-                    render();
+                {
+                    title: "Focus",
+                    body: "Queue what matters, then run Pomodoro on it.",
+                    prep() {
+                        setAppTab("focus");
+                    },
+                    target() {
+                        return document.querySelector('.app-nav-btn[data-app="focus"]');
+                    },
                 },
-                target() {
-                    return document.querySelector('#tasksPanel .view-tab[data-view="backlog"]');
+                {
+                    title: "Memo",
+                    body: "Quick memos on the same glass surface — type above, browse the grid, click to remove.",
+                    prep() {
+                        setAppTab("notes");
+                    },
+                    target() {
+                        return document.querySelector('.app-nav-btn[data-app="notes"]');
+                    },
                 },
-            },
-            {
-                title: "Focus",
-                body: "Queue what matters, then run Pomodoro on it.",
-                prep() {
-                    setAppTab("focus");
+            ];
+
+            if (isMobileOnboardingContext()) {
+                return core.concat([
+                    {
+                        title: "Filters",
+                        body: "Categories and filters live here. Open Manage to add or rename categories.",
+                        prep: showTasksToday,
+                        target() {
+                            return document.getElementById("mobileFiltersBtn");
+                        },
+                    },
+                    {
+                        title: "Add tasks",
+                        body: "Tap + to add a task — set priority and category, or create a new label inline.",
+                        prep: showTasksToday,
+                        target() {
+                            const fab = document.getElementById("mobileFab");
+                            return fab && !fab.hidden ? fab : null;
+                        },
+                    },
+                    {
+                        title: "You're set",
+                        body: "Tasks stay on this device. Use + to capture work; Kanban moves tasks with a tap.",
+                        centered: true,
+                        prep: showTasksToday,
+                        target() {
+                            return null;
+                        },
+                    },
+                ]);
+            }
+
+            return core.concat([
+                {
+                    title: "System tray",
+                    body: "Closing hides Grove to the system tray. Use tray → Quit to exit.",
+                    centered: true,
+                    prep: showTasksToday,
+                    target() {
+                        return null;
+                    },
                 },
-                target() {
-                    return document.querySelector('.app-nav-btn[data-app="focus"]');
-                },
-            },
-            {
-                title: "Memo",
-                body: "Quick memos on the same glass surface — type above, browse the grid, click to remove.",
-                prep() {
-                    setAppTab("notes");
-                },
-                target() {
-                    return document.querySelector('.app-nav-btn[data-app="notes"]');
-                },
-            },
-            {
-                title: "System tray",
-                body: "Closing hides Grove to the system tray. Use tray → Quit to exit.",
-                centered: true,
-                prep() {
-                    setAppTab("tasks");
-                    view = "today";
-                    render();
-                },
-                target() {
-                    return null;
-                },
-            },
-        ];
+            ]);
+        }
 
         function loadOnboardingState() {
             try {
@@ -8900,17 +8942,32 @@
         }
 
         function showAddTaskNudge() {
+            if (isMobileOnboardingContext()) {
+                const fab = document.getElementById("mobileFab");
+                if (!fab || fab.hidden) return;
+                fab.classList.add("onboarding-nudge");
+                const dismiss = () => fab.classList.remove("onboarding-nudge");
+                fab.addEventListener("click", () => {
+                    dismiss();
+                }, { once: true });
+                return;
+            }
             const area = document.getElementById("taskAddArea");
+            const input = document.getElementById("addInput");
             if (!area) return;
             area.classList.add("onboarding-nudge");
             const dismiss = () => {
                 area.classList.remove("onboarding-nudge");
-                input.removeEventListener("focus", dismiss);
-                input.removeEventListener("keydown", dismiss);
+                if (input) {
+                    input.removeEventListener("focus", dismiss);
+                    input.removeEventListener("keydown", dismiss);
+                }
                 area.removeEventListener("click", dismiss);
             };
-            input.addEventListener("focus", dismiss, { once: true });
-            input.addEventListener("keydown", dismiss, { once: true });
+            if (input) {
+                input.addEventListener("focus", dismiss, { once: true });
+                input.addEventListener("keydown", dismiss, { once: true });
+            }
             area.addEventListener("click", dismiss, { once: true });
         }
 
@@ -8989,23 +9046,25 @@
         }
 
         function renderTourChrome(stepIndex) {
+            const steps = getTourSteps();
             const dotsEl = document.getElementById("onboardingStepDots");
             const titleEl = document.getElementById("onboardingCardTitle");
             const bodyEl = document.getElementById("onboardingCardBody");
             const nextBtn = document.getElementById("onboardingTourNext");
-            const step = TOUR_STEPS[stepIndex];
+            const step = steps[stepIndex];
             if (!step || !dotsEl) return;
-            dotsEl.innerHTML = TOUR_STEPS.map((_, i) =>
+            dotsEl.innerHTML = steps.map((_, i) =>
                 `<span class="onboarding-step-dot${i === stepIndex ? " is-active" : ""}"></span>`
             ).join("");
             titleEl.textContent = step.title;
             bodyEl.textContent = step.body;
-            nextBtn.textContent = stepIndex >= TOUR_STEPS.length - 1 ? "Got it" : "Next";
+            nextBtn.textContent = stepIndex >= steps.length - 1 ? "Got it" : "Next";
         }
 
         function goTourStep(stepIndex) {
             tourStepIndex = stepIndex;
-            const step = TOUR_STEPS[stepIndex];
+            const steps = getTourSteps();
+            const step = steps[stepIndex];
             if (!step) {
                 completeOnboarding();
                 return;
@@ -9053,7 +9112,7 @@
             tourEl.classList.add("is-active");
             const state = loadOnboardingState() || {};
             const step = Number.isFinite(fromStep) ? fromStep : (state.tourStep || 0);
-            goTourStep(Math.min(Math.max(0, step), TOUR_STEPS.length - 1));
+            goTourStep(Math.min(Math.max(0, step), getTourSteps().length - 1));
         }
 
         function hideTour() {
@@ -9063,7 +9122,7 @@
 
         function advanceTour() {
             const next = tourStepIndex + 1;
-            if (next >= TOUR_STEPS.length) {
+            if (next >= getTourSteps().length) {
                 completeOnboarding();
                 return;
             }
@@ -9077,7 +9136,7 @@
             const state = loadOnboardingState() || {};
             state.completed = true;
             state.tourCompleted = true;
-            state.tourStep = TOUR_STEPS.length - 1;
+            state.tourStep = getTourSteps().length - 1;
             saveOnboardingState(state);
             hideTour();
             resetToFreshWorkspace();
