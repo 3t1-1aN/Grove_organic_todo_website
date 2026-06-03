@@ -4593,7 +4593,10 @@
                 </div>
             </div>
             <div class="mobile-add-field">
-                <span class="mobile-add-label">Category</span>
+                <div class="mobile-add-field-head">
+                    <span class="mobile-add-label">Category</span>
+                    <button type="button" class="mobile-add-cat-manage" id="mobileAddCatManage">Manage</button>
+                </div>
                 <div class="mobile-add-category-row" id="mobileAddCategoryRow"></div>
             </div>
             <button type="button" class="mobile-add-submit" id="mobileAddSubmit">Add task</button>
@@ -4718,8 +4721,6 @@
                                 aria-selected="true">List</button>
                             <button type="button" class="layout-tab" data-layout="kanban" role="tab"
                                 aria-selected="false">Kanban</button>
-                            <button type="button" class="layout-tab" data-layout="compact" role="tab"
-                                aria-selected="false">Compact</button>
                             <button type="button" class="layout-tab" data-layout="eisenhower" role="tab"
                                 aria-selected="false">Matrix</button>
                         </div>
@@ -4978,7 +4979,7 @@
         let filter = "active";
         let priorityFilter = "all";
         let taskLayout = "list";
-        const TASK_LAYOUTS = ["list", "kanban", "compact", "eisenhower"];
+        const TASK_LAYOUTS = ["list", "kanban", "eisenhower"];
         let selected = null;
         let priorityMenuId = null;
         let toastTimer = null;
@@ -6087,6 +6088,8 @@
         const MOBILE_BACKDROP_GUARD_MS = 350;
         let mobileAddPriority = "med";
         let mobileAddCategoryId = null;
+        let mobileAddCategoryNewMode = false;
+        let mobileActionDismissedId = null;
 
         function layoutMobileFiltersHost() {
             const host = document.getElementById("sidebarFiltersHost");
@@ -6155,6 +6158,8 @@
             if (open) {
                 setMobileFiltersOpen(false);
                 setMobileAddSheetOpen(false);
+            } else if (isPhoneViewport() && selected) {
+                mobileActionDismissedId = selected;
             }
             document.body.classList.toggle("mobile-actions-open", open);
             const sheet = document.getElementById("mobileActionSheet");
@@ -6171,7 +6176,7 @@
             const row = document.getElementById("mobileAddCategoryRow");
             if (!row) return;
             const activeId = mobileAddCategoryId ?? defaultCategoryId;
-            row.innerHTML = categories.map(c => {
+            const chips = categories.map(c => {
                 const active = c.id === activeId ? " active" : "";
                 const color = CATEGORY_COLORS[c.color] || CATEGORY_COLORS.green;
                 return `<button type="button" class="mobile-add-cat-chip${active}" data-mobile-cat="${c.id}">
@@ -6179,12 +6184,56 @@
                     <span>${escapeHtml(c.label)}</span>
                 </button>`;
             }).join("");
+            const newPart = mobileAddCategoryNewMode
+                ? `<div class="mobile-add-cat-new">
+                        <input type="text" class="mobile-add-cat-new-input" id="mobileAddCatNewInput"
+                            placeholder="Category name…" maxlength="24" autocomplete="off" />
+                   </div>`
+                : `<button type="button" class="mobile-add-cat-chip mobile-add-cat-new-toggle" id="mobileAddCatNewToggle">
+                        <span class="mobile-add-cat-dot mobile-add-cat-dot-new"></span>
+                        <span>New</span>
+                   </button>`;
+            row.innerHTML = chips + newPart;
+
             row.querySelectorAll("[data-mobile-cat]").forEach(btn => {
                 btn.addEventListener("click", () => {
                     mobileAddCategoryId = btn.getAttribute("data-mobile-cat");
+                    mobileAddCategoryNewMode = false;
                     renderMobileAddCategories();
                 });
             });
+
+            const newToggle = row.querySelector("#mobileAddCatNewToggle");
+            if (newToggle) {
+                newToggle.addEventListener("click", () => {
+                    mobileAddCategoryNewMode = true;
+                    renderMobileAddCategories();
+                    requestAnimationFrame(() => {
+                        const inp = document.getElementById("mobileAddCatNewInput");
+                        if (inp) inp.focus();
+                    });
+                });
+            }
+
+            const newInp = row.querySelector("#mobileAddCatNewInput");
+            if (newInp) {
+                newInp.addEventListener("keydown", e => {
+                    if (e.key === "Enter") {
+                        const cat = createCategoryFromLabel(newInp.value);
+                        if (cat) {
+                            mobileAddCategoryId = cat.id;
+                            mobileAddCategoryNewMode = false;
+                            save();
+                            renderMobileAddCategories();
+                            renderCategoryFilter();
+                            renderCategoryManage();
+                        }
+                    } else if (e.key === "Escape") {
+                        mobileAddCategoryNewMode = false;
+                        renderMobileAddCategories();
+                    }
+                });
+            }
         }
 
         function resetMobileAddForm() {
@@ -6192,6 +6241,7 @@
             if (inp) inp.value = "";
             mobileAddPriority = "med";
             mobileAddCategoryId = defaultCategoryId;
+            mobileAddCategoryNewMode = false;
             document.querySelectorAll(".mobile-priority-pill").forEach(p => {
                 p.classList.toggle("active", p.getAttribute("data-mobile-priority") === "med");
             });
@@ -6320,6 +6370,15 @@
             }
             if (actionClose) {
                 actionClose.addEventListener("click", () => setMobileActionSheetOpen(false));
+            }
+            const mobileAddCatManage = document.getElementById("mobileAddCatManage");
+            if (mobileAddCatManage) {
+                mobileAddCatManage.addEventListener("click", () => {
+                    catManageOpen = true;
+                    setMobileAddSheetOpen(false);
+                    setMobileFiltersOpen(true);
+                    renderCategoryManage();
+                });
             }
 
             window.addEventListener("beforeinstallprompt", e => {
@@ -6463,7 +6522,8 @@
             } else {
                 tasks = Array.isArray(data.tasks) ? data.tasks : structuredClone(DEFAULT_TASKS);
                 if (typeof data.nextId === "number") nextId = data.nextId;
-                if (TASK_LAYOUTS.includes(data.taskLayout)) taskLayout = data.taskLayout;
+                if (data.taskLayout === "compact") taskLayout = "list";
+                else if (TASK_LAYOUTS.includes(data.taskLayout)) taskLayout = data.taskLayout;
             }
 
             categories = (data && Array.isArray(data.categories)) ? data.categories.filter(c => c && c.id) : [];
@@ -7063,7 +7123,6 @@
                 el.addEventListener("click", e => {
                     if (matrixSuppressCardClick) return;
                     if (e.target.closest(".task-card") ||
-                        e.target.closest(".matrix-drag-handle") ||
                         e.target.closest("input, textarea, button.matrix-more-btn")) return;
                     e.stopPropagation();
                     openQuadrant(el.dataset.matrixOpen);
@@ -7140,23 +7199,18 @@
             return !!target.closest(
                 ".priority-bloom, .priority-orb, [data-priority-toggle], [data-choose-priority], " +
                 "[data-subtask-toggle], .subtask-pill, .subtask-region, [data-check], .check-wrap, " +
-                "[data-move-today], button:not(.matrix-drag-handle), input, textarea, select, a"
+                "[data-move-today], button, input, textarea, select, a"
             );
         }
 
         function matrixDragSurface(target, card) {
             if (!card.contains(target)) return false;
-            if (target.closest(".matrix-drag-handle")) return true;
             if (matrixDragBlockedTarget(target)) return false;
-            return !!target.closest(".task-body, .task-title, .task-tag");
+            return true;
         }
 
         function dragThresholdPx() {
             return isCoarsePointer() ? 8 : 6;
-        }
-
-        function isDragHandleTarget(target) {
-            return !!target.closest(".matrix-drag-handle, .kanban-drag-handle");
         }
 
         function clearMatrixDragOver() {
@@ -7190,13 +7244,6 @@
                 card.addEventListener("pointerdown", e => {
                     if (e.button !== 0) return;
                     if (!matrixDragSurface(e.target, card)) return;
-                    if (isDragHandleTarget(e.target)) {
-                        e.preventDefault();
-                        const handle = e.target.closest(".matrix-drag-handle");
-                        if (handle) {
-                            try { handle.setPointerCapture(e.pointerId); } catch { /* ignore */ }
-                        }
-                    }
 
                     const taskId = +card.dataset.id;
                     const DRAG_THRESHOLD = dragThresholdPx();
@@ -7270,15 +7317,14 @@
             return !!target.closest(
                 ".priority-bloom, .priority-orb, [data-priority-toggle], [data-choose-priority], " +
                 "[data-subtask-toggle], .subtask-pill, .subtask-region, [data-check], .check-wrap, " +
-                "[data-move-today], button:not(.kanban-drag-handle), input, textarea, select, a"
+                "[data-move-today], button, input, textarea, select, a"
             );
         }
 
         function kanbanDragSurface(target, card) {
             if (!card.contains(target)) return false;
-            if (target.closest(".kanban-drag-handle")) return true;
             if (kanbanDragBlockedTarget(target)) return false;
-            return !!target.closest(".task-body, .task-title, .task-tag");
+            return true;
         }
 
         function clearKanbanDragOver() {
@@ -7325,13 +7371,6 @@
                 card.addEventListener("pointerdown", e => {
                     if (e.button !== 0) return;
                     if (!kanbanDragSurface(e.target, card)) return;
-                    if (isDragHandleTarget(e.target)) {
-                        e.preventDefault();
-                        const handle = e.target.closest(".kanban-drag-handle");
-                        if (handle) {
-                            try { handle.setPointerCapture(e.pointerId); } catch { /* ignore */ }
-                        }
-                    }
 
                     const taskId = +card.dataset.id;
                     const DRAG_THRESHOLD = dragThresholdPx();
@@ -7924,13 +7963,14 @@
             const t = selected ? tasks.find(x => x.id === selected) : null;
             if (!t) {
                 actionBar.classList.add("hidden");
+                mobileActionDismissedId = null;
                 if (isPhoneViewport()) setMobileActionSheetOpen(false);
                 return;
             }
             actionBar.classList.remove("hidden");
             if (isPhoneViewport()) {
                 populateMobileActionSheet();
-                setMobileActionSheetOpen(true);
+                if (selected !== mobileActionDismissedId) setMobileActionSheetOpen(true);
             }
 
             const moveBacklog = document.getElementById("actMoveBacklog");
@@ -8035,12 +8075,6 @@
             const compactClass = compact ? " compact-card" : "";
             const expanded = expandedSubtasks.has(t.id);
             const expandedClass = expanded ? " subtasks-expanded" : "";
-            const matrixHandle = opts.matrix
-                ? `<button type="button" class="matrix-drag-handle" data-matrix-drag="${t.id}" aria-label="Drag to another quadrant" title="Drag to move">${icon("grip", 14)}</button>`
-                : "";
-            const kanbanHandle = isKanban
-                ? `<button type="button" class="kanban-drag-handle" data-kanban-drag="${t.id}" aria-label="Drag to another stage" title="Drag to move">${icon("grip", 14)}</button>`
-                : "";
             const lead = isBacklog
                 ? `<div class="card-slot" aria-hidden="true"></div>`
                 : `<div class="check-wrap${t.done ? " checked" : ""}" data-check="${t.id}">
@@ -8052,7 +8086,6 @@
             const priorityControl = (isKanban || matrixOverview) ? "" : priorityControlHtml(t.id, p);
 
             return `<div class="task-card${priorityClass}${compactClass}${expandedClass}${matrixOverview ? " matrix-overview-card" : ""}${t.done ? " done" : ""}${sel ? " selected" : ""}" data-id="${t.id}" data-stage="${getTaskStage(t)}">
-                ${matrixHandle}${kanbanHandle}
                 ${lead}
                 <div class="task-body">
                     <div class="task-tag">${taskTagInnerHtml(t, p, { kanban: isKanban, matrixOverview })}</div>
@@ -8130,11 +8163,10 @@
                     if (e.target.closest("[data-check]") || e.target.closest("[data-move-today]") ||
                         e.target.closest(".priority-bloom") ||
                         e.target.closest("[data-subtask-toggle]") ||
-                        e.target.closest(".subtask-region") ||
-                        e.target.closest(".matrix-drag-handle") ||
-                        e.target.closest(".kanban-drag-handle")) return;
+                        e.target.closest(".subtask-region")) return;
                     const id = +card.dataset.id;
                     selected = selected === id ? null : id;
+                    if (selected) mobileActionDismissedId = null;
                     closePriorityBloom();
                     render();
                 });
@@ -8273,10 +8305,6 @@
                 list.innerHTML = renderKanbanBoard(visible);
             } else if (taskLayout === "eisenhower") {
                 list.innerHTML = renderEisenhowerMatrix(visible);
-            } else if (taskLayout === "compact") {
-                list.innerHTML = visible.map(t =>
-                    renderTaskCard(t, { inBacklog, compact: true })
-                ).join("");
             } else {
                 list.innerHTML = visible.map(t =>
                     renderTaskCard(t, { inBacklog, compact: false })

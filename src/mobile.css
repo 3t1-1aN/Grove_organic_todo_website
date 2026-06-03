@@ -281,12 +281,55 @@ body.panel-animating .app-panel {
     gap: 10px;
 }
 
+.mobile-add-field-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
 .mobile-add-label {
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--text-muted);
+}
+
+.mobile-add-cat-manage {
+    border: none;
+    background: transparent;
+    padding: 4px 0;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-pale);
+    cursor: pointer;
+}
+
+.mobile-add-cat-new {
+    flex: 1 1 100%;
+    min-width: 100%;
+}
+
+.mobile-add-cat-new-input {
+    width: 100%;
+    min-height: 38px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-body);
+    outline: none;
+    box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+}
+
+.mobile-add-cat-dot-new {
+    background: transparent !important;
+    border: 1px dashed rgba(255, 255, 255, 0.35);
+    box-sizing: border-box;
 }
 
 .mobile-priority-pills {
@@ -603,16 +646,24 @@ body.panel-animating .app-panel {
         scroll-snap-align: start;
     }
 
-    .check-wrap {
-        min-width: 44px;
-        min-height: 44px;
+    .task-card .check-wrap {
+        width: 28px;
+        height: 28px;
+        min-width: 28px;
+        min-height: 28px;
+        flex-shrink: 0;
     }
 
-    .kanban-drag-handle,
-    .matrix-drag-handle {
-        min-width: 44px;
-        min-height: 44px;
-        touch-action: none;
+    .task-card .check-wrap .check-icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .kanban-board .task-card,
+    .matrix-grid .task-card,
+    .task-list.layout-eisenhower .task-card {
+        padding: 10px 12px;
+        gap: 10px;
     }
 
     body.kanban-drag-active .kanban-board,
