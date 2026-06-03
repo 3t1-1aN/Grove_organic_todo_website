@@ -1307,11 +1307,34 @@
         .layout-toolbar-end {
             display: flex;
             align-items: center;
+            justify-content: flex-end;
             gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .layout-toolbar-matrix-slot {
+            flex: 0 0 auto;
+            width: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .layout-toolbar-matrix-slot.is-active {
+            width: 7.75rem;
+            margin-left: 2px;
+        }
+
+        .matrix-quadrant-edit-toggle {
+            min-width: 7.75rem;
+            white-space: nowrap;
         }
 
         .matrix-quadrant-edit-toggle.hidden {
-            display: none;
+            visibility: hidden;
+            pointer-events: none;
         }
 
         .layout-tabs {
@@ -3724,7 +3747,7 @@
                 overflow-y: auto;
             }
 
-            .kanban-board {
+            .kanban-board:not(.kanban-board--mobile) {
                 grid-template-columns: 1fr;
                 grid-template-rows: repeat(3, var(--kanban-col-height-mobile));
                 flex: none;
@@ -3733,7 +3756,7 @@
                 max-height: var(--kanban-board-stacked-height);
             }
 
-            .task-list.layout-kanban {
+            .task-list.layout-kanban:not(.layout-kanban-mobile) {
                 overflow-y: auto;
             }
         }
@@ -4713,8 +4736,6 @@
                 <div class="layout-toolbar" id="layoutToolbar">
                     <span class="layout-toolbar-label">Layout</span>
                     <div class="layout-toolbar-end">
-                        <button type="button" class="cat-section-toggle matrix-quadrant-edit-toggle hidden"
-                            id="matrixQuadrantEditToggle" aria-expanded="false">Edit quadrants</button>
                         <div class="layout-tabs" role="tablist" aria-label="Task layout">
                             <div class="layout-tab-indicator" id="layoutTabIndicator" aria-hidden="true"></div>
                             <button type="button" class="layout-tab active" data-layout="list" role="tab"
@@ -4723,6 +4744,10 @@
                                 aria-selected="false">Kanban</button>
                             <button type="button" class="layout-tab" data-layout="eisenhower" role="tab"
                                 aria-selected="false">Matrix</button>
+                        </div>
+                        <div class="layout-toolbar-matrix-slot" id="layoutToolbarMatrixSlot">
+                            <button type="button" class="cat-section-toggle matrix-quadrant-edit-toggle hidden"
+                                id="matrixQuadrantEditToggle" aria-expanded="false">Edit quadrants</button>
                         </div>
                     </div>
                 </div>
@@ -6090,6 +6115,7 @@
         let mobileAddCategoryId = null;
         let mobileAddCategoryNewMode = false;
         let mobileActionDismissedId = null;
+        let mobileKanbanStage = "todo";
 
         function layoutMobileFiltersHost() {
             const host = document.getElementById("sidebarFiltersHost");
@@ -6276,6 +6302,13 @@
                 return;
             }
             const parts = [];
+            if (taskLayout === "kanban" && view === "today") {
+                const currentStage = getTaskStage(t);
+                STAGE_ORDER.forEach(stage => {
+                    if (stage === currentStage) return;
+                    parts.push(`<button type="button" class="action-btn" data-mobile-act-stage="${stage}">Move to ${STAGES[stage].label}</button>`);
+                });
+            }
             if (view === "today") {
                 if (!t.done) {
                     parts.push('<button type="button" class="action-btn" data-mobile-act="backlog">Move to backlog</button>');
@@ -6298,6 +6331,16 @@
             body.querySelector('[data-mobile-act="delete"]')?.addEventListener("click", () => {
                 document.getElementById("actDelete")?.click();
                 setMobileActionSheetOpen(false);
+            });
+            body.querySelectorAll("[data-mobile-act-stage]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    if (selected) {
+                        const stage = btn.getAttribute("data-mobile-act-stage");
+                        setTaskStage(selected, stage);
+                        mobileKanbanStage = stage;
+                    }
+                    setMobileActionSheetOpen(false);
+                });
             });
         }
 
@@ -7708,14 +7751,17 @@
                 taskLayout === "eisenhower" && isPhoneViewport() && !matrixFocusedQuadrant && !matrixQuadrantEditOpen);
             list.classList.toggle("matrix-phone-focused",
                 taskLayout === "eisenhower" && isPhoneViewport() && !!matrixFocusedQuadrant && !matrixQuadrantEditOpen);
+            const matrixSlot = document.getElementById("layoutToolbarMatrixSlot");
             const matrixEditBtn = document.getElementById("matrixQuadrantEditToggle");
+            const showMatrix = taskLayout === "eisenhower";
+            if (matrixSlot) matrixSlot.classList.toggle("is-active", showMatrix);
             if (matrixEditBtn) {
-                const show = taskLayout === "eisenhower";
-                matrixEditBtn.classList.toggle("hidden", !show);
+                matrixEditBtn.classList.toggle("hidden", !showMatrix);
                 matrixEditBtn.textContent = matrixQuadrantEditOpen ? "Done" : "Edit quadrants";
                 matrixEditBtn.classList.toggle("active", matrixQuadrantEditOpen);
                 matrixEditBtn.setAttribute("aria-expanded", matrixQuadrantEditOpen ? "true" : "false");
             }
+            list.classList.toggle("layout-kanban-mobile", taskLayout === "kanban" && isPhoneViewport());
             requestAnimationFrame(() => positionLayoutTabIndicator(false));
         }
 
@@ -8068,6 +8114,7 @@
             const isBacklog = opts.inBacklog;
             const compact = !!opts.compact;
             const isKanban = !!opts.kanban;
+            const mobileKanban = !!opts.mobileKanban;
             const matrixOverview = !!opts.matrixOverview;
             const sel = selected === t.id;
             const p = normalizePriority(t.priority);
@@ -8084,12 +8131,26 @@
                 ? `<button type="button" class="card-today-btn" data-move-today="${t.id}" ${canAddToToday() ? "" : "disabled"}>Add to today</button>`
                 : "";
             const priorityControl = (isKanban || matrixOverview) ? "" : priorityControlHtml(t.id, p);
+            const currentStage = getTaskStage(t);
+            const mobileKanbanRail = mobileKanban
+                ? `<div class="kanban-mobile-stage-rail" role="group" aria-label="Move to stage">${
+                    STAGE_ORDER.map(stage => {
+                        const isCurrent = stage === currentStage;
+                        return `<button type="button" class="kanban-mobile-move stage-${stage}${isCurrent ? " is-current" : ""}"
+                            data-kanban-move="${t.id}" data-stage="${stage}"${isCurrent ? ' aria-current="true"' : ""}
+                            aria-label="${isCurrent ? STAGES[stage].label + " (current)" : "Move to " + STAGES[stage].label}">
+                            <span class="kanban-mobile-move-label">${STAGES[stage].label}</span>
+                        </button>`;
+                    }).join("")
+                }</div>`
+                : "";
 
-            return `<div class="task-card${priorityClass}${compactClass}${expandedClass}${matrixOverview ? " matrix-overview-card" : ""}${t.done ? " done" : ""}${sel ? " selected" : ""}" data-id="${t.id}" data-stage="${getTaskStage(t)}">
+            return `<div class="task-card${priorityClass}${compactClass}${expandedClass}${matrixOverview ? " matrix-overview-card" : ""}${t.done ? " done" : ""}${sel ? " selected" : ""}" data-id="${t.id}" data-stage="${currentStage}">
                 ${lead}
                 <div class="task-body">
                     <div class="task-tag">${taskTagInnerHtml(t, p, { kanban: isKanban, matrixOverview })}</div>
                     <div class="task-title">${escapeHtml(t.title)}</div>
+                    ${mobileKanbanRail}
                 </div>
                 ${priorityControl}
                 ${todayBtn}
@@ -8108,8 +8169,44 @@
             });
         }
 
+        function resolveMobileKanbanStage(byStage) {
+            if ((byStage[mobileKanbanStage] || []).length > 0) return mobileKanbanStage;
+            return STAGE_ORDER.find(s => (byStage[s] || []).length > 0) || mobileKanbanStage;
+        }
+
+        function renderMobileKanbanBoard(visible, inBacklog) {
+            const byStage = Object.fromEntries(STAGE_ORDER.map(s => [s, []]));
+            visible.forEach(t => byStage[getTaskStage(t)].push(t));
+            const stage = resolveMobileKanbanStage(byStage);
+            mobileKanbanStage = stage;
+
+            const nav = STAGE_ORDER.map(s => {
+                const count = byStage[s].length;
+                const active = s === stage ? " active" : "";
+                return `<button type="button" class="kanban-stage-tab stage-${s}${active}" role="tab"
+                    aria-selected="${s === stage ? "true" : "false"}" data-kanban-stage-tab="${s}">
+                    <span class="kanban-stage-tab-label">${STAGES[s].label}</span>
+                    <span class="kanban-stage-tab-count">${count}</span>
+                </button>`;
+            }).join("");
+
+            const items = byStage[stage];
+            const cards = items.length
+                ? items.map(t => renderTaskCard(t, { inBacklog, kanban: true, mobileKanban: true })).join("")
+                : `<div class="kanban-empty">No tasks in ${STAGES[stage].label}</div>`;
+
+            return `<div class="kanban-board kanban-board--mobile" role="region" aria-label="Kanban board">
+                <div class="kanban-stage-nav" role="tablist" aria-label="Workflow stage">${nav}</div>
+                <div class="kanban-mobile-panel" data-kanban-stage-panel="${stage}">
+                    <div class="kanban-mobile-cards">${cards}</div>
+                </div>
+            </div>`;
+        }
+
         function renderKanbanBoard(visible) {
             const inBacklog = view === "backlog";
+            if (isPhoneViewport()) return renderMobileKanbanBoard(visible, inBacklog);
+
             const byStage = Object.fromEntries(STAGE_ORDER.map(s => [s, []]));
             visible.forEach(t => byStage[getTaskStage(t)].push(t));
 
@@ -8163,7 +8260,8 @@
                     if (e.target.closest("[data-check]") || e.target.closest("[data-move-today]") ||
                         e.target.closest(".priority-bloom") ||
                         e.target.closest("[data-subtask-toggle]") ||
-                        e.target.closest(".subtask-region")) return;
+                        e.target.closest(".subtask-region") ||
+                        e.target.closest(".kanban-mobile-move")) return;
                     const id = +card.dataset.id;
                     selected = selected === id ? null : id;
                     if (selected) mobileActionDismissedId = null;
@@ -8237,8 +8335,30 @@
             }
 
             if (taskLayout === "kanban") {
-                bindKanbanEvents();
+                bindMobileKanbanEvents();
+                if (!isPhoneViewport()) bindKanbanEvents();
             }
+        }
+
+        function bindMobileKanbanEvents() {
+            if (!isPhoneViewport() || taskLayout !== "kanban") return;
+            list.querySelectorAll("[data-kanban-stage-tab]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    mobileKanbanStage = btn.getAttribute("data-kanban-stage-tab") || "todo";
+                    render();
+                });
+            });
+            list.querySelectorAll("[data-kanban-move]").forEach(btn => {
+                btn.addEventListener("click", e => {
+                    e.stopPropagation();
+                    const id = +btn.getAttribute("data-kanban-move");
+                    const stage = btn.getAttribute("data-stage");
+                    if (stage) {
+                        setTaskStage(id, stage);
+                        mobileKanbanStage = stage;
+                    }
+                });
+            });
         }
 
         function renderTaskEmptyState() {

@@ -623,6 +623,23 @@ body.panel-animating .app-panel {
     .layout-toolbar-end {
         width: 100%;
         min-width: 0;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .layout-tabs {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .layout-toolbar-matrix-slot.is-active {
+        flex-shrink: 0;
+    }
+
+    .matrix-quadrant-edit-toggle {
+        min-height: 40px;
+        padding: 8px 12px;
+        font-size: 12px;
     }
 
     .task-list {
@@ -683,50 +700,172 @@ body.panel-animating .app-panel {
         padding: 8px 14px;
     }
 
-    /* Kanban: horizontal lanes + vertical scroll inside columns */
-    .kanban-board {
-        display: flex;
-        flex-direction: row;
-        align-items: stretch;
-        gap: 12px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scroll-snap-type: x proximity;
-        touch-action: pan-x;
-        -webkit-overflow-scrolling: touch;
-        flex: 1;
-        min-height: min(58dvh, 520px);
-        max-height: min(58dvh, 520px);
-        height: auto;
-        padding-bottom: 4px;
-    }
-
-    .kanban-col {
-        flex: 0 0 min(86vw, 320px);
-        scroll-snap-align: start;
-        height: 100%;
-        max-height: none;
+    /* Kanban (mobile): one stage at a time — tabs + full-width list, tap to move */
+    .task-list.layout-kanban.layout-kanban-mobile {
+        overflow: hidden;
         display: flex;
         flex-direction: column;
         min-height: 0;
     }
 
-    .kanban-col-body {
+    .kanban-board--mobile {
+        display: flex;
+        flex-direction: column;
         flex: 1;
         min-height: 0;
-        max-height: none;
+        gap: 12px;
+    }
+
+    .kanban-stage-nav {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        padding: 4px;
+        border-radius: 14px;
+        background: rgba(0, 0, 0, 0.22);
+        border: 0.5px solid rgba(255, 255, 255, 0.06);
+        flex-shrink: 0;
+    }
+
+    .kanban-stage-tab {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        min-height: 52px;
+        padding: 8px 6px;
+        border: none;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--text-muted);
+        font-family: inherit;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .kanban-stage-tab-label {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    .kanban-stage-tab-count {
+        font-size: 15px;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--text-body);
+    }
+
+    .kanban-stage-tab.stage-todo.active {
+        background: rgba(160, 200, 170, 0.12);
+        color: rgba(180, 220, 190, 0.95);
+        box-shadow: inset 0 0 0 0.5px rgba(160, 200, 170, 0.25);
+    }
+
+    .kanban-stage-tab.stage-in_progress.active {
+        background: rgba(255, 176, 96, 0.14);
+        color: rgba(255, 200, 130, 0.95);
+        box-shadow: inset 0 0 0 0.5px rgba(255, 176, 96, 0.3);
+    }
+
+    .kanban-stage-tab.stage-done.active {
+        background: rgba(74, 222, 128, 0.14);
+        color: rgba(134, 239, 172, 0.95);
+        box-shadow: inset 0 0 0 0.5px rgba(74, 222, 128, 0.28);
+    }
+
+    .kanban-mobile-panel {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .kanban-mobile-cards {
+        flex: 1;
+        min-height: 0;
         overflow-y: auto;
-        overflow-x: hidden;
-        touch-action: pan-y;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-y: contain;
-    }
-
-    .task-list.layout-kanban {
-        overflow: visible;
         display: flex;
         flex-direction: column;
-        min-height: 0;
+        gap: 10px;
+        padding-bottom: 8px;
+    }
+
+    .kanban-board--mobile .task-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .kanban-board--mobile .task-card .check-wrap {
+        align-self: flex-start;
+    }
+
+    .kanban-board--mobile .task-body {
+        width: 100%;
+    }
+
+    .kanban-mobile-stage-rail {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 0.5px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .kanban-mobile-move {
+        min-height: 36px;
+        padding: 6px 4px;
+        border: 0.5px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-muted);
+        font-family: inherit;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        line-height: 1.15;
+        text-align: center;
+        cursor: pointer;
+        transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .kanban-mobile-move-label {
+        display: block;
+    }
+
+    .kanban-mobile-move.is-current {
+        cursor: default;
+        pointer-events: none;
+    }
+
+    .kanban-mobile-move.stage-todo.is-current {
+        background: rgba(160, 200, 170, 0.14);
+        border-color: rgba(160, 200, 170, 0.28);
+        color: rgba(180, 220, 190, 0.95);
+    }
+
+    .kanban-mobile-move.stage-in_progress.is-current {
+        background: rgba(255, 176, 96, 0.14);
+        border-color: rgba(255, 176, 96, 0.32);
+        color: rgba(255, 200, 130, 0.95);
+    }
+
+    .kanban-mobile-move.stage-done.is-current {
+        background: rgba(74, 222, 128, 0.14);
+        border-color: rgba(74, 222, 128, 0.3);
+        color: rgba(134, 239, 172, 0.95);
+    }
+
+    .kanban-board--mobile .kanban-empty {
+        margin-top: 24px;
     }
 
     /* Matrix: 2×2 overview fills the task area; drill into one quadrant on tap */
