@@ -5810,6 +5810,7 @@
 
         function setWorkDuration(minutes) {
             if (timerState.running) return;
+            if (!Number.isFinite(minutes) || minutes <= 0) return;
             timerState.workMinutes = minutes;
             if (timerState.phase === "work") {
                 timerState.secondsLeft = minutes * 60;
@@ -9775,7 +9776,7 @@
         document.getElementById("focusReset").addEventListener("click", resetTimer);
         document.getElementById("focusSkip").addEventListener("click", skipTimerPhase);
 
-        document.querySelectorAll(".focus-dur-btn").forEach(btn => {
+        document.querySelectorAll("#focusDurations .focus-dur-btn").forEach(btn => {
             btn.addEventListener("click", () => setWorkDuration(+btn.dataset.work));
         });
 
