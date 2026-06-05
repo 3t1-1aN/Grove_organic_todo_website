@@ -15,7 +15,7 @@ Phone layout uses **full-viewport glass** (no green blob wallpaper behind a floa
 
 | Control | Behavior |
 |---------|----------|
-| **+ FAB** | Bottom-right floating button opens the **New task** sheet (title, priority, category) |
+| **+ FAB** | Bottom-right floating button opens the **New task** sheet (title, optional **Done by**, priority, category) |
 | **Filters** | Compact button in the task top bar opens a body-level filters sheet (priority, status, categories) |
 | **Task tap** | Opens the task actions sheet (move / remove) |
 
@@ -37,7 +37,7 @@ Vercel runs `npm run build:pwa` on deploy (`vercel.json`). The `app/` folder is 
 | Topic | Limitation |
 |-------|------------|
 | iOS storage | Safari may evict site data after ~7 days of no use |
-| Background timer | Pomodoro pauses when the app is hidden |
+| Background timer | Wall-clock `endsAt` + Capacitor `appStateChange` reconcile; optional local notification at phase end (Android) |
 | Push / widgets | Not in PWA v1 |
 | Haptics | Weak on iOS; native wrapper later |
 
@@ -127,7 +127,7 @@ Signed release builds need a keystore (never commit secrets). Use `assembleRelea
 | Milestone | Approach |
 |-----------|----------|
 | **Debug APK (now)** | `localStorage` — same as PWA |
-| **Follow-up** | `@capacitor/preferences` migration + **local notifications** for Pomodoro in background |
+| **Follow-up** | `@capacitor/preferences` migration; richer Pomodoro notification copy |
 
 ## Deferred: iOS
 
@@ -145,7 +145,10 @@ When ready on a Mac:
 | Close hides window | Yes | N/A |
 | Min window 1100px | Yes | No |
 | Full-bleed phone glass | N/A | Yes (≤480px) |
-| Pomodoro in background | Yes | Pause (or notifications later) |
+| Pomodoro in background | Yes | Yes (v1.0.2: wall-clock `endsAt`, resume reconcile, phase-end local notification on native; “Keep screen on” only while Focus is open) |
+| Android app version | — | `versionName` **1.0.2** (`versionCode` 3 in debug APK) |
+| Done by (due date/time) | Yes (v1.0.2) | Yes (v1.0.2) |
+| Due-time OS notification | **Windows only** (v1.0.2, opt-in) | No (toast at due on macOS/Linux desktop; Android later) |
 
 ## Related files
 

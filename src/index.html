@@ -512,6 +512,38 @@
             gap: 20px;
         }
 
+        .focus-wake-toggle {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 14px;
+            font-size: 12px;
+            color: rgba(170, 210, 180, 0.72);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .focus-wake-toggle input {
+            width: 16px;
+            height: 16px;
+            accent-color: rgba(74, 222, 128, 0.85);
+            cursor: pointer;
+        }
+
+        .focus-wake-hint {
+            position: relative;
+            z-index: 1;
+            margin: 8px 12px 0;
+            max-width: 280px;
+            text-align: center;
+            font-size: 11px;
+            line-height: 1.4;
+            color: rgba(160, 200, 170, 0.55);
+        }
+
         /* Circular raised neumorphic buttons — same dual-shadow recipe as .view-tab */
         .focus-ctrl {
             width: 52px;
@@ -1758,12 +1790,39 @@
         .layout-kanban .task-card {
             max-height: none;
             width: 100%;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .layout-kanban .task-card-top {
+            display: flex;
             align-items: flex-start;
+            gap: 14px;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .layout-kanban .task-card-top .task-body {
+            flex: 1;
+            min-width: 0;
         }
 
         .layout-kanban .task-body {
             min-width: 0;
             flex: 1 1 0;
+        }
+
+        .layout-kanban .task-card .subtask-region {
+            order: 2;
+            width: 100%;
+            flex: 0 0 auto;
+            flex-basis: auto;
+            align-self: stretch;
+        }
+
+        .layout-kanban .task-card .subtask-region-inner {
+            padding-left: 0;
+            margin-left: 42px;
         }
 
         .layout-kanban .task-tag {
@@ -2141,6 +2200,111 @@
             line-height: 1.35;
         }
 
+        .task-due {
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(160, 200, 170, 0.62);
+            margin-top: 3px;
+            line-height: 1.3;
+        }
+
+        .task-due-overdue {
+            color: rgba(251, 191, 36, 0.88);
+        }
+
+        .add-due-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .add-due-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: rgba(120, 160, 130, 0.55);
+            flex-shrink: 0;
+        }
+
+        .add-due-input {
+            flex: 1;
+            min-width: 0;
+            font-size: 12px;
+            font-family: inherit;
+            color: rgba(200, 230, 210, 0.88);
+            background: rgba(0, 0, 0, 0.22);
+            border: 0.5px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            padding: 7px 10px;
+            outline: none;
+        }
+
+        .add-due-input:focus {
+            border-color: rgba(134, 239, 172, 0.22);
+        }
+
+        .add-due-clear {
+            flex-shrink: 0;
+            font-size: 11px;
+            font-family: inherit;
+            color: rgba(160, 200, 170, 0.7);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px 8px;
+            border-radius: 8px;
+        }
+
+        .add-due-clear:hover {
+            color: rgba(200, 230, 210, 0.9);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .notify-settings {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 0.5px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            z-index: 1;
+        }
+
+        .notify-toggle-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .notify-toggle-row.is-disabled {
+            cursor: default;
+            opacity: 0.72;
+        }
+
+        .notify-toggle-row input {
+            margin-top: 2px;
+            accent-color: var(--accent-light);
+        }
+
+        .notify-toggle-text {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(200, 230, 210, 0.88);
+            line-height: 1.35;
+        }
+
+        .notify-hint {
+            margin: 6px 0 0 26px;
+            font-size: 11px;
+            line-height: 1.4;
+            color: rgba(120, 160, 130, 0.55);
+        }
+
         .priority-bloom {
             position: relative;
             flex-shrink: 0;
@@ -2461,6 +2625,79 @@
 
         .action-bar.hidden {
             display: none;
+        }
+
+        .task-edit-panel {
+            margin-bottom: 12px;
+            padding: 14px;
+            border-radius: 16px;
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.22);
+            animation: barIn 0.25s cubic-bezier(0.34, 1.4, 0.64, 1);
+        }
+
+        .task-edit-panel.hidden {
+            display: none;
+        }
+
+        .task-edit-panel-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .task-edit-title-input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.28);
+            color: var(--text-body);
+            font-family: inherit;
+            font-size: 15px;
+        }
+
+        .task-edit-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .task-edit-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        .task-edit-due-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-edit-due-input {
+            flex: 1;
+            min-width: 0;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.28);
+            color: var(--text-body);
+            font-family: inherit;
+            font-size: 13px;
+        }
+
+        .task-edit-category-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .task-edit-actions {
+            display: flex;
+            gap: 8px;
         }
 
         @keyframes barIn {
@@ -4598,6 +4835,14 @@
             <input type="text" class="mobile-add-input" id="mobileAddInput" placeholder="What needs doing?" maxlength="60"
                 autocomplete="off" enterkeyhint="done" />
             <div class="mobile-add-field">
+                <span class="mobile-add-label">Done by</span>
+                <div class="mobile-add-due-row">
+                    <input type="datetime-local" class="mobile-add-due-input" id="mobileAddDueInput"
+                        aria-label="Done by date and time" />
+                    <button type="button" class="add-due-clear" id="mobileAddDueClear" hidden>Clear</button>
+                </div>
+            </div>
+            <div class="mobile-add-field">
                 <span class="mobile-add-label">Priority</span>
                 <div class="mobile-priority-pills" role="group" aria-label="Priority">
                     <button type="button" class="mobile-priority-pill" data-mobile-priority="high">High</button>
@@ -4614,6 +4859,31 @@
                 <div class="mobile-add-category-row" id="mobileAddCategoryRow"></div>
             </div>
             <button type="button" class="mobile-add-submit" id="mobileAddSubmit">Add task</button>
+        </div>
+    </div>
+    <div class="mobile-sheet mobile-edit-sheet" id="mobileEditSheet" aria-hidden="true" hidden>
+        <div class="mobile-sheet-head">
+            <span class="mobile-sheet-title">Edit task</span>
+            <button type="button" class="mobile-sheet-close" id="mobileEditSheetClose" aria-label="Close">&times;</button>
+        </div>
+        <div class="mobile-sheet-body mobile-add-body">
+            <input type="text" class="mobile-add-input" id="mobileEditInput" placeholder="Task title" maxlength="60"
+                autocomplete="off" enterkeyhint="done" />
+            <div class="mobile-add-field">
+                <span class="mobile-add-label">Done by</span>
+                <div class="mobile-add-due-row">
+                    <input type="datetime-local" class="mobile-add-due-input" id="mobileEditDueInput"
+                        aria-label="Done by date and time" />
+                    <button type="button" class="add-due-clear" id="mobileEditDueClear" hidden>Clear</button>
+                </div>
+            </div>
+            <div class="mobile-add-field">
+                <div class="mobile-add-field-head">
+                    <span class="mobile-add-label">Category</span>
+                </div>
+                <div class="mobile-add-category-row" id="mobileEditCategoryRow"></div>
+            </div>
+            <button type="button" class="mobile-add-submit" id="mobileEditSubmit">Save changes</button>
         </div>
     </div>
     <button type="button" class="mobile-fab" id="mobileFab" aria-label="Add task" hidden>
@@ -4703,12 +4973,43 @@
 
                 <div class="action-bar hidden" id="actionBar">
                     <div class="action-bar-actions">
+                        <button type="button" class="action-btn" id="actEdit">Edit</button>
                         <button type="button" class="action-btn" id="actMoveBacklog">Move to backlog</button>
                         <button type="button" class="action-btn primary" id="actMoveToday">Add to today</button>
                         <button type="button" class="action-btn" id="actDelete">Remove</button>
                     </div>
                 </div>
 
+                <div class="task-edit-panel hidden" id="taskEditPanel" aria-hidden="true">
+                    <div class="task-edit-panel-inner">
+                        <input type="text" class="task-edit-title-input" id="taskEditTitleInput" placeholder="Task title"
+                            maxlength="60" autocomplete="off" />
+                        <div class="task-edit-field">
+                            <span class="task-edit-label">Done by</span>
+                            <div class="task-edit-due-row">
+                                <input type="datetime-local" class="task-edit-due-input" id="taskEditDueInput"
+                                    aria-label="Done by date and time" />
+                                <button type="button" class="add-due-clear" id="taskEditDueClear" hidden>Clear</button>
+                            </div>
+                        </div>
+                        <div class="task-edit-field">
+                            <span class="task-edit-label">Category</span>
+                            <div class="task-edit-category-row" id="taskEditCategoryRow"></div>
+                        </div>
+                        <div class="task-edit-actions">
+                            <button type="button" class="action-btn" id="taskEditCancel">Cancel</button>
+                            <button type="button" class="action-btn primary" id="taskEditSave">Save</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notify-settings" id="notifySettings" hidden>
+                    <label class="notify-toggle-row" id="notifyToggleRow">
+                        <input type="checkbox" id="notifyToggle" />
+                        <span class="notify-toggle-text">Due-time alerts</span>
+                    </label>
+                    <p class="notify-hint" id="notifyHint"></p>
+                </div>
                 <div class="add-area" id="taskAddArea">
                     <button type="button" class="category-chip" id="categoryChip" aria-haspopup="true"
                         aria-expanded="false" title="Category for new task">
@@ -4718,6 +5019,12 @@
                     <input class="add-input" id="addInput" placeholder="Add a new task…" maxlength="60"
                         autocomplete="off" />
                     <button type="button" class="add-btn" id="addBtn" aria-label="Add task"></button>
+                </div>
+                <div class="add-due-row" id="addDueRow">
+                    <span class="add-due-label">Done by</span>
+                    <input type="datetime-local" class="add-due-input" id="addDueInput"
+                        aria-label="Done by date and time" />
+                    <button type="button" class="add-due-clear" id="addDueClear" hidden>Clear</button>
                 </div>
                 <div class="category-chip-popover" id="categoryChipPopover" role="menu"
                     aria-labelledby="categoryChip"></div>
@@ -4836,6 +5143,11 @@
                     <button type="button" class="focus-main-btn" id="focusMain">Start</button>
                     <button type="button" class="focus-ctrl" id="focusSkip" title="Skip" aria-label="Skip phase"></button>
                 </div>
+                <label class="focus-wake-toggle">
+                    <input type="checkbox" id="focusKeepAwake" />
+                    <span>Keep screen on while Focus is open</span>
+                </label>
+                <p class="focus-wake-hint" id="focusWakeHint">Timer uses the clock — it keeps running when the phone sleeps and updates when you return.</p>
             </div>
         </div>
     </div>
@@ -4930,8 +5242,10 @@
         const STORAGE_KEY = "organic-todo-v2";
         const ONBOARDING_STORAGE_KEY = "grove-onboarding-v2";
         const TIMER_STORAGE_KEY = "organic-todo-timer-v1";
+        const POMODORO_NOTIF_ID = 982001;
         const FOCUS_STORAGE_KEY = "organic-todo-focus-v1";
         const NOTES_STORAGE_KEY = "organic-notes-v1";
+        const NOTIFY_STORAGE_KEY = "organic-todo-notify-v1";
         const NOTE_MAX_LEN = 500;
 
         const PRIORITY_ORDER = ["high", "med", "low"];
@@ -5000,6 +5314,9 @@
         let priorityMenuId = null;
         let toastTimer = null;
 
+        let notificationsEnabled = false;
+        const taskReminderTimeouts = new Map();
+
         let categories = [];
         let defaultCategoryId = null;
         let categoryFilters = new Set();
@@ -5019,6 +5336,10 @@
         let categoryChipOpen = false;
         let categoryChipNewMode = false;
 
+        let editingTaskId = null;
+        let editCategoryId = null;
+        let editCategoryNewMode = false;
+
         let timerTickInterval = null;
         let timerState = {
             workMinutes: 25,
@@ -5027,7 +5348,10 @@
             running: false,
             endsAt: null,
             secondsLeft: 25 * 60,
+            keepScreenAwake: false,
         };
+
+        let pomodoroWakeLock = null;
 
         let focusMode = "daily";
         let focusOnlyTasks = [];
@@ -5136,28 +5460,164 @@
                 timerState.endsAt = null;
                 timerState.secondsLeft = seconds || phaseDefault;
             }
+            if (typeof timerState.keepScreenAwake !== "boolean") {
+                timerState.keepScreenAwake = isCapacitorNative();
+            }
+        }
+
+        async function releasePomodoroWakeLock() {
+            if (!pomodoroWakeLock) return;
+            try {
+                await pomodoroWakeLock.release();
+            } catch { /* ignore */ }
+            pomodoroWakeLock = null;
+        }
+
+        async function acquirePomodoroWakeLock() {
+            if (!timerState.keepScreenAwake || !timerState.running ||
+                appTab !== "focus" || focusMode !== "pomodoro" || !navigator.wakeLock) {
+                await releasePomodoroWakeLock();
+                return;
+            }
+            if (pomodoroWakeLock) return;
+            try {
+                pomodoroWakeLock = await navigator.wakeLock.request("screen");
+                pomodoroWakeLock.addEventListener("release", () => {
+                    pomodoroWakeLock = null;
+                });
+            } catch {
+                pomodoroWakeLock = null;
+            }
+        }
+
+        function syncPomodoroWakeLock() {
+            acquirePomodoroWakeLock();
+        }
+
+        function getCapAppPlugin() {
+            return window.Capacitor?.Plugins?.App ?? null;
+        }
+
+        function getCapLocalNotificationsPlugin() {
+            return window.Capacitor?.Plugins?.LocalNotifications ?? null;
+        }
+
+        async function cancelPomodoroAlarm() {
+            const LN = getCapLocalNotificationsPlugin();
+            if (!LN) return;
+            try {
+                await LN.cancel({ notifications: [{ id: POMODORO_NOTIF_ID }] });
+            } catch { /* ignore */ }
+        }
+
+        async function ensurePomodoroNotifPermission() {
+            const LN = getCapLocalNotificationsPlugin();
+            if (!LN || !isCapacitorNative()) return false;
+            try {
+                const status = await LN.checkPermissions();
+                if (status.display === "granted") return true;
+                const req = await LN.requestPermissions();
+                return req.display === "granted";
+            } catch {
+                return false;
+            }
+        }
+
+        async function schedulePomodoroAlarm() {
+            await cancelPomodoroAlarm();
+            if (!timerState.running || timerState.endsAt == null || !isCapacitorNative()) return;
+            const LN = getCapLocalNotificationsPlugin();
+            if (!LN) return;
+            const atMs = Number(timerState.endsAt);
+            if (!Number.isFinite(atMs) || atMs <= Date.now()) return;
+            if (!(await ensurePomodoroNotifPermission())) return;
+            const isWork = timerState.phase === "work";
+            try {
+                await LN.schedule({
+                    notifications: [{
+                        id: POMODORO_NOTIF_ID,
+                        title: isWork ? "Grove — Focus done" : "Grove — Break over",
+                        body: isWork ? "Take a break." : "Ready to focus again.",
+                        schedule: { at: new Date(atMs) },
+                    }],
+                });
+            } catch { /* ignore */ }
+        }
+
+        function reconcileRunningTimer() {
+            if (!timerState.running || timerState.endsAt == null) {
+                updateTimerUI();
+                return;
+            }
+            const left = Math.max(0, Math.ceil((timerState.endsAt - Date.now()) / 1000));
+            timerState.secondsLeft = left;
+            if (left <= 0) {
+                onTimerPhaseComplete();
+            } else {
+                updateTimerUI();
+                startTimerTick();
+                syncPomodoroWakeLock();
+            }
+        }
+
+        function bindPomodoroLifecycle() {
+            if (document.documentElement.dataset.pomodoroLifecycleBound) return;
+            document.documentElement.dataset.pomodoroLifecycleBound = "1";
+
+            document.addEventListener("visibilitychange", () => {
+                if (document.visibilityState === "hidden") {
+                    saveTimer();
+                    return;
+                }
+                reconcileRunningTimer();
+            });
+
+            window.addEventListener("focus", () => reconcileRunningTimer());
+            window.addEventListener("pageshow", () => reconcileRunningTimer());
+            window.addEventListener("pagehide", () => saveTimer());
+            document.addEventListener("resume", () => reconcileRunningTimer(), true);
+            document.addEventListener("freeze", () => saveTimer(), true);
+
+            const App = getCapAppPlugin();
+            if (App?.addListener) {
+                App.addListener("appStateChange", ({ isActive }) => {
+                    if (isActive) reconcileRunningTimer();
+                    else saveTimer();
+                }).catch(() => {});
+                App.addListener("resume", () => reconcileRunningTimer()).catch(() => {});
+                App.addListener("pause", () => saveTimer()).catch(() => {});
+            }
         }
 
         function loadTimer() {
             try {
                 const raw = localStorage.getItem(TIMER_STORAGE_KEY);
-                if (!raw) return;
+                if (!raw) {
+                    timerState.keepScreenAwake = isCapacitorNative();
+                    return;
+                }
                 const data = JSON.parse(raw);
                 timerState = { ...timerState, ...data };
+                if (typeof data.keepScreenAwake !== "boolean") {
+                    timerState.keepScreenAwake = isCapacitorNative();
+                }
             } catch { /* keep defaults */ }
             normalizeTimerState();
         }
 
         function saveTimer() {
             normalizeTimerState();
-            localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify({
-                workMinutes: timerState.workMinutes,
-                breakMinutes: timerState.breakMinutes,
-                phase: timerState.phase,
-                running: timerState.running,
-                endsAt: timerState.endsAt,
-                secondsLeft: timerState.secondsLeft,
-            }));
+            try {
+                localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify({
+                    workMinutes: timerState.workMinutes,
+                    breakMinutes: timerState.breakMinutes,
+                    phase: timerState.phase,
+                    running: timerState.running,
+                    endsAt: timerState.endsAt,
+                    secondsLeft: timerState.secondsLeft,
+                    keepScreenAwake: timerState.keepScreenAwake,
+                }));
+            } catch { /* quota or private mode */ }
         }
 
         function updateTimerUI() {
@@ -5188,6 +5648,10 @@
 
             positionFocusDurIndicator();
             updateFocusModeToggleState();
+
+            const wakeCb = document.getElementById("focusKeepAwake");
+            if (wakeCb) wakeCb.checked = !!timerState.keepScreenAwake;
+            syncPomodoroWakeLock();
         }
 
         // Slides the "active pill" indicator under whichever duration button has .active.
@@ -5255,30 +5719,39 @@
         }
 
         function stopTimerTick() {
-            if (timerTickInterval) {
-                clearInterval(timerTickInterval);
+            if (timerTickInterval != null) {
+                clearTimeout(timerTickInterval);
                 timerTickInterval = null;
             }
         }
 
         function startTimerTick() {
             stopTimerTick();
-            timerTickInterval = setInterval(() => {
-                if (!timerState.running) return;
+            const tick = () => {
+                if (!timerState.running || timerState.endsAt == null) {
+                    stopTimerTick();
+                    return;
+                }
                 const left = Math.max(0, Math.ceil((timerState.endsAt - Date.now()) / 1000));
                 timerState.secondsLeft = left;
                 if (left <= 0) {
                     onTimerPhaseComplete();
-                } else {
-                    updateTimerUI();
+                    return;
                 }
-            }, 200);
+                updateTimerUI();
+                const msUntilEnd = timerState.endsAt - Date.now();
+                const delay = Math.max(200, Math.min(1000, msUntilEnd));
+                timerTickInterval = window.setTimeout(tick, delay);
+            };
+            tick();
         }
 
         function onTimerPhaseComplete() {
             timerState.running = false;
             timerState.endsAt = null;
             stopTimerTick();
+            releasePomodoroWakeLock();
+            cancelPomodoroAlarm();
 
             if (timerState.phase === "work") {
                 timerState.phase = "break";
@@ -5304,6 +5777,8 @@
             saveTimer();
             startTimerTick();
             updateTimerUI();
+            syncPomodoroWakeLock();
+            schedulePomodoroAlarm();
         }
 
         function pauseTimer() {
@@ -5315,6 +5790,8 @@
             stopTimerTick();
             saveTimer();
             updateTimerUI();
+            releasePomodoroWakeLock();
+            cancelPomodoroAlarm();
         }
 
         function resetTimer() {
@@ -5342,12 +5819,23 @@
         }
 
         function initFocus() {
+            bindPomodoroLifecycle();
             loadTimer();
             loadFocusData();
             normalizeTimerState();
             updateTimerUI();
             if (timerState.running && timerState.endsAt) {
                 startTimerTick();
+                schedulePomodoroAlarm();
+            }
+            const wakeCb = document.getElementById("focusKeepAwake");
+            if (wakeCb) {
+                wakeCb.checked = !!timerState.keepScreenAwake;
+                wakeCb.addEventListener("change", () => {
+                    timerState.keepScreenAwake = wakeCb.checked;
+                    saveTimer();
+                    syncPomodoroWakeLock();
+                });
             }
             setFocusMode(focusMode, true);
             renderFocusQueue();
@@ -5547,6 +6035,7 @@
                 renderFocusQueue();
             }
             updateFocusModeToggleState();
+            syncPomodoroWakeLock();
         }
 
         function updateFocusModeToggleState() {
@@ -6068,7 +6557,6 @@
 
         const PWA_INSTALL_KEY = "grove-pwa-install-dismissed";
         let deferredInstallPrompt = null;
-        let timerPausedForVisibility = false;
 
         function isStandalonePwa() {
             return window.matchMedia("(display-mode: standalone)").matches
@@ -6177,7 +6665,8 @@
             const backdrop = document.getElementById("mobileSheetBackdrop");
             const anyOpen = document.body.classList.contains("mobile-filters-open")
                 || document.body.classList.contains("mobile-actions-open")
-                || document.body.classList.contains("mobile-add-open");
+                || document.body.classList.contains("mobile-add-open")
+                || document.body.classList.contains("mobile-edit-open");
             if (!backdrop) return;
             backdrop.hidden = !anyOpen;
             backdrop.classList.toggle("is-open", anyOpen);
@@ -6196,12 +6685,14 @@
             setMobileFiltersOpen(false);
             setMobileActionSheetOpen(false);
             setMobileAddSheetOpen(false);
+            setMobileEditSheetOpen(false);
         }
 
         function setMobileFiltersOpen(open) {
             if (open) {
                 setMobileActionSheetOpen(false);
                 setMobileAddSheetOpen(false);
+                setMobileEditSheetOpen(false);
                 layoutMobileFiltersHost();
             }
             document.body.classList.toggle("mobile-filters-open", open);
@@ -6221,6 +6712,7 @@
             if (open) {
                 setMobileFiltersOpen(false);
                 setMobileAddSheetOpen(false);
+                setMobileEditSheetOpen(false);
             } else if (isPhoneViewport() && selected) {
                 mobileActionDismissedId = selected;
             }
@@ -6302,6 +6794,9 @@
         function resetMobileAddForm() {
             const inp = document.getElementById("mobileAddInput");
             if (inp) inp.value = "";
+            const mobileDue = document.getElementById("mobileAddDueInput");
+            if (mobileDue) mobileDue.value = "";
+            syncAddDueClearButtons();
             mobileAddPriority = "med";
             mobileAddCategoryId = defaultCategoryId;
             mobileAddCategoryNewMode = false;
@@ -6311,10 +6806,33 @@
             renderMobileAddCategories();
         }
 
+        function setMobileEditSheetOpen(open) {
+            if (open) {
+                setMobileFiltersOpen(false);
+                setMobileActionSheetOpen(false);
+                setMobileAddSheetOpen(false);
+            } else {
+                editingTaskId = null;
+            }
+            document.body.classList.toggle("mobile-edit-open", open);
+            const sheet = document.getElementById("mobileEditSheet");
+            if (sheet) {
+                sheet.hidden = !open;
+                sheet.classList.toggle("is-open", open);
+                sheet.setAttribute("aria-hidden", open ? "false" : "true");
+            }
+            if (open) {
+                armMobileBackdropGuard();
+                window.setTimeout(() => document.getElementById("mobileEditInput")?.focus(), 380);
+            }
+            updateMobileBackdrop();
+        }
+
         function setMobileAddSheetOpen(open) {
             if (open) {
                 setMobileFiltersOpen(false);
                 setMobileActionSheetOpen(false);
+                setMobileEditSheetOpen(false);
                 resetMobileAddForm();
             }
             document.body.classList.toggle("mobile-add-open", open);
@@ -6338,7 +6856,7 @@
                 if (body) body.innerHTML = "";
                 return;
             }
-            const parts = [];
+            const parts = ['<button type="button" class="action-btn primary" data-mobile-act="edit">Edit</button>'];
             if (taskLayout === "kanban" && view === "today") {
                 const currentStage = getTaskStage(t);
                 STAGE_ORDER.forEach(stage => {
@@ -6356,7 +6874,11 @@
                 parts.push(`<button type="button" class="action-btn primary" data-mobile-act="today"${disabled}>${label}</button>`);
             }
             parts.push('<button type="button" class="action-btn" data-mobile-act="delete">Remove</button>');
-            body.innerHTML = parts.join("");
+            body.innerHTML = `<div class="action-bar-actions mobile-action-sheet-actions">${parts.join("")}</div>`;
+            body.querySelector('[data-mobile-act="edit"]')?.addEventListener("click", () => {
+                if (selected) openTaskEdit(selected);
+                setMobileActionSheetOpen(false);
+            });
             body.querySelector('[data-mobile-act="backlog"]')?.addEventListener("click", () => {
                 document.getElementById("actMoveBacklog")?.click();
                 setMobileActionSheetOpen(false);
@@ -6379,6 +6901,187 @@
                     setMobileActionSheetOpen(false);
                 });
             });
+        }
+
+        function dueAtToInputValue(iso) {
+            if (!iso) return "";
+            const d = new Date(iso);
+            if (Number.isNaN(d.getTime())) return "";
+            const pad = n => String(n).padStart(2, "0");
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
+
+        function readDueAtForEdit(value) {
+            if (value == null || value === "") return { dueAt: null };
+            const d = new Date(value);
+            if (Number.isNaN(d.getTime())) return { error: "Invalid date and time" };
+            return { dueAt: d.toISOString() };
+        }
+
+        function syncEditDueClearButtons() {
+            const desktopDue = document.getElementById("taskEditDueInput");
+            const desktopClear = document.getElementById("taskEditDueClear");
+            const mobileDue = document.getElementById("mobileEditDueInput");
+            const mobileClear = document.getElementById("mobileEditDueClear");
+            if (desktopClear && desktopDue) desktopClear.hidden = !desktopDue.value;
+            if (mobileClear && mobileDue) mobileClear.hidden = !mobileDue.value;
+        }
+
+        function renderTaskEditCategories(rowEl, prefix) {
+            if (!rowEl) return;
+            const activeId = editCategoryId ?? defaultCategoryId;
+            const chips = categories.map(c => {
+                const active = c.id === activeId ? " active" : "";
+                const color = CATEGORY_COLORS[c.color] || CATEGORY_COLORS.green;
+                return `<button type="button" class="mobile-add-cat-chip${active}" data-edit-cat="${c.id}">
+                    <span class="mobile-add-cat-dot" style="background:${color}"></span>
+                    <span>${escapeHtml(c.label)}</span>
+                </button>`;
+            }).join("");
+            const newPart = editCategoryNewMode
+                ? `<div class="mobile-add-cat-new">
+                        <input type="text" class="mobile-add-cat-new-input" id="${prefix}EditCatNewInput"
+                            placeholder="Category name…" maxlength="24" autocomplete="off" />
+                   </div>`
+                : `<button type="button" class="mobile-add-cat-chip mobile-add-cat-new-toggle" data-edit-cat-new="${prefix}">
+                        <span class="mobile-add-cat-dot mobile-add-cat-dot-new"></span>
+                        <span>New</span>
+                   </button>`;
+            rowEl.innerHTML = chips + newPart;
+
+            rowEl.querySelectorAll("[data-edit-cat]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    editCategoryId = btn.getAttribute("data-edit-cat");
+                    editCategoryNewMode = false;
+                    renderTaskEditCategories(
+                        document.getElementById("mobileEditCategoryRow"), "mobile");
+                    renderTaskEditCategories(
+                        document.getElementById("taskEditCategoryRow"), "desktop");
+                });
+            });
+
+            rowEl.querySelector(`[data-edit-cat-new="${prefix}"]`)?.addEventListener("click", () => {
+                editCategoryNewMode = true;
+                renderTaskEditCategories(
+                    document.getElementById("mobileEditCategoryRow"), "mobile");
+                renderTaskEditCategories(
+                    document.getElementById("taskEditCategoryRow"), "desktop");
+                requestAnimationFrame(() => {
+                    document.getElementById(`${prefix}EditCatNewInput`)?.focus();
+                });
+            });
+
+            const newInp = document.getElementById(`${prefix}EditCatNewInput`);
+            if (newInp) {
+                newInp.addEventListener("keydown", e => {
+                    if (e.key === "Enter") {
+                        const cat = createCategoryFromLabel(newInp.value);
+                        if (cat) {
+                            setDefaultCategory(cat.id);
+                            editCategoryId = cat.id;
+                            editCategoryNewMode = false;
+                            save();
+                            renderCategoryFilter();
+                            renderCategoryManage();
+                            renderCategoryChip();
+                            showToast("Category created — used for new tasks");
+                            renderTaskEditCategories(
+                                document.getElementById("mobileEditCategoryRow"), "mobile");
+                            renderTaskEditCategories(
+                                document.getElementById("taskEditCategoryRow"), "desktop");
+                        }
+                    } else if (e.key === "Escape") {
+                        editCategoryNewMode = false;
+                        renderTaskEditCategories(
+                            document.getElementById("mobileEditCategoryRow"), "mobile");
+                        renderTaskEditCategories(
+                            document.getElementById("taskEditCategoryRow"), "desktop");
+                    }
+                });
+            }
+        }
+
+        function fillTaskEditFields(t) {
+            const dueVal = dueAtToInputValue(t.dueAt);
+            const mobileTitle = document.getElementById("mobileEditInput");
+            const desktopTitle = document.getElementById("taskEditTitleInput");
+            const mobileDue = document.getElementById("mobileEditDueInput");
+            const desktopDue = document.getElementById("taskEditDueInput");
+            if (mobileTitle) mobileTitle.value = t.title;
+            if (desktopTitle) desktopTitle.value = t.title;
+            if (mobileDue) mobileDue.value = dueVal;
+            if (desktopDue) desktopDue.value = dueVal;
+            editCategoryId = t.categoryId || defaultCategoryId;
+            editCategoryNewMode = false;
+            renderTaskEditCategories(document.getElementById("mobileEditCategoryRow"), "mobile");
+            renderTaskEditCategories(document.getElementById("taskEditCategoryRow"), "desktop");
+            syncEditDueClearButtons();
+        }
+
+        function openTaskEdit(taskId) {
+            const t = tasks.find(x => x.id === taskId);
+            if (!t) return;
+            editingTaskId = taskId;
+            fillTaskEditFields(t);
+            setMobileActionSheetOpen(false);
+            if (isPhoneViewport()) {
+                const panel = document.getElementById("taskEditPanel");
+                if (panel) panel.classList.add("hidden");
+                setMobileEditSheetOpen(true);
+            } else {
+                setMobileEditSheetOpen(false);
+                const panel = document.getElementById("taskEditPanel");
+                if (panel) {
+                    panel.classList.remove("hidden");
+                    panel.setAttribute("aria-hidden", "false");
+                }
+                requestAnimationFrame(() => document.getElementById("taskEditTitleInput")?.focus());
+            }
+        }
+
+        function closeTaskEdit() {
+            editingTaskId = null;
+            setMobileEditSheetOpen(false);
+            const panel = document.getElementById("taskEditPanel");
+            if (panel) {
+                panel.classList.add("hidden");
+                panel.setAttribute("aria-hidden", "true");
+            }
+        }
+
+        function commitTaskEdit() {
+            if (editingTaskId == null) return;
+            const t = tasks.find(x => x.id === editingTaskId);
+            if (!t) {
+                closeTaskEdit();
+                return;
+            }
+            const title = (isPhoneViewport()
+                ? document.getElementById("mobileEditInput")?.value
+                : document.getElementById("taskEditTitleInput")?.value) || "";
+            const trimmed = title.trim().slice(0, 60);
+            if (!trimmed) {
+                showToast("Enter a task title");
+                return;
+            }
+            const dueRaw = isPhoneViewport()
+                ? document.getElementById("mobileEditDueInput")?.value
+                : document.getElementById("taskEditDueInput")?.value;
+            const dueParsed = readDueAtForEdit(dueRaw);
+            if (dueParsed.error) {
+                showToast(dueParsed.error);
+                return;
+            }
+            const cat = getCategory(editCategoryId) || getDefaultCategory();
+            t.title = trimmed;
+            t.categoryId = cat ? cat.id : null;
+            t.dueAt = dueParsed.dueAt;
+            save();
+            if (!t.done && t.dueAt) scheduleTaskReminder(t);
+            else cancelTaskReminder(t.id);
+            showToast("Task updated");
+            closeTaskEdit();
+            render();
         }
 
         function initCapacitorNativeChrome() {
@@ -6410,6 +7113,29 @@
             if (addClose) {
                 addClose.addEventListener("click", () => setMobileAddSheetOpen(false));
             }
+            const editClose = document.getElementById("mobileEditSheetClose");
+            const editSubmit = document.getElementById("mobileEditSubmit");
+            const mobileEditInput = document.getElementById("mobileEditInput");
+            if (editClose) {
+                editClose.addEventListener("click", () => closeTaskEdit());
+            }
+            if (editSubmit) {
+                editSubmit.addEventListener("click", () => commitTaskEdit());
+            }
+            if (mobileEditInput) {
+                mobileEditInput.addEventListener("keydown", e => {
+                    if (e.key === "Enter") editSubmit?.click();
+                });
+            }
+            ["mobileEditDueInput", "taskEditDueInput"].forEach(id => {
+                const inp = document.getElementById(id);
+                if (inp) inp.addEventListener("input", syncEditDueClearButtons);
+            });
+            document.getElementById("mobileEditDueClear")?.addEventListener("click", () => {
+                const inp = document.getElementById("mobileEditDueInput");
+                if (inp) inp.value = "";
+                syncEditDueClearButtons();
+            });
             if (fab) {
                 fab.addEventListener("click", e => {
                     e.stopPropagation();
@@ -6422,6 +7148,7 @@
                         title: mobileAddInput?.value,
                         priority: mobileAddPriority,
                         categoryId: mobileAddCategoryId ?? defaultCategoryId,
+                        dueAt: document.getElementById("mobileAddDueInput")?.value,
                     });
                     setMobileAddSheetOpen(false);
                 });
@@ -6573,6 +7300,11 @@
                     positionFocusDurIndicator(false);
                 }
             }
+            if (tab !== "focus") {
+                releasePomodoroWakeLock();
+            } else if (timerState.running) {
+                syncPomodoroWakeLock();
+            }
         }
 
         function genId(prefix) {
@@ -6620,6 +7352,7 @@
             loadQuadrantLabels(data);
 
             nextId = Math.max(nextId || 0, ...tasks.map(t => +t.id || 0)) + 1;
+            initDesktopNotifier();
         }
 
         function defaultQuadrantLabels() {
@@ -6722,6 +7455,12 @@
                 }
 
                 delete t.tag;
+
+                if (t.dueAt != null && t.dueAt !== "") {
+                    t.dueAt = normalizeDueAt(t.dueAt);
+                } else {
+                    t.dueAt = null;
+                }
             });
 
             if (!categories.length) {
@@ -6743,16 +7482,20 @@
         }
 
         function save() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                tasks,
-                nextId,
-                taskLayout,
-                categories,
-                defaultCategoryId,
-                categoryFilters: [...categoryFilters],
-                catManageOpen,
-                quadrantLabels,
-            }));
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    tasks,
+                    nextId,
+                    taskLayout,
+                    categories,
+                    defaultCategoryId,
+                    categoryFilters: [...categoryFilters],
+                    catManageOpen,
+                    quadrantLabels,
+                }));
+            } catch {
+                showToast("Could not save — storage may be full");
+            }
         }
 
         // ===== Categories =====
@@ -7137,10 +7880,10 @@
                     value="${escapeHtml(q.sub)}" maxlength="48" aria-label="Quadrant subtitle" />`
                 : `<span class="matrix-quadrant-title">${escapeHtml(q.label)}</span>
                 <span class="matrix-quadrant-sub">${escapeHtml(q.sub)}</span>`;
-            const openAttr = phoneOverview && !matrixQuadrantEditOpen ? ` data-matrix-open="${q.id}"` : "";
             const headOpenAttr = phoneOverview && !matrixQuadrantEditOpen ? ` data-matrix-open="${q.id}"` : "";
+            const sectionOpenAttr = phoneOverview && !matrixQuadrantEditOpen ? ` data-matrix-open="${q.id}"` : "";
             return `<section class="matrix-quadrant q-${q.id}${phoneOverview ? " matrix-quadrant-overview" : ""}"
-                data-quadrant="${q.id}"${openAttr}
+                data-quadrant="${q.id}"${sectionOpenAttr}
                 aria-label="${escapeHtml(q.label)} — ${escapeHtml(q.sub)}">
                 <header class="matrix-quadrant-head${matrixQuadrantEditOpen ? " editing" : ""}"${headOpenAttr}>
                     <div class="matrix-quadrant-titles">${titles}</div>
@@ -7192,7 +7935,7 @@
             if (matrixFocusedQuadrant) return;
 
             const openQuadrant = id => {
-                if (!id || matrixQuadrantEditOpen) return;
+                if (!id || matrixQuadrantEditOpen || matrixSuppressCardClick) return;
                 matrixFocusedQuadrant = id;
                 selected = null;
                 closePriorityBloom();
@@ -7213,6 +7956,16 @@
                 btn.addEventListener("click", e => {
                     e.stopPropagation();
                     openQuadrant(btn.dataset.matrixOpen);
+                });
+            });
+
+            list.querySelectorAll(".matrix-quadrant-overview[data-quadrant]").forEach(section => {
+                section.addEventListener("click", e => {
+                    if (matrixSuppressCardClick) return;
+                    if (e.target.closest(".task-card") ||
+                        e.target.closest("button")) return;
+                    e.stopPropagation();
+                    openQuadrant(section.dataset.quadrant);
                 });
             });
         }
@@ -7289,7 +8042,15 @@
             return true;
         }
 
+        function isMatrixPhoneOverview() {
+            return taskLayout === "eisenhower" && isPhoneViewport() &&
+                !matrixFocusedQuadrant && !matrixQuadrantEditOpen;
+        }
+
         function dragThresholdPx() {
+            if (isMatrixPhoneOverview()) {
+                return isCoarsePointer() ? 10 : 8;
+            }
             return isCoarsePointer() ? 8 : 6;
         }
 
@@ -7305,11 +8066,20 @@
         function endMatrixDrag(apply) {
             const d = matrixDrag;
             if (!d) return;
-            if (d.active) matrixSuppressCardClick = true;
+            if (d.active) {
+                matrixSuppressCardClick = true;
+                window.setTimeout(() => { matrixSuppressCardClick = false; }, 450);
+            }
             if (apply && d.overQuadrant != null && d.taskId != null) {
                 const t = tasks.find(x => x.id === d.taskId);
                 const currentQ = t ? getTaskQuadrantId(t) : null;
-                if (currentQ !== d.overQuadrant) setTaskQuadrant(d.taskId, d.overQuadrant);
+                if (currentQ !== d.overQuadrant) {
+                    setTaskQuadrant(d.taskId, d.overQuadrant);
+                    if (isMatrixPhoneOverview()) {
+                        const q = getQuadrants().find(x => x.id === d.overQuadrant);
+                        if (q) showToast(`Moved to ${q.label}`);
+                    }
+                }
             }
             d.card.classList.remove("dragging");
             if (d.ghost) d.ghost.remove();
@@ -7834,13 +8604,18 @@
             if (getTaskStage(t) === s) return;
             t.stage = s;
             t.done = s === "done";
+            if (t.done) cancelTaskReminder(id);
             save();
+            if (!t.done && t.dueAt) scheduleTaskReminder(t);
             closePriorityBloom();
             render();
         }
 
         function sortByPriority(list) {
             return [...list].sort((a, b) => {
+                const aDue = a.dueAt ? Date.parse(a.dueAt) : Infinity;
+                const bDue = b.dueAt ? Date.parse(b.dueAt) : Infinity;
+                if (aDue !== bDue) return aDue - bDue;
                 const diff = PRIORITIES[normalizePriority(a.priority)].order
                     - PRIORITIES[normalizePriority(b.priority)].order;
                 if (diff !== 0) return diff;
@@ -7993,6 +8768,292 @@
             toastTimer = setTimeout(() => el.classList.remove("show"), 2800);
         }
 
+        function isTauriDesktop() {
+            return !!(window.__TAURI_INTERNALS__ || window.__TAURI__);
+        }
+
+        function getDesktopPlatform() {
+            if (!isTauriDesktop()) return null;
+            const ua = navigator.userAgent || "";
+            if (/Windows/i.test(ua)) return "windows";
+            if (/Macintosh|Mac OS X/i.test(ua)) return "macos";
+            if (/Linux/i.test(ua)) return "linux";
+            return "unknown";
+        }
+
+        function canScheduleReminders() {
+            return isTauriDesktop();
+        }
+
+        function loadNotifyPrefs() {
+            notificationsEnabled = false;
+            try {
+                const raw = localStorage.getItem(NOTIFY_STORAGE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+                notificationsEnabled = !!data.notificationsEnabled;
+            } catch {
+                notificationsEnabled = false;
+            }
+        }
+
+        function saveNotifyPrefs() {
+            localStorage.setItem(NOTIFY_STORAGE_KEY, JSON.stringify({ notificationsEnabled }));
+        }
+
+        function getNotificationHelpText() {
+            const plat = getDesktopPlatform();
+            if (plat === "windows") {
+                return "Allow Grove in Settings → System → Notifications. Focus Assist can hide alerts.";
+            }
+            if (plat === "macos" || plat === "linux") {
+                return "System notifications are available on Windows in v1.0.2. You’ll still get an in-app reminder when a task is due.";
+            }
+            return "Due-time alerts are available in the Grove desktop app.";
+        }
+
+        function isNotifyToggleAvailable() {
+            return isTauriDesktop() && getDesktopPlatform() === "windows";
+        }
+
+        async function ensureNotificationPermission(requestIfNeeded) {
+            if (!isTauriDesktop() || typeof Notification === "undefined") return false;
+            if (Notification.permission === "granted") return true;
+            if (Notification.permission === "denied") return false;
+            if (!requestIfNeeded) return false;
+            const result = await Notification.requestPermission();
+            return result === "granted";
+        }
+
+        async function canSendOsNotification() {
+            if (!isNotifyToggleAvailable() || !notificationsEnabled) return false;
+            return ensureNotificationPermission(false);
+        }
+
+        function sendOsNotification(title, body) {
+            if (typeof Notification === "undefined") return false;
+            try {
+                new Notification(title, { body });
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        async function onTaskDueFire(task) {
+            const title = (task && task.title) ? String(task.title) : "Task";
+            if (await canSendOsNotification()) {
+                if (sendOsNotification(title, "Due now")) return;
+            }
+            showToast(`Due now: ${title}`);
+        }
+
+        function cancelTaskReminder(taskId) {
+            const tid = taskReminderTimeouts.get(taskId);
+            if (tid != null) {
+                clearTimeout(tid);
+                taskReminderTimeouts.delete(taskId);
+            }
+        }
+
+        function scheduleTaskReminder(task) {
+            cancelTaskReminder(task.id);
+            if (!canScheduleReminders() || !task.dueAt) return;
+            if (task.done || getTaskStage(task) === "done") return;
+            const dueMs = Date.parse(task.dueAt);
+            if (!Number.isFinite(dueMs)) return;
+            const delay = dueMs - Date.now();
+            if (delay <= 0) return;
+            const maxDelay = 2147483647;
+            const tid = setTimeout(() => {
+                taskReminderTimeouts.delete(task.id);
+                const current = tasks.find(t => t.id === task.id);
+                if (!current || current.done || getTaskStage(current) === "done") return;
+                onTaskDueFire(current);
+            }, Math.min(delay, maxDelay));
+            taskReminderTimeouts.set(task.id, tid);
+        }
+
+        function syncAllTaskReminders() {
+            [...taskReminderTimeouts.keys()].forEach(cancelTaskReminder);
+            if (!canScheduleReminders()) return;
+            const now = Date.now();
+            tasks.forEach(t => {
+                if (!t.dueAt || t.done || getTaskStage(t) === "done") return;
+                const dueMs = Date.parse(t.dueAt);
+                if (!Number.isFinite(dueMs)) return;
+                if (dueMs <= now) {
+                    if (dueMs > now - 24 * 60 * 60 * 1000) onTaskDueFire(t);
+                } else {
+                    scheduleTaskReminder(t);
+                }
+            });
+        }
+
+        function parseDueAtInput(value) {
+            const v = String(value || "").trim();
+            if (!v) return { dueAt: null };
+            const d = new Date(v);
+            if (Number.isNaN(d.getTime())) return { error: "Invalid date and time" };
+            if (d.getTime() <= Date.now()) return { error: "Pick a future time" };
+            return { dueAt: d.toISOString() };
+        }
+
+        function normalizeDueAt(value) {
+            if (value == null || value === "") return null;
+            const ms = Date.parse(String(value));
+            if (!Number.isFinite(ms)) return null;
+            return new Date(ms).toISOString();
+        }
+
+        function formatDueAtLabel(iso) {
+            if (!iso) return "";
+            const d = new Date(iso);
+            if (Number.isNaN(d.getTime())) return "";
+            const now = new Date();
+            const sameDay = d.toDateString() === now.toDateString();
+            const opts = sameDay
+                ? { hour: "numeric", minute: "2-digit" }
+                : { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" };
+            const when = d.toLocaleString(undefined, opts);
+            return sameDay ? `Due ${when}` : `Due ${when}`;
+        }
+
+        function taskDueMetaHtml(t) {
+            if (!t.dueAt) return "";
+            const label = formatDueAtLabel(t.dueAt);
+            if (!label) return "";
+            const overdue = Date.parse(t.dueAt) < Date.now() && !t.done && getTaskStage(t) !== "done";
+            return `<div class="task-due${overdue ? " task-due-overdue" : ""}">${escapeHtml(label)}</div>`;
+        }
+
+        function syncAddDueClearButtons() {
+            const addDue = document.getElementById("addDueInput");
+            const addClear = document.getElementById("addDueClear");
+            const mobileDue = document.getElementById("mobileAddDueInput");
+            const mobileClear = document.getElementById("mobileAddDueClear");
+            if (addClear && addDue) addClear.hidden = !addDue.value;
+            if (mobileClear && mobileDue) mobileClear.hidden = !mobileDue.value;
+        }
+
+        function clearAddDueInputs() {
+            const addDue = document.getElementById("addDueInput");
+            const mobileDue = document.getElementById("mobileAddDueInput");
+            if (addDue) addDue.value = "";
+            if (mobileDue) mobileDue.value = "";
+            syncAddDueClearButtons();
+        }
+
+        function readDueAtForCreate(opts) {
+            if (opts && typeof opts === "object" && "dueAt" in opts) {
+                if (opts.dueAt == null || opts.dueAt === "") return { dueAt: null };
+                const parsed = parseDueAtInput(opts.dueAt);
+                return parsed.error ? parsed : { dueAt: normalizeDueAt(opts.dueAt) };
+            }
+            const addDue = document.getElementById("addDueInput");
+            return parseDueAtInput(addDue?.value);
+        }
+
+        function updateNotifySettingsUi() {
+            const block = document.getElementById("notifySettings");
+            const row = document.getElementById("notifyToggleRow");
+            const toggle = document.getElementById("notifyToggle");
+            const hint = document.getElementById("notifyHint");
+            if (!block || !toggle || !hint) return;
+
+            if (!isTauriDesktop()) {
+                block.hidden = true;
+                return;
+            }
+
+            block.hidden = false;
+            const available = isNotifyToggleAvailable();
+            toggle.checked = available && notificationsEnabled;
+            toggle.disabled = !available;
+            row.classList.toggle("is-disabled", !available);
+            hint.textContent = getNotificationHelpText();
+        }
+
+        async function setNotificationsEnabled(enabled, requestPermission) {
+            if (enabled && !isNotifyToggleAvailable()) {
+                notificationsEnabled = false;
+                saveNotifyPrefs();
+                updateNotifySettingsUi();
+                return false;
+            }
+            if (enabled && requestPermission) {
+                const granted = await ensureNotificationPermission(true);
+                if (!granted) {
+                    notificationsEnabled = false;
+                    saveNotifyPrefs();
+                    updateNotifySettingsUi();
+                    showToast("Notifications blocked — check Windows notification settings");
+                    return false;
+                }
+            }
+            notificationsEnabled = !!enabled;
+            saveNotifyPrefs();
+            updateNotifySettingsUi();
+            syncAllTaskReminders();
+            return true;
+        }
+
+        function maybePromptEnableNotifications() {
+            if (!isNotifyToggleAvailable() || notificationsEnabled) return;
+            try {
+                if (sessionStorage.getItem("grove-notify-prompted")) return;
+                sessionStorage.setItem("grove-notify-prompted", "1");
+            } catch {
+                /* ignore */
+            }
+            showToast("Turn on Due-time alerts in the sidebar for Windows notifications");
+        }
+
+        function initDesktopNotifier() {
+            loadNotifyPrefs();
+            updateNotifySettingsUi();
+            syncAllTaskReminders();
+
+            const toggle = document.getElementById("notifyToggle");
+            if (toggle && !toggle.dataset.bound) {
+                toggle.dataset.bound = "1";
+                toggle.addEventListener("change", async () => {
+                    await setNotificationsEnabled(toggle.checked, toggle.checked);
+                });
+            }
+
+            const addDue = document.getElementById("addDueInput");
+            const addClear = document.getElementById("addDueClear");
+            const mobileDue = document.getElementById("mobileAddDueInput");
+            const mobileClear = document.getElementById("mobileAddDueClear");
+            [addDue, mobileDue].forEach(el => {
+                if (!el || el.dataset.bound) return;
+                el.dataset.bound = "1";
+                el.addEventListener("input", syncAddDueClearButtons);
+            });
+            if (addClear && !addClear.dataset.bound) {
+                addClear.dataset.bound = "1";
+                addClear.addEventListener("click", () => {
+                    if (addDue) addDue.value = "";
+                    syncAddDueClearButtons();
+                });
+            }
+            if (mobileClear && !mobileClear.dataset.bound) {
+                mobileClear.dataset.bound = "1";
+                mobileClear.addEventListener("click", () => {
+                    if (mobileDue) mobileDue.value = "";
+                    syncAddDueClearButtons();
+                });
+            }
+
+            if (!document.documentElement.dataset.notifyVisBound) {
+                document.documentElement.dataset.notifyVisBound = "1";
+                document.addEventListener("visibilitychange", () => {
+                    if (document.visibilityState === "visible") updateNotifySettingsUi();
+                });
+            }
+        }
+
         function setGreeting() {
             const h = new Date().getHours();
             let text = "Good evening";
@@ -8048,17 +9109,22 @@
                 actionBar.classList.add("hidden");
                 mobileActionDismissedId = null;
                 if (isPhoneViewport()) setMobileActionSheetOpen(false);
+                closeTaskEdit();
                 return;
             }
             actionBar.classList.remove("hidden");
             if (isPhoneViewport()) {
+                const panel = document.getElementById("taskEditPanel");
+                if (panel) panel.classList.add("hidden");
                 populateMobileActionSheet();
                 if (selected !== mobileActionDismissedId) setMobileActionSheetOpen(true);
             }
 
+            const actEdit = document.getElementById("actEdit");
             const moveBacklog = document.getElementById("actMoveBacklog");
             const moveToday = document.getElementById("actMoveToday");
             const del = document.getElementById("actDelete");
+            if (actEdit) actEdit.style.display = "";
 
             if (view === "today") {
                 moveBacklog.style.display = t.done ? "none" : "";
@@ -8101,6 +9167,7 @@
         }
 
         function removeTask(id) {
+            cancelTaskReminder(id);
             tasks = tasks.filter(t => t.id !== id);
             if (selected === id) selected = null;
             priorityMenuId = null;
@@ -8182,13 +9249,17 @@
                 }</div>`
                 : "";
 
-            return `<div class="task-card${priorityClass}${compactClass}${expandedClass}${matrixOverview ? " matrix-overview-card" : ""}${t.done ? " done" : ""}${sel ? " selected" : ""}" data-id="${t.id}" data-stage="${currentStage}">
-                ${lead}
-                <div class="task-body">
+            const bodyBlock = `<div class="task-body">
                     <div class="task-tag">${taskTagInnerHtml(t, p, { kanban: isKanban, matrixOverview })}</div>
-                    <div class="task-title">${escapeHtml(t.title)}</div>
+                    <div class="task-title" data-task-title="${t.id}">${escapeHtml(t.title)}</div>
+                    ${taskDueMetaHtml(t)}
                     ${mobileKanbanRail}
-                </div>
+                </div>`;
+            const mainRow = isKanban
+                ? `<div class="task-card-top">${lead}${bodyBlock}</div>`
+                : `${lead}${bodyBlock}`;
+            return `<div class="task-card${priorityClass}${compactClass}${expandedClass}${matrixOverview ? " matrix-overview-card" : ""}${t.done ? " done" : ""}${sel ? " selected" : ""}" data-id="${t.id}" data-stage="${currentStage}">
+                ${mainRow}
                 ${priorityControl}
                 ${todayBtn}
                 ${matrixOverview ? "" : subtaskRegionHtml(t)}
@@ -8300,6 +9371,10 @@
                         e.target.closest(".subtask-region") ||
                         e.target.closest(".kanban-mobile-move")) return;
                     const id = +card.dataset.id;
+                    if (e.target.closest("[data-task-title]") && selected === id && isPhoneViewport()) {
+                        openTaskEdit(id);
+                        return;
+                    }
                     selected = selected === id ? null : id;
                     if (selected) mobileActionDismissedId = null;
                     closePriorityBloom();
@@ -8324,6 +9399,8 @@
                     const markingDone = !t.done;
                     t.done = markingDone;
                     t.stage = markingDone ? "done" : "todo";
+                    if (markingDone) cancelTaskReminder(t.id);
+                    else if (t.dueAt) scheduleTaskReminder(t);
                     save();
                     if (selected === t.id) selected = null;
 
@@ -8437,6 +9514,7 @@
 
         function render() {
             updateChrome();
+            updateNotifySettingsUi();
             syncPriorityFilterButtons();
             syncLayoutTabs();
             renderCategoryFilter();
@@ -8533,11 +9611,13 @@
                 if (!v.trim()) return;
                 const cat = createCategoryFromLabel(v);
                 if (cat) {
+                    setDefaultCategory(cat.id);
                     save();
                     inp.value = "";
                     renderCategoryFilter();
                     renderCategoryManage();
                     renderCategoryChip();
+                    showToast("Category created — used for new tasks");
                 }
             } else if (e.key === "Escape") {
                 e.currentTarget.value = "";
@@ -8582,6 +9662,16 @@
             const v = fromMobile ? String(opts.title || "").trim() : input.value.trim();
             if (!v) return;
 
+            const dueParsed = fromMobile
+                ? readDueAtForCreate({
+                    dueAt: document.getElementById("mobileAddDueInput")?.value ?? opts.dueAt,
+                })
+                : readDueAtForCreate(opts);
+            if (dueParsed.error) {
+                showToast(dueParsed.error);
+                return;
+            }
+
             const inBacklogView = view === "backlog";
             const todayFull = !canAddToToday();
             let place = "today";
@@ -8601,7 +9691,7 @@
                 : (getDefaultCategory()?.id ?? null);
             const cat = getCategory(catId) || getDefaultCategory();
 
-            tasks.unshift({
+            const newTask = {
                 id: nextId++,
                 title: v,
                 priority,
@@ -8612,9 +9702,14 @@
                 importance: priority === "high" || priority === "med" ? "important" : "not-important",
                 subtasks: [],
                 categoryId: cat ? cat.id : null,
-            });
+                dueAt: dueParsed.dueAt,
+            };
+            tasks.unshift(newTask);
             if (!fromMobile) input.value = "";
+            clearAddDueInputs();
             save();
+            scheduleTaskReminder(newTask);
+            if (dueParsed.dueAt) maybePromptEnableNotifications();
 
             if (place === "backlog" && !todayFull && inBacklogView) {
                 showToast("Task saved to backlog");
@@ -8633,6 +9728,19 @@
         document.getElementById("addBtn").addEventListener("click", () => addTask());
         input.addEventListener("keydown", e => { if (e.key === "Enter") addTask(); });
 
+        document.getElementById("actEdit").addEventListener("click", () => {
+            if (selected) openTaskEdit(selected);
+        });
+        document.getElementById("taskEditCancel")?.addEventListener("click", () => closeTaskEdit());
+        document.getElementById("taskEditSave")?.addEventListener("click", () => commitTaskEdit());
+        document.getElementById("taskEditDueClear")?.addEventListener("click", () => {
+            const inp = document.getElementById("taskEditDueInput");
+            if (inp) inp.value = "";
+            syncEditDueClearButtons();
+        });
+        document.getElementById("taskEditTitleInput")?.addEventListener("keydown", e => {
+            if (e.key === "Enter") commitTaskEdit();
+        });
         document.getElementById("actMoveBacklog").addEventListener("click", () => {
             if (selected) moveToBacklog(selected);
         });
@@ -8669,23 +9777,6 @@
 
         document.querySelectorAll(".focus-dur-btn").forEach(btn => {
             btn.addEventListener("click", () => setWorkDuration(+btn.dataset.work));
-        });
-
-        document.addEventListener("visibilitychange", () => {
-            if (document.visibilityState === "hidden") {
-                if (timerState.running && !timerPausedForVisibility) {
-                    timerPausedForVisibility = true;
-                    pauseTimer();
-                }
-                return;
-            }
-            timerPausedForVisibility = false;
-            if (timerState.running && timerState.endsAt) {
-                const left = Math.max(0, Math.ceil((timerState.endsAt - Date.now()) / 1000));
-                timerState.secondsLeft = left;
-                if (left <= 0) onTimerPhaseComplete();
-                else updateTimerUI();
-            }
         });
 
         // Keep tab indicators aligned on viewport changes (debounced via rAF).

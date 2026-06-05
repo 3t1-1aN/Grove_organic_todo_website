@@ -1,7 +1,7 @@
 {
   "name": "organic-todo",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Grove — tasks, focus & memo for desktop and mobile (PWA)",
   "homepage": "https://grove-todo.vercel.app",
   "type": "module",
@@ -30,12 +30,17 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@capacitor/android": "^7.4.2",
+    "@capacitor/app": "^7.1.2",
     "@capacitor/core": "^7.4.2",
+    "@capacitor/local-notifications": "^7.0.6",
     "@capacitor/splash-screen": "^7.0.1",
     "@capacitor/status-bar": "^7.0.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.4.2",
-    "@tauri-apps/cli": "^2"
+    "@tauri-apps/api": "^2.11.0",
+    "@tauri-apps/cli": "^2",
+    "@tauri-apps/plugin-notification": "^2.3.3",
+    "@tauri-apps/plugin-os": "^2.3.2"
   }
 }

@@ -43,6 +43,23 @@ button:focus-visible,
     .task-card:active:not(.dragging) {
         background: rgba(255, 255, 255, 0.04);
     }
+
+    .subtask-pill.subtask-pill-empty {
+        opacity: 0.55;
+        pointer-events: auto;
+    }
+
+    .subtask-pill.subtask-pill-empty:active {
+        opacity: 0.85;
+    }
+}
+
+html.grove-android .subtask-pill.subtask-pill-empty {
+    opacity: 0.55;
+    pointer-events: auto;
+    min-width: 32px;
+    min-height: 28px;
+    padding: 4px 8px;
 }
 
 /* PWA install hint */
@@ -205,7 +222,8 @@ body.panel-animating .app-panel {
     flex-shrink: 0;
 }
 
-.mobile-action-sheet .action-bar-actions {
+.mobile-action-sheet .action-bar-actions,
+.mobile-action-sheet-actions {
     flex-direction: column;
 }
 
@@ -300,6 +318,29 @@ body.panel-animating .app-panel {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+.mobile-add-due-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mobile-add-due-input {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    font-family: inherit;
+    color: rgba(200, 230, 210, 0.9);
+    background: rgba(0, 0, 0, 0.28);
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 10px 12px;
+    outline: none;
+}
+
+.mobile-add-due-input:focus {
+    border-color: rgba(134, 239, 172, 0.28);
 }
 
 .mobile-add-field-head {
@@ -717,7 +758,6 @@ body.panel-animating .app-panel {
     body.matrix-drag-active .matrix-grid,
     body.matrix-drag-active .task-list.layout-eisenhower {
         touch-action: none;
-        overflow: hidden;
     }
 
     .filter-btn {
@@ -824,7 +864,24 @@ body.panel-animating .app-panel {
 
     .kanban-board--mobile .task-card {
         flex-direction: column;
+        flex-wrap: nowrap;
         align-items: stretch;
+        gap: 10px;
+    }
+
+    .kanban-board--mobile .task-card .subtask-region {
+        order: 2;
+        width: 100%;
+        flex: 0 0 auto;
+        align-self: stretch;
+    }
+
+    .kanban-board--mobile .task-card.subtasks-expanded .subtask-region-inner {
+        padding-left: 0;
+        margin-left: 38px;
+    }
+
+    .kanban-board--mobile .task-card-top {
         gap: 10px;
     }
 
@@ -834,6 +891,10 @@ body.panel-animating .app-panel {
 
     .kanban-board--mobile .task-body {
         width: 100%;
+    }
+
+    .kanban-board--mobile .subtask-region-inner {
+        padding-left: 12px;
     }
 
     .kanban-mobile-stage-rail {
@@ -982,6 +1043,15 @@ body.panel-animating .app-panel {
         padding: 6px 8px 6px 10px;
         max-height: none;
         border-radius: 10px;
+    }
+
+    .matrix-quadrant-overview .matrix-overview-card {
+        touch-action: none;
+        cursor: grab;
+    }
+
+    .matrix-quadrant-overview .matrix-overview-card.dragging {
+        cursor: grabbing;
     }
 
     .matrix-quadrant-overview .matrix-overview-card .task-tag {
