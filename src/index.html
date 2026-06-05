@@ -5640,7 +5640,7 @@
             document.body.classList.toggle("focus-running", timerState.running && timerState.phase === "work");
             document.body.classList.toggle("focus-break", timerState.phase === "break");
 
-            document.querySelectorAll(".focus-dur-btn").forEach(btn => {
+            document.querySelectorAll("#focusDurations .focus-dur-btn").forEach(btn => {
                 const mins = +btn.dataset.work;
                 btn.classList.toggle("active", mins === timerState.workMinutes);
                 btn.disabled = timerState.running;
