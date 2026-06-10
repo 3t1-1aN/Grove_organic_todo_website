@@ -4,6 +4,7 @@ const CACHE = "grove-pwa-v__SW_VERSION__";
 const PRECACHE = [
   "./",
   "./index.html",
+  "./grove-palettes.js",
   "./grove-tokens.css",
   "./mobile.css",
   "./app-ui-lock.css",

@@ -23,7 +23,7 @@ button,
 
 button:focus-visible,
 .check-wrap:focus-visible {
-    outline: 2px solid rgba(74, 222, 128, 0.55);
+    outline: 2px solid var(--accent-a55);
     outline-offset: 2px;
 }
 
@@ -115,7 +115,7 @@ html.grove-android .subtask-pill.subtask-pill-empty {
 }
 
 .pwa-install-link {
-    background: rgba(74, 222, 128, 0.2);
+    background: var(--accent-a20);
     color: var(--accent-pale);
     text-decoration: none;
 }
@@ -244,8 +244,8 @@ body.panel-animating .app-panel {
     height: 56px;
     border: none;
     border-radius: 50%;
-    background: linear-gradient(145deg, rgba(74, 222, 128, 0.95), rgba(34, 197, 94, 0.88));
-    color: #052010;
+    background: linear-gradient(145deg, var(--accent-a95), var(--accent-a88));
+    color: var(--accent-on);
     box-shadow:
         0 8px 24px rgba(0, 0, 0, 0.35),
         0 0 0 0.5px rgba(255, 255, 255, 0.12) inset;
@@ -278,15 +278,15 @@ body.panel-animating .app-panel {
     0%, 100% {
         box-shadow:
             0 8px 24px rgba(0, 0, 0, 0.35),
-            0 0 0 2px rgba(74, 222, 128, 0.35),
-            0 0 18px rgba(74, 222, 128, 0.2);
+            0 0 0 2px var(--accent-a35),
+            0 0 18px var(--accent-a20);
     }
 
     50% {
         box-shadow:
             0 10px 28px rgba(0, 0, 0, 0.4),
-            0 0 0 3px rgba(74, 222, 128, 0.55),
-            0 0 28px rgba(74, 222, 128, 0.28);
+            0 0 0 3px var(--accent-a55),
+            0 0 28px var(--accent-a28);
     }
 }
 
@@ -414,8 +414,8 @@ body.panel-animating .app-panel {
 }
 
 .mobile-priority-pill.active {
-    background: rgba(74, 222, 128, 0.18);
-    border-color: rgba(74, 222, 128, 0.35);
+    background: var(--accent-a18);
+    border-color: var(--accent-a35);
     color: var(--accent-pale);
 }
 
@@ -427,8 +427,8 @@ body.panel-animating .app-panel {
 
 .mobile-priority-pill[data-mobile-priority="low"].active,
 .mobile-priority-pill[data-mobile-priority="none"].active {
-    background: rgba(74, 222, 128, 0.12);
-    border-color: rgba(74, 222, 128, 0.28);
+    background: var(--accent-a12);
+    border-color: var(--accent-a28);
 }
 
 .mobile-add-category-row {
@@ -454,8 +454,8 @@ body.panel-animating .app-panel {
 }
 
 .mobile-add-cat-chip.active {
-    background: rgba(74, 222, 128, 0.14);
-    border-color: rgba(74, 222, 128, 0.32);
+    background: var(--accent-a14);
+    border-color: var(--accent-a32);
     color: var(--accent-pale);
 }
 
@@ -472,8 +472,8 @@ body.panel-animating .app-panel {
     margin-top: 4px;
     border: none;
     border-radius: 14px;
-    background: rgba(74, 222, 128, 0.22);
-    color: var(--accent-pale);
+    background: var(--accent-a22);
+    color: var(--accent-on);
     font-family: inherit;
     font-size: 16px;
     font-weight: 600;
@@ -495,7 +495,7 @@ body.panel-animating .app-panel {
         padding-right: env(safe-area-inset-right);
         padding-top: env(safe-area-inset-top);
         padding-bottom: var(--bottom-nav-clearance);
-        background: #0a1410;
+        background: var(--page-bg);
         overflow-x: hidden;
     }
 
@@ -518,11 +518,11 @@ body.panel-animating .app-panel {
     }
 
     body.mode-backlog {
-        background: #0c1008;
+        background: var(--page-bg-backlog);
     }
 
     .bg {
-        background: #0a1410;
+        background: var(--page-bg);
         filter: none;
     }
 
@@ -541,26 +541,29 @@ body.panel-animating .app-panel {
 
     .task-shell,
     .focus-shell,
-    .notes-shell {
+    .notes-shell,
+    .settings-shell {
         width: 100%;
         max-width: none;
         margin: 0;
         border-radius: 0;
         min-height: calc(100dvh - var(--bottom-nav-clearance));
         box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
-        background: rgba(5, 12, 8, 0.92);
+        background: var(--shell-bg);
     }
 
     body.mode-backlog .task-shell,
     body.mode-backlog .focus-shell,
-    body.mode-backlog .notes-shell {
-        background: rgba(12, 14, 6, 0.94);
-        box-shadow: inset 0 0 0 0.5px rgba(217, 249, 157, 0.08);
+    body.mode-backlog .notes-shell,
+    body.mode-backlog .settings-shell {
+        background: var(--shell-bg-backlog);
+        box-shadow: inset 0 0 0 0.5px var(--backlog-shell-border);
     }
 
     .task-shell::before,
     .focus-shell::before,
-    .notes-shell::before {
+    .notes-shell::before,
+    .settings-shell::before {
         border-radius: 0;
     }
 
@@ -584,13 +587,14 @@ body.panel-animating .app-panel {
         flex: 1;
         min-width: 0;
         min-height: 44px;
-        padding: 10px 8px;
-        font-size: 13px;
+        padding: 10px 6px;
+        font-size: 12px;
     }
 
     #tasksPanel.active,
     #focusPanel.active,
-    #notesPanel.active {
+    #notesPanel.active,
+    #settingsPanel.active {
         min-height: calc(100dvh - var(--bottom-nav-clearance));
         padding-left: 0;
         padding-right: 0;
@@ -838,9 +842,9 @@ body.panel-animating .app-panel {
     }
 
     .kanban-stage-tab.stage-done.active {
-        background: rgba(74, 222, 128, 0.14);
-        color: rgba(134, 239, 172, 0.95);
-        box-shadow: inset 0 0 0 0.5px rgba(74, 222, 128, 0.28);
+        background: var(--accent-a14);
+        color: var(--accent-light);
+        box-shadow: inset 0 0 0 0.5px var(--accent-a28);
     }
 
     .kanban-mobile-panel {
@@ -945,9 +949,9 @@ body.panel-animating .app-panel {
     }
 
     .kanban-mobile-move.stage-done.is-current {
-        background: rgba(74, 222, 128, 0.14);
-        border-color: rgba(74, 222, 128, 0.3);
-        color: rgba(134, 239, 172, 0.95);
+        background: var(--accent-a14);
+        border-color: var(--accent-a30);
+        color: var(--accent-light);
     }
 
     .kanban-board--mobile .kanban-empty {
@@ -1128,7 +1132,8 @@ body.panel-animating .app-panel {
     }
 
     .focus-shell,
-    .notes-shell {
+    .notes-shell,
+    .settings-shell {
         padding: 16px 14px 12px;
         min-height: calc(100dvh - var(--bottom-nav-clearance));
         border-radius: 0;
@@ -1282,6 +1287,6 @@ body.panel-animating .app-panel {
 
     .mobile-fab.onboarding-nudge {
         animation: none !important;
-        box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.35) !important;
+        box-shadow: 0 0 0 2px var(--accent-a35) !important;
     }
 }

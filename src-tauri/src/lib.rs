@@ -42,6 +42,8 @@ pub fn run() {
         }));
     }
 
+    builder = builder.plugin(tauri_plugin_notification::init());
+
     builder
         .setup(|app| {
             let show = MenuItem::with_id(app, "show", "Show Grove", true, None::<&str>)?;

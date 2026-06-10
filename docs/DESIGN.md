@@ -78,7 +78,9 @@ Spring easing for selection/state changes: `cubic-bezier(0.34, 1.4, 0.64, 1)`. H
 ### Tasks
 
 - **Today cap meter** — dot row showing `N of 5 tasks`; amber state when full
-- **Task cards** — priority stripe (`::before`), checkbox, priority orb bloom, expandable subtasks
+- **Task cards** — priority stripe (`::before`), checkbox, priority orb bloom, optional **Done by** line (`.task-due`), expandable subtasks
+- **New task** — optional `datetime-local` **Done by** on desktop sidebar and mobile add sheet (v1.0.2)
+- **Due-time alerts** — Windows desktop only in v1.0.2 (sidebar toggle); macOS/Linux get in-app toast at due until OS notifications ship
 - **Kanban board** — three workflow columns (To Do / In Progress / Done), drag handle on cards, column drop targets with drag-over glow
 - **Backlog cards** — left accent stripe + “Add to today” CTA (disabled when today full)
 - **Empty states** — illustrated checklist rows (`.task-empty-art`), context-specific copy

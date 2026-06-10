@@ -5,7 +5,7 @@
  */
 
 html.grove-app {
-    background-color: #0a1410;
+    background-color: var(--page-bg);
 }
 
 body.grove-app-tier {
@@ -14,17 +14,13 @@ body.grove-app-tier {
     overscroll-behavior-y: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #0a1410;
-    /* Pin tokens on the mobile tier so system / forced-light cannot drift */
-    --page-bg: #0a1410;
-    --shell-bg: rgba(5, 12, 8, 0.82);
-    --shell-bg-backlog: rgba(12, 14, 6, 0.86);
+    background-color: var(--page-bg);
     --app-gutter: 10px;
     --bottom-nav-clearance: calc(4.75rem + env(safe-area-inset-bottom));
 }
 
 body.grove-app-tier.mode-backlog {
-    background-color: #0c1008;
+    background-color: var(--page-bg-backlog);
 }
 
 body.grove-app-tier input,

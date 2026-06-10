@@ -51,6 +51,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Patrick+Hand&display=swap"
         rel="stylesheet">
+    <script src="grove-palettes.js"></script>
     <link rel="stylesheet" href="grove-tokens.css">
     <style>
         * {
@@ -133,7 +134,7 @@
             gap: 6px;
             padding: 5px;
             border-radius: 20px;
-            background: rgba(5, 12, 8, 0.78);
+            background: var(--nav-bg);
             backdrop-filter: blur(24px) saturate(160%);
             -webkit-backdrop-filter: blur(24px) saturate(160%);
             border: 0.5px solid rgba(255, 255, 255, 0.1);
@@ -175,18 +176,18 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            color: rgba(200, 230, 210, 0.55);
+            color: var(--nav-text);
             background: transparent;
             transition: color var(--duration-fast) ease;
             font-family: inherit;
         }
 
         .app-nav-btn:hover:not(.active) {
-            color: rgba(210, 235, 215, 0.85);
+            color: var(--text-primary);
         }
 
         .app-nav-btn.active {
-            color: var(--accent-pale);
+            color: var(--nav-text-active);
         }
 
         /* —— Focus / Pomodoro —— */
@@ -239,8 +240,8 @@
             background: var(--shell-bg-backlog);
             box-shadow:
                 0 24px 64px rgba(0, 0, 0, 0.25),
-                0 0 48px rgba(163, 230, 53, 0.08),
-                inset 0 0 0 0.5px rgba(217, 249, 157, 0.1);
+                0 0 48px var(--backlog-shell-glow),
+                inset 0 0 0 0.5px var(--backlog-shell-border);
         }
 
         /* Running / break tint the entire shell with a soft colored glow */
@@ -248,8 +249,8 @@
             box-shadow:
                 0 24px 64px rgba(0, 0, 0, 0.22),
                 10px 10px 28px rgba(0, 0, 0, 0.18),
-                0 0 90px rgba(74, 222, 128, 0.12),
-                inset 0 0 0 0.5px rgba(134, 239, 172, 0.16);
+                0 0 90px var(--focus-running-glow),
+                inset 0 0 0 0.5px var(--focus-running-border);
         }
 
         body.focus-break .focus-shell {
@@ -1105,12 +1106,12 @@
             position: fixed;
             inset: 0;
             z-index: 0;
-            background: linear-gradient(165deg, #0a1410 0%, #0e2218 42%, #071209 100%);
+            background: var(--bg-gradient);
             transition: background 0.6s ease, filter 0.6s ease;
         }
 
         body.mode-backlog .bg {
-            background: linear-gradient(165deg, #101408 0%, #1a2410 45%, #0a1006 100%);
+            background: var(--bg-gradient-backlog);
             filter: none;
         }
 
@@ -1133,23 +1134,23 @@
 
         body.mode-backlog .blob1 {
             opacity: 0.24;
-            background: #84cc16;
+            background: var(--blob-backlog-1);
         }
 
         body.mode-backlog .blob2 {
             opacity: 0.2;
-            background: #ca8a04;
+            background: var(--blob-backlog-2);
         }
 
         body.mode-backlog .blob5 {
             opacity: 0.26;
-            background: #4d7c0f;
+            background: var(--blob-backlog-5);
         }
 
         .blob1 {
             width: 500px;
             height: 500px;
-            background: #22c55e;
+            background: var(--blob-1);
             top: -120px;
             left: -140px;
             opacity: 0.22;
@@ -1159,7 +1160,7 @@
         .blob2 {
             width: 420px;
             height: 420px;
-            background: #4ade80;
+            background: var(--blob-2);
             bottom: -80px;
             right: -100px;
             opacity: 0.18;
@@ -1170,7 +1171,7 @@
         .blob3 {
             width: 340px;
             height: 340px;
-            background: #16a34a;
+            background: var(--blob-3);
             bottom: 80px;
             left: 80px;
             opacity: 0.2;
@@ -1181,7 +1182,7 @@
         .blob4 {
             width: 280px;
             height: 280px;
-            background: #15803d;
+            background: var(--blob-4);
             top: 100px;
             right: 60px;
             opacity: 0.16;
@@ -1192,7 +1193,7 @@
         .blob5 {
             width: 220px;
             height: 220px;
-            background: #14532d;
+            background: var(--blob-5);
             top: 40%;
             left: 40%;
             opacity: 0.28;
@@ -4106,8 +4107,8 @@
             box-shadow:
                 inset 2px 2px 8px rgba(0, 0, 0, 0.5),
                 inset -1px -1px 3px rgba(255, 255, 255, 0.04),
-                0 0 0 1px rgba(74, 222, 128, 0.25),
-                0 0 18px rgba(74, 222, 128, 0.08);
+                0 0 0 1px var(--accent-a25),
+                0 0 18px var(--accent-a08);
         }
 
         .notes-input-hint {
@@ -4430,7 +4431,7 @@
             .task-sidebar .add-area.onboarding-nudge,
             .mobile-fab.onboarding-nudge {
                 animation: none !important;
-                box-shadow: 0 0 0 2px rgba(74, 222, 128, 0.35);
+                box-shadow: 0 0 0 2px var(--accent-a35);
             }
         }
 
@@ -4451,10 +4452,182 @@
                 font-size: 22px;
             }
 
-            .notes-wall {
-                grid-template-columns: 1fr;
-                gap: 12px;
+            .settings-shell {
+                padding: 22px 18px 110px;
+                border-radius: 18px;
+                min-height: calc(100dvh - 5.5rem);
             }
+
+            .palette-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        /* ===== Settings ===== */
+        #settingsPanel.active {
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
+            width: 100%;
+            min-height: calc(100dvh - 5rem);
+        }
+
+        #settingsPanel .bg {
+            position: fixed;
+        }
+
+        .settings-shell {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: var(--app-max-width);
+            margin: 0 auto;
+            min-height: min(780px, calc(100dvh - 6.5rem));
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            padding: 28px 36px 110px;
+            border-radius: var(--radius-lg);
+            background: var(--shell-bg);
+            backdrop-filter: blur(48px) saturate(180%);
+            -webkit-backdrop-filter: blur(48px) saturate(180%);
+            box-shadow: var(--shadow-shell);
+        }
+
+        .settings-shell::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-lg);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .settings-header {
+            position: relative;
+            z-index: 1;
+            padding-bottom: 18px;
+            border-bottom: 0.5px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .settings-title {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: var(--text-bright);
+            font-family: var(--font-display);
+        }
+
+        .settings-sub {
+            margin: 6px 0 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .settings-section {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .settings-section-title {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: var(--font-display);
+        }
+
+        .settings-section-hint {
+            margin: -6px 0 0;
+            font-size: 12px;
+            line-height: 1.45;
+            color: var(--text-dim);
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .palette-option {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 14px 14px 12px;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            background: rgba(0, 0, 0, 0.28);
+            box-shadow: var(--shadow-raised);
+            transition:
+                box-shadow var(--duration-fast) ease,
+                background var(--duration-fast) ease,
+                transform var(--duration-fast) var(--ease-spring);
+        }
+
+        .palette-option:hover {
+            transform: translateY(-1px);
+        }
+
+        .palette-option.is-active {
+            background: var(--accent-tint);
+            box-shadow:
+                var(--shadow-inset),
+                inset 0 0 0 0.5px var(--accent-border);
+        }
+
+        .palette-swatch {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .palette-swatch-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            box-shadow:
+                inset 0 1px 2px rgba(255, 255, 255, 0.15),
+                0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        .palette-swatch-dot.secondary {
+            width: 16px;
+            height: 16px;
+            opacity: 0.88;
+        }
+
+        .palette-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-body);
+        }
+
+        .palette-option.is-active .palette-name {
+            color: var(--accent-pale);
+        }
+
+        .settings-notify-block {
+            padding: 16px;
+            border-radius: var(--radius-md);
+            background: rgba(0, 0, 0, 0.24);
+            box-shadow: var(--shadow-inset-tray);
+        }
+
+        .settings-notify-block .notify-settings {
+            margin: 0;
+            padding: 0;
+            border: none;
         }
 
         /* ===== Onboarding ===== */
@@ -4894,6 +5067,7 @@
         <button type="button" class="app-nav-btn active" data-app="tasks">Tasks</button>
         <button type="button" class="app-nav-btn" data-app="focus">Focus</button>
         <button type="button" class="app-nav-btn" data-app="notes">Memo</button>
+        <button type="button" class="app-nav-btn" data-app="settings">Settings</button>
     </nav>
 
     <div id="tasksPanel" class="app-panel active">
@@ -5003,13 +5177,6 @@
                     </div>
                 </div>
 
-                <div class="notify-settings" id="notifySettings" hidden>
-                    <label class="notify-toggle-row" id="notifyToggleRow">
-                        <input type="checkbox" id="notifyToggle" />
-                        <span class="notify-toggle-text">Due-time alerts</span>
-                    </label>
-                    <p class="notify-hint" id="notifyHint"></p>
-                </div>
                 <div class="add-area" id="taskAddArea">
                     <button type="button" class="category-chip" id="categoryChip" aria-haspopup="true"
                         aria-expanded="false" title="Category for new task">
@@ -5197,6 +5364,43 @@
             </div>
 
             <div class="notes-wall" id="notesWall" role="list" aria-label="Memos"></div>
+        </div>
+    </div>
+
+    <div id="settingsPanel" class="app-panel" aria-hidden="true">
+        <div class="bg" aria-hidden="true">
+            <div class="blob blob1"></div>
+            <div class="blob blob2"></div>
+            <div class="blob blob3"></div>
+            <div class="blob blob4"></div>
+            <div class="blob blob5"></div>
+        </div>
+
+        <div class="settings-shell">
+            <header class="settings-header">
+                <h1 class="settings-title">Settings</h1>
+                <p class="settings-sub">Personalize Grove's look and alerts.</p>
+            </header>
+
+            <section class="settings-section" aria-labelledby="settingsPaletteTitle">
+                <h2 class="settings-section-title" id="settingsPaletteTitle">Color palette</h2>
+                <p class="settings-section-hint">Calm accents that match Grove's dark glass theme.</p>
+                <div class="palette-grid" id="paletteGrid" role="listbox" aria-label="Color palette"></div>
+            </section>
+
+            <section class="settings-section" id="settingsNotifySection" aria-labelledby="settingsNotifyTitle" hidden>
+                <h2 class="settings-section-title" id="settingsNotifyTitle">Notifications</h2>
+                <p class="settings-section-hint">Get a Windows alert when a task is due.</p>
+                <div class="settings-notify-block">
+                    <div class="notify-settings" id="notifySettings">
+                        <label class="notify-toggle-row" id="notifyToggleRow">
+                            <input type="checkbox" id="notifyToggle" />
+                            <span class="notify-toggle-text">Due-time alerts</span>
+                        </label>
+                        <p class="notify-hint" id="notifyHint"></p>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 
@@ -5640,7 +5844,7 @@
             document.body.classList.toggle("focus-running", timerState.running && timerState.phase === "work");
             document.body.classList.toggle("focus-break", timerState.phase === "break");
 
-            document.querySelectorAll(".focus-dur-btn").forEach(btn => {
+            document.querySelectorAll("#focusDurations .focus-dur-btn").forEach(btn => {
                 const mins = +btn.dataset.work;
                 btn.classList.toggle("active", mins === timerState.workMinutes);
                 btn.disabled = timerState.running;
@@ -5810,6 +6014,7 @@
 
         function setWorkDuration(minutes) {
             if (timerState.running) return;
+            if (!Number.isFinite(minutes) || minutes <= 0) return;
             timerState.workMinutes = minutes;
             if (timerState.phase === "work") {
                 timerState.secondsLeft = minutes * 60;
@@ -6026,23 +6231,25 @@
                 btn.classList.toggle("active", active);
                 btn.setAttribute("aria-selected", active ? "true" : "false");
             });
-            positionFocusModeIndicator(!silent);
+            updateFocusModeToggleState();
             if (mode === "pomodoro") {
                 normalizeTimerState();
                 updateTimerUI();
-                positionFocusDurIndicator(false);
             } else {
                 renderFocusQueue();
             }
-            updateFocusModeToggleState();
+            positionFocusModeIndicator(!silent);
             syncPomodoroWakeLock();
         }
 
         function updateFocusModeToggleState() {
             const locked = isAnyFocusTimerRunning();
+            let disabledChanged = false;
             document.querySelectorAll("#focusPanel .focus-mode-btn").forEach(btn => {
+                if (!!btn.disabled !== locked) disabledChanged = true;
                 btn.disabled = locked;
             });
+            if (disabledChanged) positionFocusModeIndicator(false);
         }
 
         function computeFocusStats() {
@@ -7281,8 +7488,10 @@
             document.getElementById("tasksPanel").classList.toggle("active", tab === "tasks");
             document.getElementById("notesPanel").classList.toggle("active", tab === "notes");
             document.getElementById("focusPanel").classList.toggle("active", tab === "focus");
+            document.getElementById("settingsPanel").classList.toggle("active", tab === "settings");
             document.getElementById("notesPanel").setAttribute("aria-hidden", tab !== "notes");
             document.getElementById("focusPanel").setAttribute("aria-hidden", tab !== "focus");
+            document.getElementById("settingsPanel").setAttribute("aria-hidden", tab !== "settings");
             document.querySelectorAll(".app-nav-btn").forEach(btn => {
                 btn.classList.toggle("active", btn.dataset.app === tab);
             });
@@ -8955,6 +9164,7 @@
         }
 
         function updateNotifySettingsUi() {
+            const section = document.getElementById("settingsNotifySection");
             const block = document.getElementById("notifySettings");
             const row = document.getElementById("notifyToggleRow");
             const toggle = document.getElementById("notifyToggle");
@@ -8962,11 +9172,11 @@
             if (!block || !toggle || !hint) return;
 
             if (!isTauriDesktop()) {
-                block.hidden = true;
+                if (section) section.hidden = true;
                 return;
             }
 
-            block.hidden = false;
+            if (section) section.hidden = false;
             const available = isNotifyToggleAvailable();
             toggle.checked = available && notificationsEnabled;
             toggle.disabled = !available;
@@ -9006,7 +9216,7 @@
             } catch {
                 /* ignore */
             }
-            showToast("Turn on Due-time alerts in the sidebar for Windows notifications");
+            showToast("Turn on Due-time alerts in Settings for Windows notifications");
         }
 
         function initDesktopNotifier() {
@@ -9068,10 +9278,44 @@
             greeting.innerHTML = `<span class="greeting-text">${text}</span>${icon(iconName, 14)}`;
         }
 
+        function renderPaletteGrid() {
+            const grid = document.getElementById("paletteGrid");
+            if (!grid || !window.GrovePalettes) return;
+
+            const activeId = GrovePalettes.loadStoredPaletteId();
+            grid.innerHTML = GrovePalettes.getPalettes().map((p) => {
+                const swatchHtml = p.swatch.map((color, i) =>
+                    `<span class="palette-swatch-dot${i > 0 ? " secondary" : ""}" style="background:${color}"></span>`
+                ).join("");
+                return `<button type="button" class="palette-option${p.id === activeId ? " is-active" : ""}" data-palette="${p.id}" role="option" aria-selected="${p.id === activeId}"><span class="palette-swatch">${swatchHtml}</span><span class="palette-name">${p.name}</span></button>`;
+            }).join("");
+        }
+
+        function initSettings() {
+            if (window.GrovePalettes) {
+                GrovePalettes.applyPalette(GrovePalettes.loadStoredPaletteId());
+            }
+            renderPaletteGrid();
+
+            const grid = document.getElementById("paletteGrid");
+            if (grid && !grid.dataset.bound) {
+                grid.dataset.bound = "1";
+                grid.addEventListener("click", (e) => {
+                    const btn = e.target.closest(".palette-option[data-palette]");
+                    if (!btn || !window.GrovePalettes) return;
+                    const id = btn.dataset.palette;
+                    GrovePalettes.savePaletteId(id);
+                    renderPaletteGrid();
+                    if (appTab === "tasks") render();
+                });
+            }
+        }
+
         function updateChrome() {
             const isBacklog = view === "backlog";
             const isKanban = taskLayout === "kanban";
             document.body.classList.toggle("mode-backlog", isBacklog);
+            if (window.GrovePalettes) GrovePalettes.syncBodyBackground();
             todayCap.classList.toggle("hidden", isBacklog);
             backlogHint.classList.toggle("hidden", !isBacklog);
             todayFilters.classList.toggle("hidden", isBacklog || isKanban);
@@ -9775,7 +10019,7 @@
         document.getElementById("focusReset").addEventListener("click", resetTimer);
         document.getElementById("focusSkip").addEventListener("click", skipTimerPhase);
 
-        document.querySelectorAll(".focus-dur-btn").forEach(btn => {
+        document.querySelectorAll("#focusDurations .focus-dur-btn").forEach(btn => {
             btn.addEventListener("click", () => setWorkDuration(+btn.dataset.work));
         });
 
@@ -9838,6 +10082,21 @@
                     },
                 },
                 {
+                    title: "Priority orbs",
+                    body: isMobileOnboardingContext()
+                        ? "Each task has a colored orb beside it — that’s its priority. Tap the orb to open High, Medium, or Low and pick the level that fits."
+                        : "Each task has a colored orb beside it — that’s its priority. Click the orb to open High, Medium, or Low and pick the level that fits.",
+                    prep() {
+                        setAppTab("tasks");
+                        view = "today";
+                        taskLayout = "list";
+                        render();
+                    },
+                    target() {
+                        return document.querySelector("#tasksPanel .task-list .task-card .priority-orb");
+                    },
+                },
+                {
                     title: "Backlog",
                     body: "Everything else waits in Backlog until you pull it into Today.",
                     prep() {
@@ -9883,7 +10142,7 @@
                     },
                     {
                         title: "Add tasks",
-                        body: "Tap + to add a task — set priority and category, or create a new label inline.",
+                        body: "Tap + to add a task — set priority and category, or create a new label inline. You can also tap the orb beside any task to change its priority anytime.",
                         prep: showTasksToday,
                         target() {
                             const fab = document.getElementById("mobileFab");
@@ -9892,7 +10151,7 @@
                     },
                     {
                         title: "You're set",
-                        body: "Tasks stay on this device. Use + to capture work; Kanban moves tasks with a tap.",
+                        body: "Tasks stay on this device. Use + to capture work, tap orbs to set priority, and use Kanban to move tasks with a tap.",
                         centered: true,
                         prep: showTasksToday,
                         target() {
@@ -10289,6 +10548,7 @@
         initPwaMobile();
         load();
         mountStaticIcons();
+        initSettings();
         setGreeting();
         initFocus();
         initFocusDailyEvents();
